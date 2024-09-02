@@ -23,3 +23,9 @@ Django application to point interns, send holidays requests and get centralized 
 - Calendar management
 - Make holiday requests easier from student to HR
 - Being able to download formated reports and stats in PDF format at the end of the internship
+
+## Sources
+- [Django documentation](https://docs.djangoproject.com/en/3.1/)
+- [SQLite documentation](https://www.sqlite.org/docs.html)
+- [Django basic yt tutorial](https://www.youtube.com/watch?v=rHux0gMZ3Eg)
+- [Django basic++ yt tutorial](https://www.youtube.com/watch?v=Bn0k9DDYBZM)
