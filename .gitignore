@@ -1,1 +1,3 @@
-calpoint/env
+PS/env
+PS/*/__pycache__
+PS/*/migrations
