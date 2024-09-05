@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PS Pointer</title>
+    <title>PS Error</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -95,39 +95,39 @@
         }
 
         .content {
-            margin-top: 80px;
-            display: flex;
-            flex-direction: column;
+        }
+
+        .navigation {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .navigation a {
+            text-decoration: none;
+            color: #617798;
+            font-weight: bold;
+            margin: 0 15px;
+            padding: 5px 10px;
+            border: 1px solid #617798;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navigation a:hover {
+            background-color: #617798;
+            color: white;
+        }
+
+        .content-box {
+            margin-top: 100px; /* Adjust this margin to avoid overlap with the fixed navbar */
+            justify-content: center;
             align-items: center;
             text-align: center;
-        }
-
-        .button-container {
-            margin: 30px 0;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background-color: #617798;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin: 10px;
-        }
-
-        .btn:hover {
-            background-color: #4c5e79;
-        }
-
-        .timer-info {
-            margin: 20px;
-            font-size: 18px;
-            font-weight: bold;
-            color: #617798;
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -145,60 +145,13 @@
         </div>
     </div>
 
-    <div class="content">
-        <h2>Pointer System</h2>
-        <p>Manage your work and lunch timers below:</p>
-        
-        <div class="button-container">
-            <button class="btn" id="work-timer-btn" onclick="toggleWorkTimer()">Start Work Timer</button>
-            <button class="btn" id="lunch-timer-btn" onclick="toggleLunchTimer()">Start Lunch Timer</button>
-        </div>
-
-        <div class="timer-info" id="work-timer-info">
-            Work Timer: <span id="work-timer-status">Not Started</span>
-        </div>
-
-        <div class="timer-info" id="lunch-timer-info">
-            Lunch Timer: <span id="lunch-timer-status">Not Started</span>
-        </div>
+    <div class="content-box">
+        <h1>Error</h1>
+        <p>{{ content }}</p>
+        <a href="../planning">Go back</a>
     </div>
 
     <script>
-        let workTimerActive = false;
-        let lunchTimerActive = false;
-
-        function toggleWorkTimer() {
-            workTimerActive = !workTimerActive;
-            const workBtn = document.getElementById('work-timer-btn');
-            const workStatus = document.getElementById('work-timer-status');
-
-            if (workTimerActive) {
-                workBtn.textContent = 'Stop Work Timer';
-                workStatus.textContent = 'Active';
-                // Code to start timer or save time
-            } else {
-                workBtn.textContent = 'Start Work Timer';
-                workStatus.textContent = 'Not Active';
-                // Code to stop timer or save time
-            }
-        }
-
-        function toggleLunchTimer() {
-            lunchTimerActive = !lunchTimerActive;
-            const lunchBtn = document.getElementById('lunch-timer-btn');
-            const lunchStatus = document.getElementById('lunch-timer-status');
-
-            if (lunchTimerActive) {
-                lunchBtn.textContent = 'Stop Lunch Timer';
-                lunchStatus.textContent = 'Active';
-                // Code to start timer or save time
-            } else {
-                lunchBtn.textContent = 'Start Lunch Timer';
-                lunchStatus.textContent = 'Not Active';
-                // Code to stop timer or save time
-            }
-        }
-
         function toggleMenu() {
             const menuLinks = document.querySelector('.menu-links');
             menuLinks.classList.toggle('active');

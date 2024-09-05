@@ -95,6 +95,25 @@
         }
 
         .content {
+            margin-top: 100px;
+            width: 80%;
+            max-width: 800px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-section {
+            margin: 20px 0;
+        }
+
+        .stats-section h3 {
+            color: #4c5e79;
+        }
+
+        .stats-section p {
+            font-size: 1.2em;
         }
 
         .navigation {
@@ -135,7 +154,32 @@
     </div>
 
     <div class="content">
-        <a>Stats</a>
+        <h2>Stats for {{ username }}</h2>
+
+         <div class="stats-section">
+            <h3>General</h3>
+            <p>Logtime today: {{ logtime_today }}</p>
+            <p>Breaktime today: {{ breaktime_today }}</p>
+            <p>Lunchtime today: {{ lunchtime_today }}</p>
+        </div>
+       
+        <div class="stats-section">
+            <h3>Vacations</h3>
+            <p>Total: {{ days_off }}</p>
+            <p>Left: {{ days_left }}</p>
+        </div>
+
+        <div class="stats-section">
+            <h3>Average working hours</h3>
+            <p>Last week: {{ hours_lastweek }}</p>
+            <p>Last month: {{ hours_lastmonth }}</p>
+            <p>Breaktime average: {{ breaktime_avg }}</p>
+        </div>
+
+        <div class="navigation">
+            <a href="../">Back to Home</a>
+            <a href="../planning">Back to Calendar</a>
+        </div>
     </div>
 
     <script>
