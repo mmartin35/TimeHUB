@@ -16,8 +16,11 @@ Django application to point interns and students, send holidays requests and wor
 - Generate statistics (days off, hours worked, etc.)
 - Generate reports
 
-## Whats left to do
-- Being able to download formated reports and stats in PDF format at the end of the internship
+## Left to do
+- [ ] Add a logout page
+- [ ] Fix DB issue with pointer method
+- [ ] Add vacations for DB
+- [ ] Generate reports in PDF format
 
 ## Sources
 - [Django documentation](https://docs.djangoproject.com/en/3.1/)
