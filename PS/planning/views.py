@@ -5,7 +5,7 @@ from .forms import EventForm
 from calendar import HTMLCalendar
 from datetime import datetime, timedelta
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required  # Ensure the user is logged in
+from django.contrib.auth.decorators import login_required
 
 class EventCalendar(HTMLCalendar):
     def __init__(self, events, uname, *args, **kwargs):
