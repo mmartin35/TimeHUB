@@ -6,6 +6,9 @@ Django application to point interns and students, send holidays requests and wor
 - Django
 - SQLite3
 
+# Requirements
+- fullcalendar
+
 ## Features
 1. Default page
 - Point arrival time, departure time
@@ -17,13 +20,16 @@ Django application to point interns and students, send holidays requests and wor
 - Generate reports
 
 ## Left to do
+- [ ] Change FS to fullcalendar
+- [ ] Design with Bootstrap
 - [ ] Add a logout page
 - [ ] Fix DB issue with pointer method
-- [ ] Add vacations for DB
 - [ ] Generate reports in PDF format
+- [ ] Oauth2
 
 ## Sources
 - [Django documentation](https://docs.djangoproject.com/en/3.1/)
 - [SQLite documentation](https://www.sqlite.org/docs.html)
 - [Django basic yt tutorial](https://www.youtube.com/watch?v=rHux0gMZ3Eg)
 - [Django basic++ yt tutorial](https://www.youtube.com/watch?v=Bn0k9DDYBZM)
+- [Django fullcalendar](https://fullcalendar.io/docs/initialize-globals)

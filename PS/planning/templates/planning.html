@@ -241,15 +241,13 @@
             <a href="?month={{ next_month }}">Next Month →</a>
         </div>
 
+        {% if date %}
         <div class="form-container">
-            <h2>Submit Days Off</h2>
+            <h2>Submit Event for {{ date }} ({{ days_left }} days left):</h2>
             <form method="POST">
                 {% csrf_token %}
                 <label for="title">Reason:</label>
                 <input type="text" id="title" name="title" required>
-
-                <label for="date">Date:</label>
-                <input type="date" id="date" name="date" required>
 
                 <label for="duration">Duration (days):</label>
                 <input type="number" id="duration" name="duration" min="1" required>
@@ -257,7 +255,9 @@
                 <button type="submit">Submit</button>
             </form>
         </div>
+        {% endif %}
     </div>
+
 
     <script>
         function toggleMenu() {
