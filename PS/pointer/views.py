@@ -25,6 +25,6 @@ def login_view(request):
 @login_required
 def pointer(request):
     context = {
-        'user': request.user.username,
+        'user': request.user,
     }
     return render(request, 'pointer.html', context)

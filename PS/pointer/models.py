@@ -11,7 +11,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         Timer.objects.create(user=instance)
 
 class Timer(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.CharField(default='Anonymous', max_length=30)
+'''
     date = models.DateField(default=timezone.now)
     work_start_time = models.DateTimeField(default=timezone.now)
     work_time_elapsed = models.DurationField(default=timedelta(0))
@@ -40,4 +41,6 @@ class Timer(models.Model):
             self.lunch_start_time = None
 
     def __str__(self):
-        return f'{self.user} - {self.date} (Started at {self.work_start_time})- {self.work_time_elapsed} + {self.lunch_time_elapsed}'
+        return (f'{self.user} - {self.date} (Started at {self.work_start_time}) '
+                f'- {self.work_time_elapsed} + {self.lunch_time_elapsed}')
+'''
