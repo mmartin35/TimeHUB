@@ -92,8 +92,10 @@ def events_json(request):
     events = Event.objects.filter(user=request.user)
     event_list = []
     for event in events:
+        '''
         if event.user != request.user:
             continue
+        '''
         event_list.append({
             'title': event.reason,
             'start': event.start_date.strftime('%Y-%m-%d'),
