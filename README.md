@@ -24,7 +24,7 @@ Django application to point interns and students, send holidays requests and wor
 - [ ] Design with Bootstrap
 - [x] Add a logout page
 - [ ] Fix DB issue with pointer method
-- [ ] allAuth
+- [ ] Implement allAuth
 
 ## Sources
 - [Django documentation](https://docs.djangoproject.com/en/3.1/)
