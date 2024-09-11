@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-import configparser
+from django.http import JsonResponse
 from datetime import timedelta
 from .forms import EventForm
 from .models import Event
 
 @login_required
 def planning(request):
-    # Calculate days off left
+    # Calculate remaining days off
     daysoff_left = 25 - Event.objects.filter(user=request.user).count()
 
     # Check form submission
@@ -20,33 +20,84 @@ def planning(request):
             reason = form.cleaned_data['reason']
             half_day = form.cleaned_data['half_day']
 
-            # Validation: Ensure the start date is before or equal to the end date
+            # Ensure start date is before or equal to end date
             if start_date > end_date:
-                form.add_error('start_date', 'Start date must be before or on the end date.')
-                return render(request, 'planning.html', {'form': form, 'daysoff_left': daysoff_left})
+                context = {
+                    'content': 'Start date cannot be after end date',
+                }
+                return render(request, 'error.html', context)
 
-            # Validation: Check if the user has enough days off left
+            # Check if user has enough days off
             if total_days_requested > daysoff_left:
-                form.add_error('end_date', f'The requested time off exceeds the remaining days off ({daysoff_left} days).')
-                return render(request, 'planning.html', {'form': form, 'daysoff_left': daysoff_left})
+                context = {
+                        'content': 'Requested time off exceeds the remaining days off',
+                }
+                return render(request, 'error.html', context)
+
+            # Ensure start date is not in the past
+            if start_date < start_date.today():
+                context = {
+                    'content': 'Start date cannot be in the past',
+                }
+                return render(request, 'error.html', context)
+
+            # Check for existing events within the same date range
+            existing_events = Event.objects.filter(
+                user=request.user,
+                start_date__lte=end_date,
+                end_date__gte=start_date
+            )
+
+            if existing_events.exists():
+                context = {
+                    'content': 'An event already exists within the selected date range',
+                }
+                return render(request, 'error.html', context)
 
             # Add each day as a separate event
             for single_date in (start_date + timedelta(days=n) for n in range(total_days_requested)):
-                Event.objects.create(
-                    user=request.user,
-                    reason=reason,
-                    start_date=single_date,
-                    end_date=single_date,
-                    half_day=half_day
-                )
+                if half_day:
+                    Event.objects.create(
+                        user=request.user,
+                        reason=reason,
+                        start_date=single_date,
+                        end_date=single_date,
+                        half_day=half_day,
+                        remaining_days=daysoff_left + 0.5
+                    )
+                else:
+                    Event.objects.create(
+                        user=request.user,
+                        reason=reason,
+                        start_date=single_date,
+                        end_date=single_date,
+                        half_day=half_day,
+                        remaining_days=daysoff_left
+                    )
             return redirect('planning')
 
     else:
         form = EventForm()
 
     context = {
-        'user': request.user.username,
+        'user': request.user,
         'daysoff_left': daysoff_left,
         'form': form
     }
     return render(request, 'planning.html', context)
+
+@login_required
+def events_json(request):
+    # Fetch all events for the logged-in user
+    events = Event.objects.filter(user=request.user)
+    event_list = []
+    for event in events:
+        if event.user != request.user:
+            continue
+        event_list.append({
+            'title': event.reason,
+            'start': event.start_date.strftime('%Y-%m-%d'),
+            'end': event.end_date.strftime('%Y-%m-%d'),
+            'allDay': not event.half_day,
+        })
+    return JsonResponse(event_list, safe=False)

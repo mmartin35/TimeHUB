@@ -8,18 +8,23 @@
     <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
     <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          dateClick: function(info) {
-            document.getElementById('eventDate').value = info.dateStr;
-            document.getElementById('reason').focus();
-          }
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                dateClick: function(info) {
+                    document.getElementById('eventDate').value = info.dateStr;
+                    document.getElementById('reason').focus();
+                },
+                events: "{% url 'events_json' %}",
+                eventDidMount: function(info) {
+                    info.el.style.backgroundColor = 'red';
+                }
+            });
+            calendar.render();
         });
-        calendar.render();
-      });
     </script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,7 +90,7 @@
             margin-top: 5px;
             width: 100%;
         }
-        
+
         button {
             margin-top: 10px;
         }

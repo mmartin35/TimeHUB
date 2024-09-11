@@ -12,13 +12,11 @@ def create_user_profile(sender, instance, created, **kwargs):
 class Event(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reason = models.CharField(max_length=200)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(default=timezone.now)
     half_day = models.IntegerField(default=0)
     approved = models.BooleanField(default=False)
+    remaining_days = models.FloatField(default=25)
 
     def __str__(self):
         return f'{self.user} -> {self.reason} between {self.start_date} and {self.end_date} | status: {self.approved}'
-
-    class Meta:
-        pass
