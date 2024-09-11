@@ -1,0 +1,5 @@
+[09/09/2024] Rebuilt all the app to fit new constraints
+- Overall: Use bootstrap design
+- Calendar: Use a new library to display events (FullCalendar)
+- User management: Create user with django data automatically
+[11/09/2024] Added a reporting system

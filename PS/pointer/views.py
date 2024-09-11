@@ -24,39 +24,7 @@ def login_view(request):
 
 @login_required
 def pointer(request):
-    today = timezone.now().date()
-    timer, created = Timer.objects.get_or_create(uname=request.user.username, date=today)
-
-    if request.method == 'POST':
-        if 'toggle_work' in request.POST:
-            if timer.work_start_time:
-                timer.stop_work()
-            else:
-                timer.start_work()
-            timer.save()
-
-        if 'toggle_lunch' in request.POST:
-            if timer.lunch_start_time:
-                timer.stop_lunch()
-            else:
-                timer.start_lunch()
-            timer.save()
-
-    current_time = timezone.now()
-    work_time = timer.work_time_elapsed
-    if timer.work_start_time:
-        work_time += current_time - timer.work_start_time
-
-    lunch_time = timer.lunch_time_elapsed
-    if timer.lunch_start_time:
-        lunch_time += current_time - timer.lunch_start_time
-
-
     context = {
-        'work_time': work_time,
-        'lunch_time': lunch_time,
-        'work_timer_active': bool(timer.work_start_time),
-        'lunch_timer_active': bool(timer.lunch_start_time),
-        'date': today,
+        'user': request.user.username,
     }
     return render(request, 'pointer.html', context)

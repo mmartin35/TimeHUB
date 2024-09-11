@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Report Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,6 +12,7 @@
             margin: 0;
             padding: 0;
             display: flex;
+            height: 100vh;
         }
 
         .menu {
@@ -35,35 +36,42 @@
         }
 
         .form-container {
-            margin-top: 30px;
-            width: 80%;
-            max-width: 400px;
-            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            padding: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             font-weight: bold;
+            font-size: 13px;
         }
 
         input, textarea {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
+            max-width: 600px;
+            padding: 12px;
+            margin-bottom: 20px;
             border: 1px solid #000;
             border-radius: 4px;
             box-sizing: border-box;
+            font-size: 16px;
         }
 
         button {
             display: block;
             width: 100%;
-            padding: 10px;
+            max-width: 600px;
+            padding: 12px;
             background-color: #000;
             color: #fff;
             border: none;
             cursor: pointer;
+            font-size: 16px;
         }
 
         button:hover {
@@ -77,6 +85,25 @@
         <a href="../planning">Planning</a>
         <a href="../reporting">Reporting</a>
         <a href="../logout">Logout</a>
+    </div>
+
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            <label for="name">Name (not mandatory):</label>
+            <input type="text" id="name" name="name">
+
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required>
+
+            <label for="detailed">Details:</label>
+            <textarea id="detailed" name="detailed" required></textarea>
+
+            <label for="contact">Contact:</label>
+            <textarea id="contact" name="contact"></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
     </div>
 </body>
 </html>
