@@ -22,10 +22,9 @@ Django application to point interns and students, send holidays requests and wor
 ## Left to do
 - [x] Change FS to fullcalendar
 - [ ] Design with Bootstrap
-- [ ] Add a logout page
+- [x] Add a logout page
 - [ ] Fix DB issue with pointer method
-- [ ] Generate reports in PDF format
-- [ ] Oauth2
+- [ ] allAuth
 
 ## Sources
 - [Django documentation](https://docs.djangoproject.com/en/3.1/)
