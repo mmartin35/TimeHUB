@@ -1,133 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planning</title>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
-    <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                dateClick: function(info) {
-                    document.getElementById('eventDate').value = info.dateStr;
-                    document.getElementById('reason').focus();
-                },
-                events: "{% url 'events_json' %}",
-                eventDidMount: function(info) {
-                    info.el.style.backgroundColor = 'red';
-                }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Planning</title>
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+        <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+        <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    dateClick: function(info) {
+                        document.getElementById('eventDate').value = info.dateStr;
+                        document.getElementById('reason').focus();
+                    },
+                    events: "{% url 'events_json' %}",
+                    eventDidMount: function(info) {
+                        info.el.style.backgroundColor = 'red';
+                    }
+                });
+                calendar.render();
             });
-            calendar.render();
-        });
-    </script>
+        </script>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff;
-            color: #000;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #fff;
+                color: #000;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                height: 100vh;
+                overflow: hidden;
+            }
 
-        .menu {
-            padding: 20px;
-            text-align: left;
-            width: 200px;
-            border-right: 1px solid #000;
-            height: 100vh;
-            overflow-y: auto;
-        }
+            .menu {
+                padding: 20px;
+                text-align: left;
+                width: 200px;
+                border-right: 1px solid #000;
+                height: 100vh;
+                overflow-y: auto;
+            }
 
-        .menu a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #000;
-            font-size: 18px;
-        }
+            .menu a {
+                display: block;
+                margin: 10px 0;
+                text-decoration: none;
+                color: #000;
+                font-size: 18px;
+            }
 
-        .menu a:hover {
-            color: #555;
-        }
+            .menu a:hover {
+                color: #555;
+            }
 
-        .content {
-            display: flex;
-            flex-direction: row;
-            flex-grow: 1;
-            padding: 20px;
-            overflow: hidden;
-            gap: 20px;
-        }
+            .content {
+                display: flex;
+                flex-direction: row;
+                flex-grow: 1;
+                padding: 20px;
+                overflow: hidden;
+                gap: 20px;
+            }
 
-        #calendar {
-            flex: 1;
-            min-width: 300px;
-        }
+            #calendar {
+                flex: 1;
+                min-width: 300px;
+            }
 
-        #eventFormSection {
-            width: 300px;
-            max-width: 100%;
-            padding: 20px;
-            border: 1px solid #888;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
+            #eventFormSection {
+                width: 300px;
+                max-width: 100%;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 4px;
+                background-color: #f9f9f9;
+            }
 
-        form label {
-            display: block;
-            margin-top: 10px;
-        }
+            form label {
+                display: block;
+                margin-top: 10px;
+            }
 
-        form input, form button {
-            margin-top: 5px;
-            width: 100%;
-        }
+            form input, form button {
+                margin-top: 5px;
+                width: 100%;
+            }
 
-        button {
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="menu">
-        <a href="../">Home</a>
-        <a href="../planning">Planning</a>
-        <a href="../reporting">Reporting</a>
-        <a href="../logout">Logout</a>
-    </div>
-    <div class="content">
-        <div id='calendar'></div>
-        <div id="eventFormSection">
-            <h2>Create New Event</h2>
-            <form id="eventForm" method="post">
-                {% csrf_token %}
-                <input type="hidden" id="eventDate" name="start_date">
-                <label for="reason">Reason:</label>
-                <input type="text" id="reason" name="reason" required><br>
-                <label for="start_date">Start Date:</label>
-                <input type="date" id="start_date" name="start_date" required><br>
-                <label for="end_date">End Date:</label>
-                <input type="date" id="end_date" name="end_date" required><br>
-                <label for="half_day">Half Day:</label>
-                <input type="number" value="0" min="0" max="1" id="half_day" name="half_day" required><br>
-                <button type="submit">Submit</button>
-            </form>
-            <p>For Half Day, you have the following choices</p>
-            <ul>
-                <li>0: starting in the morning</li>
-                <li>1: starting in the afternoon</li>
-            </ul>
-            <h2>Data of {{ user }}</h2>
-            <p>Days off remaining: {{ daysoff_left }}</p>
+            button {
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="menu">
+            <a href="../">Home</a>
+            <a href="../planning">Planning</a>
+            <a href="../reporting">Reporting</a>
+            <a href="../logout">Logout</a>
         </div>
-    </div>
-</body>
+
+        <div class="content">
+            <div id='calendar'></div>
+            <div id="eventFormSection">
+                <h2>Create New Event</h2>
+                <form id="eventForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="eventDate" name="start_date">
+                    <label for="reason">Reason:</label>
+                    <input type="text" id="reason" name="reason" required><br>
+                    <label for="start_date">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" required><br>
+                    <label for="end_date">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" required><br>
+                    <label for="half_day">Half Day:</label>
+                    <input type="number" value="0" min="0" max="1" id="half_day" name="half_day" required><br>
+                    <button type="submit">Submit</button>
+                </form>
+                <p>For Half Day, you have the following choices</p>
+                <ul>
+                    <li>0: starting in the morning</li>
+                    <li>1: starting in the afternoon</li>
+                </ul>
+                <h2>Data of {{ user }}</h2>
+                <p>Days off remaining: {{ daysoff_left }}</p>
+            </div>
+        </div>
+    </body>
 </html>

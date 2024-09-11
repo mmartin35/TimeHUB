@@ -1,109 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Form</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fff;
-            color: #000;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            height: 100vh;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Report Form</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #fff;
+                color: #000;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                height: 100vh;
+            }
 
-        .menu {
-            padding: 20px;
-            text-align: left;
-            width: 200px;
-            border-right: 1px solid #000;
-            height: 100vh;
-        }
+            .menu {
+                padding: 20px;
+                text-align: left;
+                width: 200px;
+                border-right: 1px solid #000;
+                height: 100vh;
+            }
 
-        .menu a {
-            display: block;
-            margin: 10px 0;
-            text-decoration: none;
-            color: #000;
-            font-size: 18px;
-        }
+            .menu a {
+                display: block;
+                margin: 10px 0;
+                text-decoration: none;
+                color: #000;
+                font-size: 18px;
+            }
 
-        .menu a:hover {
-            color: #555;
-        }
+            .menu a:hover {
+                color: #555;
+            }
 
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            padding: 20px;
-        }
+            .form-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                flex-grow: 1;
+                padding: 20px;
+            }
 
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-size: 13px;
-        }
+            label {
+                display: block;
+                margin-bottom: 10px;
+                font-weight: bold;
+                font-size: 13px;
+            }
 
-        input, textarea {
-            width: 100%;
-            max-width: 600px;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
+            input, textarea {
+                width: 100%;
+                max-width: 600px;
+                padding: 12px;
+                margin-bottom: 20px;
+                border: 1px solid #000;
+                border-radius: 4px;
+                box-sizing: border-box;
+                font-size: 16px;
+            }
 
-        button {
-            display: block;
-            width: 100%;
-            max-width: 600px;
-            padding: 12px;
-            background-color: #000;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
+            button {
+                display: block;
+                width: 100%;
+                max-width: 600px;
+                padding: 12px;
+                background-color: #000;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                font-size: 16px;
+            }
 
-        button:hover {
-            background-color: #555;
-        }
-    </style>
-</head>
-<body>
-    <div class="menu">
-        <a href="../">Home</a>
-        <a href="../planning">Planning</a>
-        <a href="../reporting">Reporting</a>
-        <a href="../logout">Logout</a>
-    </div>
+            button:hover {
+                background-color: #555;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="menu">
+            <a href="../">Home</a>
+            <a href="../planning">Planning</a>
+            <a href="../reporting">Reporting</a>
+            <a href="../logout">Logout</a>
+        </div>
 
-    <div class="form-container">
-        <form method="POST">
-            {% csrf_token %}
-            <label for="name">Name (not mandatory):</label>
-            <input type="text" id="name" name="name">
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
+                <label for="name">Name (not mandatory):</label>
+                <input type="text" id="name" name="name">
 
-            <label for="subject">Subject:</label>
-            <input type="text" id="subject" name="subject" required>
+                <label for="subject">Subject:</label>
+                <input type="text" id="subject" name="subject" required>
 
-            <label for="detailed">Details:</label>
-            <textarea id="detailed" name="detailed" required></textarea>
+                <label for="detailed">Details:</label>
+                <textarea id="detailed" name="detailed" required></textarea>
 
-            <label for="contact">Contact:</label>
-            <textarea id="contact" name="contact"></textarea>
+                <label for="contact">Contact:</label>
+                <textarea id="contact" name="contact"></textarea>
 
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-</body>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </body>
 </html>
