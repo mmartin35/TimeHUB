@@ -29,17 +29,11 @@ def planning(request):
 
             # Check if user has enough days off
             if total_days_requested > daysoff_left:
-                context = {
-                        'content': 'Requested time off exceeds the remaining days off',
-                }
-                return render(request, 'error.html', context)
+                return render(request, 'error.html', context = {'content': 'Requested time off exceeds the remaining days off'})
 
             # Ensure start date is not in the past
             if start_date < start_date.today():
-                context = {
-                    'content': 'Start date cannot be in the past',
-                }
-                return render(request, 'error.html', context)
+                return render(request, 'error.html', context = {'content': 'Start date cannot be in the past'})
 
             # Check for existing events within the same date range
             existing_events = Event.objects.filter(
@@ -49,22 +43,21 @@ def planning(request):
             )
 
             if existing_events.exists():
-                context = {
-                    'content': 'An event already exists within the selected date range',
-                }
-                return render(request, 'error.html', context)
+                return render(request, 'error.html', context = {'content': 'An event already exists within the selected date range'})
 
             # Add each day as a separate event
             for single_date in (start_date + timedelta(days=n) for n in range(total_days_requested)):
                 if half_day:
+                    daysoff_left += 0.5
                     Event.objects.create(
                         user=request.user,
                         reason=reason,
                         start_date=single_date,
                         end_date=single_date,
                         half_day=half_day,
-                        remaining_days=daysoff_left + 0.5
+                        remaining_days=daysoff_left,
                     )
+                    half_day = False
                 else:
                     Event.objects.create(
                         user=request.user,
@@ -72,13 +65,14 @@ def planning(request):
                         start_date=single_date,
                         end_date=single_date,
                         half_day=half_day,
-                        remaining_days=daysoff_left
+                        remaining_days=daysoff_left,
                     )
             return redirect('planning')
 
     else:
         form = EventForm()
 
+    print(daysoff_left)
     context = {
         'user': request.user,
         'daysoff_left': daysoff_left,
@@ -92,14 +86,11 @@ def events_json(request):
     events = Event.objects.filter(user=request.user)
     event_list = []
     for event in events:
-        '''
-        if event.user != request.user:
-            continue
-        '''
         event_list.append({
             'title': event.reason,
             'start': event.start_date.strftime('%Y-%m-%d'),
             'end': event.end_date.strftime('%Y-%m-%d'),
-            'allDay': not event.half_day,
+            'allDay': True,
+            'backgroundColor': 'green' if event.approved else 'orange',
         })
     return JsonResponse(event_list, safe=False)
