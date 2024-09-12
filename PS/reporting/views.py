@@ -6,6 +6,7 @@ from .forms import ReportForm
 from .models import Report
 
 def reporting(request):
+    # Form
     if request.method == 'POST':
         form = ReportForm(request.POST)
         if form.is_valid():

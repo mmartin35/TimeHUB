@@ -23,8 +23,9 @@ Django application to point interns and students, send holidays requests and wor
 - [x] Change FS to fullcalendar
 - [ ] Design with Bootstrap
 - [x] Add a logout page
-- [ ] Fix DB issue with pointer method
+- [x] Fix DB issue with pointer method
 - [ ] Implement allAuth
+- [ ] Add 5m delay for pointing to avoid multiclick
 
 ## Sources
 - [Django documentation](https://docs.djangoproject.com/en/3.1/)

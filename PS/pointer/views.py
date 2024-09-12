@@ -29,6 +29,7 @@ def login_view(request):
 def pointer(request):
     timer, created = Timer.objects.get_or_create(user=request.user, date=date.today())
 
+    # Forms
     if request.method == 'POST':
         current_time = timezone.now().time()
         if timer.work_start_morning is None:
@@ -42,6 +43,8 @@ def pointer(request):
         else:
             return HttpResponse('You have already completed the day', status=400)
         timer.save()
+
+        # Check status
         if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
             status = 0
         else:
@@ -55,7 +58,6 @@ def pointer(request):
             'work_end_afternoon': timer.work_end_afternoon,
         }
         return render(request, 'pointer.html', context)
-
     context = {
         'user': request.user,
     }

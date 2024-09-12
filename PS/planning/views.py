@@ -68,10 +68,8 @@ def planning(request):
                         remaining_days=daysoff_left,
                     )
             return redirect('planning')
-
     else:
         form = EventForm()
-
     context = {
         'user': request.user,
         'daysoff_left': daysoff_left,
