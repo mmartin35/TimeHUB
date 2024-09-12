@@ -3,16 +3,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
-from datetime import timedelta
+from datetime import date
 from .models import Timer
 
 def logout_view(request):
     logout(request)
-    return redirect('/login')
+    return redirect('login')
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('/pointer')
+        return redirect('')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
