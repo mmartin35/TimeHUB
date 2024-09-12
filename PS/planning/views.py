@@ -8,7 +8,7 @@ from .models import Event
 @login_required
 def planning(request):
     # Calculate remaining days off
-    daysoff_left = 25 - Event.objects.filter(user=request.user).count()
+    daysoff_left = 25 - Event.objects.filter(user=request.user).count() + 1
 
     # Check form submission
     if request.method == 'POST':
@@ -72,7 +72,6 @@ def planning(request):
     else:
         form = EventForm()
 
-    print(daysoff_left)
     context = {
         'user': request.user,
         'daysoff_left': daysoff_left,
@@ -86,6 +85,8 @@ def events_json(request):
     events = Event.objects.filter(user=request.user)
     event_list = []
     for event in events:
+        if event.reason == 'Initial request':
+            continue
         event_list.append({
             'title': event.reason,
             'start': event.start_date.strftime('%Y-%m-%d'),

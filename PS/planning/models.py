@@ -10,8 +10,8 @@ def create_user_profile(sender, instance, created, **kwargs):
         Event.objects.create(user=instance)
 
 class Event(models.Model):
-    user = models.CharField(default='Anonymous', max_length=50)
-    reason = models.CharField(max_length=200)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    reason = models.CharField(max_length=200, default='Initial request')
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
     half_day = models.IntegerField(default=0)

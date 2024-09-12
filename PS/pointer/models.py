@@ -11,13 +11,12 @@ def create_user_profile(sender, instance, created, **kwargs):
         Timer.objects.create(user=instance)
 
 class Timer(models.Model):
-    user = models.CharField(default='Anonymous', max_length=30)
-'''
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     date = models.DateField(default=timezone.now)
-    work_start_time = models.DateTimeField(default=timezone.now)
-    work_time_elapsed = models.DurationField(default=timedelta(0))
-    lunch_start_time = models.DateTimeField(default=timezone.now)
-    lunch_time_elapsed = models.DurationField(default=timedelta(0))
+    work_start_time = models.TimeField(null=True, blank=True)
+    work_time_elapsed = models.DurationField(default=timedelta())
+    lunch_start_time = models.TimeField(null=True, blank=True)
+    lunch_time_elapsed = models.DurationField(default=timedelta())
 
     class Meta:
         unique_together = ('user', 'date')
@@ -43,4 +42,3 @@ class Timer(models.Model):
     def __str__(self):
         return (f'{self.user} - {self.date} (Started at {self.work_start_time}) '
                 f'- {self.work_time_elapsed} + {self.lunch_time_elapsed}')
-'''
