@@ -11,6 +11,8 @@ def logout_view(request):
     return redirect('/login')
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('/pointer')
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']

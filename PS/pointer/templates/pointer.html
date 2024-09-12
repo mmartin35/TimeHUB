@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+    {% load static %}
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Home</title>
         <style>
             body {
@@ -13,7 +13,6 @@
                 padding: 0;
                 display: flex;
             }
-
             .menu {
                 padding: 20px;
                 text-align: left;
@@ -21,7 +20,6 @@
                 border-right: 1px solid #000;
                 height: 100vh;
             }
-
             .menu a {
                 display: block;
                 margin: 10px 0;
@@ -29,7 +27,6 @@
                 color: #000;
                 font-size: 18px;
             }
-
             .menu a:hover {
                 color: #555;
             }
