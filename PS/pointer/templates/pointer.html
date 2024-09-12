@@ -12,6 +12,10 @@
                 margin: 0;
                 padding: 0;
                 display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                box-sizing: border-box;
             }
             .menu {
                 padding: 20px;
@@ -19,6 +23,7 @@
                 width: 200px;
                 border-right: 1px solid #000;
                 height: 100vh;
+                box-sizing: border-box;
             }
             .menu a {
                 display: block;
@@ -30,6 +35,43 @@
             .menu a:hover {
                 color: #555;
             }
+            .content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                width: 100%;
+            }
+            .content form {
+                border-collapse: collapse;
+                width: 100%;
+                text-align: center;
+            }
+            .schedule-table {
+                border: 1px solid black;
+                border-collapse: collapse;
+                width: 100%;
+                text-align: left;
+            }
+            .schedule-table th, .schedule-table td {
+                border: 1px solid black;
+                padding: 8px;
+            }
+            .schedule-table th {
+                background-color: #f2f2f2;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                border: 1px solid black;
+                border-radius: 5px;
+                background-color: #f2f2f2;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #e0e0e0;
+            }
         </style>
     </head>
     <body>
@@ -38,6 +80,63 @@
             <a href="../planning">Planning</a>
             <a href="../reporting">Reporting</a>
             <a href="../logout">Logout</a>
+        </div>
+
+        <div class="content">
+            <div class="schedule">
+                <table class="schedule-table">
+                    <tr>
+                        <th>Status</th>
+                        {% if status == 1 %}
+                            <th style="background-color: red;color: red">##########</th>
+                        {% else %}
+                            <th style="background-color: green;color: green">##########</th>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Morning Start</th>
+                        {% if work_start_morning %}
+                            <td>{{ work_start_morning }}</td>
+                        {% else %}
+                            <td>None</button></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Morning End</th>
+                        {% if work_end_morning %}
+                            <td>{{ work_end_morning }}</td>
+                        {% else %}
+                            <td>None</button></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Afternoon Start</th>
+                        {% if work_start_afternoon %}
+                            <td>{{ work_start_afternoon }}</td>
+                        {% else %}
+                            <td>None</button></td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th>Afternoon End</th>
+                        {% if work_end_afternoon %}
+                            <td>{{ work_end_afternoon }}</td>
+                        {% else %}
+                            <td>None</button></td>
+                        {% endif %}
+                    </tr>
+                </table>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" id="action_input" name="action" value="">
+                <button type="button" name="action" value="pointer" id="pointerButton">Log Time</button>
+            </form>
+            <script>
+                document.getElementById("pointerButton").addEventListener("click", function() {
+                    document.forms[0].submit();
+                });
+            </script>
         </div>
     </body>
 </html>

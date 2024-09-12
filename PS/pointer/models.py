@@ -13,10 +13,12 @@ def create_user_profile(sender, instance, created, **kwargs):
 class Timer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     date = models.DateField(default=date.today)
-    work_start_time = models.TimeField(null=True, blank=True)
-    work_time_elapsed = models.DurationField(default=timedelta())
-    lunch_start_time = models.TimeField(null=True, blank=True)
-    lunch_time_elapsed = models.DurationField(default=timedelta())
+
+    work_start_morning = models.TimeField(null=True, blank=True)
+    work_end_morning = models.TimeField(null=True, blank=True)
+
+    work_start_afternoon = models.TimeField(null=True, blank=True)
+    work_end_afternoon = models.TimeField(null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'date')
