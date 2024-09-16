@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from datetime import timedelta
 from .forms import EventForm
 from .models import Event, Intern
@@ -18,7 +18,8 @@ def planning(request):
             end_date = form.cleaned_data['end_date']
             total_days_requested = (end_date - start_date).days + 1
             reason = form.cleaned_data['reason']
-            half_day = form.cleaned_data['half_day']
+            half_day_start = form.cleaned_data['half_day_start']
+            half_day_end = form.cleaned_data['half_day_end']
 
             # Ensure start date is before or equal to end date, if user has enough days, if start date isnt in the past
             if start_date > end_date:
@@ -38,14 +39,22 @@ def planning(request):
                 return HttpResponse('An event already exists within the selected date range', status=401)
 
             # Add each day as a separate event
+            i=0
             for single_date in (start_date + timedelta(days=n) for n in range(total_days_requested)):
-                if half_day:
+                if half_day_start == 1 and i == 0:
                     Event.objects.create(
                         intern=intern,
                         reason=reason,
                         start_date=single_date,
                         end_date=single_date,
-                        half_day=0,
+                    )
+                    intern.days_off_left -= 0.5
+                elif half_day_end == 0 and i == total_days_requested - 1:
+                    Event.objects.create(
+                        intern=intern,
+                        reason=reason,
+                        start_date=single_date,
+                        end_date=single_date,
                     )
                     intern.days_off_left -= 0.5
                 else:
@@ -54,9 +63,9 @@ def planning(request):
                         reason=reason,
                         start_date=single_date,
                         end_date=single_date,
-                        half_day=1,
                     )
                     intern.days_off_left -= 1
+                i += 1
             intern.save()
             return redirect('planning')
     else:
