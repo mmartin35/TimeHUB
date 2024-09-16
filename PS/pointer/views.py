@@ -27,7 +27,7 @@ def login_view(request):
 
 @login_required
 def pointer(request):
-    timer, created = Timer.objects.get_or_create(user=request.user, date=date.today())
+    timer, created = Timer.objects.get_or_create(intern=request.user, date=date.today())
 
     # Forms
     if request.method == 'POST':
@@ -60,5 +60,10 @@ def pointer(request):
         return render(request, 'pointer.html', context)
     context = {
         'user': request.user,
+        'status': status,
+        'work_start_morning': timer.work_start_morning,
+        'work_end_morning': timer.work_end_morning,
+        'work_start_afternoon': timer.work_start_afternoon,
+        'work_end_afternoon': timer.work_end_afternoon,
     }
     return render(request, 'pointer.html', context)
