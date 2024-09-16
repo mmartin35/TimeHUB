@@ -8,7 +8,7 @@ from .models import Event
 @login_required
 def planning(request):
     # Calculate remaining days off
-    daysoff_left = 25 - Event.objects.filter(user=request.user).count() + 1
+    daysoff_left = 25 - Event.objects.filter(intern=request.user.intern).count()
 
     # Check form submission
     if request.method == 'POST':
@@ -20,22 +20,14 @@ def planning(request):
             reason = form.cleaned_data['reason']
             half_day = form.cleaned_data['half_day']
 
-            # Ensure start date is before or equal to end date
+            # Ensure start date is before or equal to end date, if user has enough days, if start date isnt in the past
             if start_date > end_date:
-                context = {
-                    'content': 'Start date cannot be after end date',
-                }
-                return render(request, 'error.html', context)
-
-            # Check if user has enough days off
+                return HttpResponse('Start date cannot be after end date.', status=401)
             if total_days_requested > daysoff_left:
-                return render(request, 'error.html', context = {'content': 'Requested time off exceeds the remaining days off'})
-
-            # Ensure start date is not in the past
+                return HttpResponse('Requested time off exceeds the remaining days off', status=401)
             if start_date < start_date.today():
-                return render(request, 'error.html', context = {'content': 'Start date cannot be in the past'})
+                return HttpResponse('Start date cannot be in the past', status=401)
 
-            # Check for existing events within the same date range
             existing_events = Event.objects.filter(
                 user=request.user,
                 start_date__lte=end_date,

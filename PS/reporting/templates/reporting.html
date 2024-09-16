@@ -80,6 +80,7 @@
     </head>
     <body>
         <div class="menu">
+            <strong>Logged as {{ user }}</strong>
             <a href="../">Home</a>
             <a href="../planning">Planning</a>
             <a href="../reporting">Reporting</a>
@@ -89,7 +90,7 @@
         <div class="form-container">
             <form method="POST">
                 {% csrf_token %}
-                <label for="name">Name (not mandatory):</label>
+                <label for="name">Name (optional):</label>
                 <input type="text" id="name" name="name">
 
                 <label for="subject">Subject:</label>
