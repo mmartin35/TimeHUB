@@ -1,11 +1,10 @@
-# views.py
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
 from datetime import date
-from .models import Timer
+from .models import Timer, Intern
 
 def logout_view(request):
     logout(request)
@@ -28,6 +27,7 @@ def login_view(request):
 @login_required
 def pointer(request):
     timer, created = Timer.objects.get_or_create(intern=request.user.intern, date=date.today())
+    intern = request.user.intern
 
     # Forms
     if request.method == 'POST':
@@ -46,12 +46,13 @@ def pointer(request):
 
         # Check status
         if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
-            status = 0
+            intern.is_active = True
         else:
-            status = 1
+            intern.is_active = False
+        intern.save()
         context = {
             'user': request.user,
-            'status': status,
+            'status': intern.is_active,
             'work_start_morning': timer.work_start_morning,
             'work_end_morning': timer.work_end_morning,
             'work_start_afternoon': timer.work_start_afternoon,
@@ -59,13 +60,14 @@ def pointer(request):
         }
         return render(request, 'pointer.html', context)
     if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
-        status = 0
+        intern.is_active = True
     else:
-        status = 1
+        intern.is_active = False
+    intern.save()
 
     context = {
         'user': request.user,
-        'status': status,
+        'status': intern.is_active,
         'work_start_morning': timer.work_start_morning,
         'work_end_morning': timer.work_end_morning,
         'work_start_afternoon': timer.work_start_afternoon,

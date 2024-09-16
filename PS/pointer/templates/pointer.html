@@ -88,10 +88,10 @@
                 <table class="schedule-table">
                     <tr>
                         <th>Status</th>
-                        {% if status == 1 %}
-                            <th style="background-color: red;color: red">##########</th>
-                        {% else %}
+                        {% if status == True %}
                             <th style="background-color: green;color: green">##########</th>
+                        {% else %}
+                            <th style="background-color: red;color: red">##########</th>
                         {% endif %}
                     </tr>
                     <tr>
