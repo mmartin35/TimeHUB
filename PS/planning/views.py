@@ -3,12 +3,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from datetime import timedelta
 from .forms import EventForm
-from .models import Event
+from .models import Event, Intern
 
 @login_required
 def planning(request):
     # Calculate remaining days off
-    daysoff_left = 25 - Event.objects.filter(intern=request.user.intern).count()
+    intern = request.user.intern
 
     # Check form submission
     if request.method == 'POST':
@@ -23,48 +23,47 @@ def planning(request):
             # Ensure start date is before or equal to end date, if user has enough days, if start date isnt in the past
             if start_date > end_date:
                 return HttpResponse('Start date cannot be after end date.', status=401)
-            if total_days_requested > daysoff_left:
+            if total_days_requested > intern.days_off_left:
                 return HttpResponse('Requested time off exceeds the remaining days off', status=401)
             if start_date < start_date.today():
                 return HttpResponse('Start date cannot be in the past', status=401)
 
             existing_events = Event.objects.filter(
-                user=request.user,
+                intern=intern,
                 start_date__lte=end_date,
                 end_date__gte=start_date
             )
 
             if existing_events.exists():
-                return render(request, 'error.html', context = {'content': 'An event already exists within the selected date range'})
+                return HttpResponse('An event already exists within the selected date range', status=401)
 
             # Add each day as a separate event
             for single_date in (start_date + timedelta(days=n) for n in range(total_days_requested)):
                 if half_day:
-                    daysoff_left += 0.5
                     Event.objects.create(
-                        user=request.user,
+                        intern=intern,
                         reason=reason,
                         start_date=single_date,
                         end_date=single_date,
-                        half_day=half_day,
-                        remaining_days=daysoff_left,
+                        half_day=0,
                     )
-                    half_day = False
+                    intern.days_off_left -= 0.5
                 else:
                     Event.objects.create(
-                        user=request.user,
+                        intern=intern,
                         reason=reason,
                         start_date=single_date,
                         end_date=single_date,
-                        half_day=half_day,
-                        remaining_days=daysoff_left,
+                        half_day=1,
                     )
+                    intern.days_off_left -= 1
+            intern.save()
             return redirect('planning')
     else:
         form = EventForm()
     context = {
         'user': request.user,
-        'daysoff_left': daysoff_left,
+        'daysoff_left': intern.days_off_left,
         'form': form
     }
     return render(request, 'planning.html', context)
@@ -72,7 +71,7 @@ def planning(request):
 @login_required
 def events_json(request):
     # Fetch all events for the logged-in user
-    events = Event.objects.filter(user=request.user)
+    events = Event.objects.filter(intern=request.user.intern)
     event_list = []
     for event in events:
         if event.reason == 'Initial request':
@@ -82,6 +81,5 @@ def events_json(request):
             'start': event.start_date.strftime('%Y-%m-%d'),
             'end': event.end_date.strftime('%Y-%m-%d'),
             'allDay': True,
-            'backgroundColor': 'green' if event.approved else 'orange',
         })
     return JsonResponse(event_list, safe=False)
