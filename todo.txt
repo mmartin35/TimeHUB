@@ -1,0 +1,9 @@
+todo
+1. validate planning requests from admin_panel ==> add archive if validated
+2. add archive page
+3. add template for base page (menu)
+4. bootstrap for user pages: (navbar, admin panel)
+
+Notes:
+- Block weekends from possible daysoff: Extract Week Days From Given Date in Python Using weekday() Method. In this method, weekday() function is provided by datetime module. The weekday() function of the date class in datetime module, returns an integer corresponding to the day of the week.
+- Create template for menu: https://stackoverflow.com/questions/23212740/html-import-menu
