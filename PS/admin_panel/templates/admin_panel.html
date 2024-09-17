@@ -30,10 +30,10 @@
             <ul>
                 {% for intern in interns_with_timers %}
                 <li>
-                    {% if intern.is_active %}
-                    <strong style="background-color: green">{{ intern.user.get_full_name }} ({{ intern.user.username }})</strong>
+                    {% if intern.is_active and timer.work_start_morning is not None %}
+                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) <span style="color: green">●</span></strong>
                     {% else %}
-                    <strong style="background-color: red">{{ intern.user.get_full_name }} ({{ intern.user.username }})</strong>
+                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) <span style="color: red">●</span></strong>
                     {% endif %}
                     <ul>
                         <li><strong>Data</strong></li>
