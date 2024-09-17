@@ -16,6 +16,5 @@ class Intern(models.Model):
     departure = models.DateField(default=timezone.now)
     is_ongoing = models.BooleanField(default=True)
     is_active = models.BooleanField(default=False)
-    phone = models.CharField(max_length=15)
     days_off_total = models.FloatField(default=25)
     days_off_left = models.FloatField(default=25)
