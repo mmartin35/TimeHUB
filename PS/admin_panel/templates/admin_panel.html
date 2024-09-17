@@ -16,7 +16,6 @@
             }
             .content {
                 margin: 20px;
-                text-align: center;
             }
             .users {
                 margin-top: 20px;
@@ -27,18 +26,44 @@
     <body>
         <div class="content">
             <h1>Admin panel</h1>
-            <h2>Users</h2>
-            <div id="users">
-                <ul style="list-style-type:'->'">
-                {% for user in users %}
-                    {% if user in active_users %}
-                    <li><a href="#" style="background-color: #88E788">{{ user }}</a></li>
+            <h2>Interns data</h2>
+            <ul>
+                {% for intern in interns_with_timers %}
+                <li>
+                    {% if intern.is_active %}
+                    <strong style="background-color: green">{{ intern.user.get_full_name }} ({{ intern.user.username }})</strong>
                     {% else %}
-                    <li><a href="#" style="background-color: #FF474C">{{ user }}</a></li>
+                    <strong style="background-color: red">{{ intern.user.get_full_name }} ({{ intern.user.username }})</strong>
                     {% endif %}
+                    <ul>
+                        <li><strong>Data</strong></li>
+                        <li>
+                            Email: {{ intern.user.email }}<br>
+                            Begining of internship: {{ intern.departure }}<br>
+                            End of internship: {{ intern.departure }}<br>
+                            Days off available: {{ intern.days_off_left }} / {{ intern.days_off_total }}<br>
+                        </li>
+                    </ul>
+                    {% if intern.timer_set.all %}
+                    <ul>
+                        <li><strong>Timers:</strong></li>
+                        {% for timer in intern.timer_set.all %}
+                        <li>
+                            Date: {{ timer.date }}<br>
+                            Work Start Morning: {{ timer.work_start_morning }}<br>
+                            Work End Morning: {{ timer.work_end_morning }}<br>
+                            Work Start Afternoon: {{ timer.work_start_afternoon }}<br>
+                            Work End Afternoon: {{ timer.work_end_afternoon }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <em>No timers available for this intern.</em>
+                    {% endif %}
+                </li>
                 {% endfor %}
-                </ul>
-            </div>
+            </ul>
+
         </div>
     </body>
 </html>

@@ -1,13 +1,16 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.models import User
-from django.http import HttpResponse
+from intern.models import Intern
+from pointer.models import Timer
 
 @staff_member_required
 def admin_panel(request):
+    interns_with_timers = Intern.objects.prefetch_related('timer_set').all()
+
     context = {
-        'users': User.objects.all(),
-        'active_users': User.objects.filter(is_active=True),
+        'interns_with_timers': interns_with_timers,
+        'active_users': Intern.objects.filter(is_active=True),
+        'inactive_users': Intern.objects.filter(is_active=False),
     }
     return render(request, 'admin_panel.html', context)
+
