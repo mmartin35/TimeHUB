@@ -7,6 +7,3 @@ class Report(models.Model):
     subject = models.CharField(max_length=100)
     detailed = models.TextField()
     contact = models.CharField(max_length=100, blank=True)
-
-    def __str__(self):
-        return f'{self.name} - {self.subject}'

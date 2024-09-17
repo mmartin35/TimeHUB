@@ -51,7 +51,6 @@
                             Days off available: {{ intern.days_off_left }} / {{ intern.days_off_total }}<br>
                         </li>
                     </ul>
-                    {% if intern.timer_set.all %}
                     <ul>
                         {% for timer in intern.timer_set.all %}
                         <li>
@@ -64,13 +63,9 @@
                         </li>
                         {% endfor %}
                     </ul>
-                    {% else %}
-                    <em>No timers available for this intern.</em>
-                    {% endif %}
                 </li>
                 {% endfor %}
             </ul>
-
         </div>
     </body>
 </html>

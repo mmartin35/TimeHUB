@@ -12,3 +12,4 @@ class Event(models.Model):
     end_date = models.DateField(default=timezone.now)
     half_day = models.IntegerField(default=0)
     is_approved = models.BooleanField(default=False)
+    is_archived = models.BooleanField(default=False)

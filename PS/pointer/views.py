@@ -26,6 +26,8 @@ def login_view(request):
 
 @login_required
 def pointer(request):
+    if request.user.is_staff:
+        return redirect('admin_panel')
     timer, created = Timer.objects.get_or_create(intern=request.user.intern, date=date.today())
     intern = request.user.intern
 
@@ -44,21 +46,6 @@ def pointer(request):
             return HttpResponse('You have already completed the day', status=400)
         timer.save()
 
-        # Check status
-        if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
-            intern.is_active = True
-        else:
-            intern.is_active = False
-        intern.save()
-        context = {
-            'user': request.user,
-            'status': intern.is_active,
-            'work_start_morning': timer.work_start_morning,
-            'work_end_morning': timer.work_end_morning,
-            'work_start_afternoon': timer.work_start_afternoon,
-            'work_end_afternoon': timer.work_end_afternoon,
-        }
-        return render(request, 'pointer.html', context)
     if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
         intern.is_active = True
     else:
