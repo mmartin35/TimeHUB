@@ -12,6 +12,3 @@ class Event(models.Model):
     end_date = models.DateField(default=timezone.now)
     half_day = models.IntegerField(default=0)
     is_approved = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f'{self.user} -> {self.reason} between {self.start_date} and {self.end_date} | status: {self.approved}'
