@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+    <head>
+        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+        <title>Admin panel</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #fff;
+                color: #000;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                height: 100vh;
+            }
+            .content {
+                margin: 20px;
+                text-align: center;
+            }
+            .users {
+                margin-top: 20px;
+                border: 1px solid black;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <h1>Admin panel</h1>
+            <h2>Users</h2>
+            <div id="users">
+                <ul style="list-style-type:'->'">
+                {% for user in users %}
+                    {% if user in active_users %}
+                    <li><a href="#" style="background-color: #88E788">{{ user }}</a></li>
+                    {% else %}
+                    <li><a href="#" style="background-color: #FF474C">{{ user }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>
