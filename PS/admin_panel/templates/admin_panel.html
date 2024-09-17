@@ -21,6 +21,13 @@
                 margin-top: 20px;
                 border: 1px solid black;
             }
+            li {
+                text-align: left;
+                list-style-type: none;
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid black;
+            }
         </style>
     </head>
     <body>
@@ -30,14 +37,14 @@
             <ul>
                 {% for intern in interns_with_timers %}
                 <li>
-                    {% if intern.is_active and timer.work_start_morning is not None %}
-                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) <span style="color: green">●</span></strong>
+                    {% if intern.is_active %}
+                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) -> Online</strong>
                     {% else %}
-                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) <span style="color: red">●</span></strong>
+                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) -> Offline</strong>
                     {% endif %}
                     <ul>
-                        <li><strong>Data</strong></li>
                         <li>
+                            <strong>Data:</strong><br>
                             Email: {{ intern.user.email }}<br>
                             Begining of internship: {{ intern.departure }}<br>
                             End of internship: {{ intern.departure }}<br>
@@ -46,9 +53,9 @@
                     </ul>
                     {% if intern.timer_set.all %}
                     <ul>
-                        <li><strong>Timers:</strong></li>
                         {% for timer in intern.timer_set.all %}
                         <li>
+                            <strong>Timer:</strong><br>
                             Date: {{ timer.date }}<br>
                             Work Start Morning: {{ timer.work_start_morning }}<br>
                             Work End Morning: {{ timer.work_end_morning }}<br>
