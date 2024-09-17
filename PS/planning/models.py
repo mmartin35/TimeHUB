@@ -10,6 +10,6 @@ class Event(models.Model):
     reason = models.CharField(max_length=200, default='Initial request')
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
-    half_day = models.IntegerField(default=0)
+    duration = models.IntegerField(default=0)
     is_approved = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False)

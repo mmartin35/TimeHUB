@@ -63,6 +63,17 @@
                         </li>
                         {% endfor %}
                     </ul>
+                    <ul>
+                        {% for event in intern.event_set.all %}
+                        <li>
+                            <strong>Event:</strong><br>
+                            Reason: {{ event.reason }}<br>
+                            Date: from {{ event.start_date }} until {{ event.end_date }}<br>
+                            Duration: {{ event.duration }}<br>
+                            Approved: {{ event.is_approved }}<br>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </li>
                 {% endfor %}
             </ul>
