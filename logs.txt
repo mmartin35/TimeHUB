@@ -1,7 +1,8 @@
 [09/09/2024] Rebuilt all the app to fit new constraints
-- Overall: Use bootstrap design
-- Calendar: Use a new library to display events (FullCalendar)
-- User management: Create user with django data automatically
 [10/09/2024] Fixed logout issue and fixed fullcalendar method
 [11/09/2024] Added a reporting system and changed template styles
 [12/09/2024] Fixed pointer db + added online display
+[13/09/2024] No entry
+
+[16/09/2024] Added report page + reworked Intern class method
+[17/09/2024] Added admin page for management + started event validation
