@@ -29,7 +29,10 @@ def pointer(request):
     if request.user.is_staff:
         return redirect('admin_panel')
 
+    timer, created = Timer.objects.get_or_create(intern=request.user.intern, date=date.today())
+    intern = request.user.intern
     # Forms
+
     if request.method == 'POST':
         current_time = timezone.now().time()
         if timer.work_start_morning is None:
@@ -40,12 +43,11 @@ def pointer(request):
             timer.work_start_afternoon = current_time
         elif timer.work_end_afternoon is None:
             timer.work_end_afternoon = current_time
+            intern.working_hours += (timer.work_end_afternoon - timer.work_start_afternoon).seconds + (timer.work_end_morning - timer.work_start_morning).seconds / 3600
         else:
             return HttpResponse('You have already completed the day', status=400)
         timer.save()
 
-    timer, created = Timer.objects.get_or_create(intern=request.user.intern, date=date.today())
-    intern = request.user.intern
     if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
         intern.is_active = True
     else:
