@@ -16,6 +16,11 @@
                 var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
+                    views: {
+                        dayGridMonth: {
+                            titleFormat: { year: 'numeric', month: 'short' } // Display only 4 letters for the month name
+                        }
+                    },
                     dateClick: function(info) {
                         document.getElementById('eventDate').value = info.dateStr;
                         document.getElementById('reason').focus();
@@ -32,91 +37,155 @@
             body {
                 font-family: Arial, sans-serif;
                 background-color: #fff;
+                text-decoration: none;
                 color: #000;
                 margin: 0;
                 padding: 0;
                 display: flex;
+                flex-direction: column;
                 height: 100vh;
             }
-            .content {
-                margin: 20px;
+
+            .container {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                padding: 0;
             }
-            .users {
-                margin-top: 20px;
-                border: 1px solid black;
+
+            .row {
+                flex-grow: 1;
+                display: flex;
+                justify-content: space-between;
             }
-            li {
-                text-align: left;
-                list-style-type: none;
-                margin: 10px;
+
+            .col {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                overflow-y: auto;
                 padding: 10px;
-                border: 1px solid black;
+            }
+
+            #calendar {
+                flex-grow: 1;
+                max-height: 100%;
+            }
+
+            .card {
+                margin: 10px 0;
+            }
+
+            .carousel-inner {
+                height: 100%;
+            }
+
+            .carousel-item {
+                height: 100%;
             }
         </style>
     </head>
     <body>
-        <div class="content">
-            <h1>Admin panel</h1>
-            <h2>Interns data</h2>
-            <ul>
-                {% for intern in interns_with_timers %}
-                <li>
-                    {% if intern.is_active %}
-                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) -> Online</strong>
-                    {% else %}
-                    <strong>{{ intern.user.get_full_name }} ({{ intern.user.username }}) -> Offline</strong>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    {% for intern in interns_with_timers %}
+                    {% if intern.is_ongoing %}
+                    <p>
+                        {% if intern.is_active %}
+                        <a class="btn btn-success" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">
+                            {{ intern.user.get_full_name }}
+                        </a>
+                        {% else %}
+                        <a class="btn btn-danger" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">
+                            {{ intern.user.get_full_name }}
+                        </a>
+                        {% endif %}
+                        <a class="btn btn-infos" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">
+                            Details
+                        </a>
+                    </p>
+
+                    <div class="collapse" id="collapse{{ intern.user.username }}_infos">
+                        <div class="card card-body">
+                            <p><strong>Full name:</strong> {{ intern.user.get_full_name }}</p>
+                            <p><strong>Email:</strong> {{ intern.user.email }}</p>
+                            <p><strong>Arrival:</strong> {{ intern.arrival }}</p>
+                            <p><strong>Departure:</strong> {{ intern.departure }}</p>
+                        </div>
+                    </div>
+                    <div class="collapse" id="collapse{{ intern.user.username }}">
+                        <div class="card card-body">
+                            <div id="carousel{{ intern.user.username }}" class="carousel slide">
+                                <div class="carousel-inner">
+                                    {% for timer in intern.timer_set.all %}
+                                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                        <h5>Timer</h5>
+                                        <p>Date: {{ timer.date }}</p>
+                                        <p>Work Start Morning: {{ timer.work_start_morning }}</p>
+                                        <p>Work End Morning: {{ timer.work_end_morning }}</p>
+                                        <p>Work Start Afternoon: {{ timer.work_start_afternoon }}</p>
+                                        <p>Work End Afternoon: {{ timer.work_end_afternoon }}</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     {% endif %}
-                    <ul>
-                        <li>
-                            <strong>Data:</strong><br>
-                            Email: {{ intern.user.email }}<br>
-                            Begining of internship: {{ intern.departure }}<br>
-                            End of internship: {{ intern.departure }}<br>
-                            Days off available: {{ intern.days_off_left }} / {{ intern.days_off_total }}<br>
-                        </li>
-                    </ul>
-                    <ul>
-                        {% for timer in intern.timer_set.all %}
-                        <li>
-                            <strong>Timer:</strong><br>
-                            Date: {{ timer.date }}<br>
-                            Work Start Morning: {{ timer.work_start_morning }}<br>
-                            Work End Morning: {{ timer.work_end_morning }}<br>
-                            Work Start Afternoon: {{ timer.work_start_afternoon }}<br>
-                            Work End Afternoon: {{ timer.work_end_afternoon }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    <ul>
-                        {% for event in intern.event_set.all %}
-                        {% if not event.is_archived %}
-                        {% if event.approved == 0 or event.approved == 1 %}
-                        <li>
-                            <strong>Event:</strong><br>
-                            Reason: {{ event.reason }}<br>
-                            Request Date: {{ event.request_date }}<br>
-                            Date: from {{ event.start_date }} until {{ event.end_date }}<br>
-                            Duration: {{ event.duration }} days<br>
-                            Approved: {{ event.approved }}<br>
+                    {% endfor %}
+                </div>
+                <div class="col">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+            <div class="row">
+                {% for intern in interns_with_timers %}
+                {% if intern.is_ongoing %}
+                <div class="col">
+                    {% for event in intern.event_set.all %}
+                    {% if not event.is_archived %}
+                    <div class="card" style="margin: 15px">
+                        <div class="card-header">
+                            <h4>Requested on {{ event.request_date }}</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Intern:</strong> {{ event.intern.user.get_full_name }}</p>
+                            <p><strong>Reason:</strong> {{ event.reason }}</p>
+                            <p><strong>Date:</strong> From {{ event.start_date }} to {{ event.end_date }}</p>
+                            <p><strong>Duration:</strong> {{ event.duration }} day(s)</p>
+                        </div>
+                        <div class="card-footer" style="text-align: center">
                             <form method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" name="event_id" value="{{ event.id }}">
-                                <textarea name="comment_staff" placeholder="Comment" required></textarea>
-                                <button type="submit" name="approve_event" value="true">Approve</button>
-                                <button type="submit" name="reject_event" value="true">Reject</button>
-                                {% if event.approved != 0 %}
-                                <button type="submit" name="archive_event" value="true">Archive</button>
-                                {% endif %}
+                                <textarea name="comment_staff" placeholder="Add a comment" required></textarea>
+
+                                <div class="action-buttons">
+                                    <button type="submit" name="approve_event" value="true" class="btn btn-success">Approve</button>
+                                    <button type="submit" name="reject_event" value="true" class="btn btn-danger">Reject</button>
+                                    {% if event.approved != 0 %}
+                                    <button type="submit" name="archive_event" value="true" class="btn btn-secondary">Archive</button>
+                                    {% endif %}
+                                </div>
                             </form>
-                        </li>
-                        {% endif %}
-                        {% endif %}
-                        {% endfor %}
-                    </ul>
-                </li>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% endfor %}
-            </ul>
-            <div id='calendar'></div>
+            </div>
         </div>
     </body>
 </html>
