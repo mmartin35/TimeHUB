@@ -28,8 +28,6 @@ def login_view(request):
 def pointer(request):
     if request.user.is_staff:
         return redirect('admin_panel')
-    timer, created = Timer.objects.get_or_create(intern=request.user.intern, date=date.today())
-    intern = request.user.intern
 
     # Forms
     if request.method == 'POST':
@@ -46,6 +44,8 @@ def pointer(request):
             return HttpResponse('You have already completed the day', status=400)
         timer.save()
 
+    timer, created = Timer.objects.get_or_create(intern=request.user.intern, date=date.today())
+    intern = request.user.intern
     if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
         intern.is_active = True
     else:

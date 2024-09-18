@@ -11,5 +11,6 @@ class Event(models.Model):
     start_date = models.DateField(default=timezone.now)
     end_date = models.DateField(default=timezone.now)
     duration = models.IntegerField(default=0)
-    is_approved = models.BooleanField(default=False)
+    approved = models.IntegerField(default=0)
     is_archived = models.BooleanField(default=False)
+    comment_staff = models.CharField(max_length=200, default='')

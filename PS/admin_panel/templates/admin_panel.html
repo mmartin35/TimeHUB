@@ -65,13 +65,27 @@
                     </ul>
                     <ul>
                         {% for event in intern.event_set.all %}
+                        {% if not event.is_archived %}
+                        {% if event.approved == 0 or event.approved == 1 %}
                         <li>
                             <strong>Event:</strong><br>
                             Reason: {{ event.reason }}<br>
                             Date: from {{ event.start_date }} until {{ event.end_date }}<br>
-                            Duration: {{ event.duration }}<br>
-                            Approved: {{ event.is_approved }}<br>
+                            Duration: {{ event.duration }} days<br>
+                            Approved: {{ event.approved }}<br>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="event_id" value="{{ event.id }}">
+                                <textarea name="comment_staff" placeholder="Comment" required></textarea>
+                                <button type="submit" name="approve_event" value="true">Approve</button>
+                                <button type="submit" name="reject_event" value="true">Reject</button>
+                                {% if event.approved != 0 %}
+                                <button type="submit" name="archive_event" value="true">Archive</button>
+                                {% endif %}
+                            </form>
                         </li>
+                        {% endif %}
+                        {% endif %}
                         {% endfor %}
                     </ul>
                 </li>

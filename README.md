@@ -21,6 +21,7 @@ Django application to point interns and students, send holidays requests and wor
 - [ ] Implement allAuth
 
 ## Optional features
+- [ ] Add a calendar to see accepted holidays
 - [ ] Add 5m delay for pointing to avoid multiclick
 - [ ] Fix auto assignment of Interns class when creating a new user
 

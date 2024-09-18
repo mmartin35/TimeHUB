@@ -19,7 +19,6 @@ def planning(request):
         if form.is_valid():
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
-            total_days_requested = (end_date - start_date).days + 1
             reason = form.cleaned_data['reason']
             half_day_start = form.cleaned_data['half_day_start']
             half_day_end = form.cleaned_data['half_day_end']
@@ -28,7 +27,7 @@ def planning(request):
             # Ensure start date is before or equal to end date, if user has enough days, if start date isnt in the past
             if start_date > end_date:
                 return HttpResponse('Start date cannot be after end date.', status=401)
-            if total_days_requested > intern.days_off_left:
+            if duration > intern.days_off_left:
                 return HttpResponse('Requested time off exceeds the remaining days off', status=401)
             if start_date < start_date.today():
                 return HttpResponse('Start date cannot be in the past', status=401)
@@ -36,23 +35,21 @@ def planning(request):
             if existing_events.exists():
                 return HttpResponse('An event already exists within the selected date range', status=401)
 
-            # Add each day as a separate event
-            i=0
-            for single_date in (start_date + timedelta(days=n) for n in range(total_days_requested)):
+            # Add days to event
+            for i in range(duration):
                 if half_day_start == 1 and i == 0:
                     intern.days_off_left -= 0.5
-                elif half_day_end == 0 and i == total_days_requested - 1:
+                elif half_day_end == 0 and i == duration - 1:
                     intern.days_off_left -= 0.5
                 else:
                     intern.days_off_left -= 1
-                Event.objects.create(
-                    intern=intern,
-                    reason=reason,
-                    start_date=single_date,
-                    end_date=single_date,
-                    duration=duration,
-                )
-                i += 1
+            Event.objects.create(
+                intern=intern,
+                reason=reason,
+                start_date=start_date,
+                end_date=end_date,
+                duration=duration,
+            )
             intern.save()
             return redirect('planning')
     else:
@@ -66,16 +63,35 @@ def planning(request):
 
 @login_required
 def events_json(request):
-    # Fetch all events for the logged-in user
-    events = Event.objects.filter(intern=request.user.intern)
+    # Fetch all events for all users or logged in user
+    if request.user.is_staff:
+        events = Event.objects.all()
+    else:
+        events = Event.objects.filter(intern=request.user.intern)
     event_list = []
     for event in events:
-        if event.reason == 'Initial request' or event.is_archived:
-            continue
-        event_list.append({
-            'title': event.reason,
-            'start': event.start_date.strftime('%Y-%m-%d'),
-            'end': event.end_date.strftime('%Y-%m-%d'),
-            'allDay': True,
-        })
+        if event.approved == 0:
+            event_list.append({
+                'title': event.reason,
+                'start': event.start_date.strftime('%Y-%m-%d'),
+                'end': event.end_date.strftime('%Y-%m-%d'),
+                'allDay': True,
+                'backgroundColor': 'blue',
+            })
+        elif event.approved == 1:
+            event_list.append({
+                'title': event.reason,
+                'start': event.start_date.strftime('%Y-%m-%d'),
+                'end': event.end_date.strftime('%Y-%m-%d'),
+                'allDay': True,
+                'backgroundColor': 'green',
+            })
+        elif event.approved == 2:
+            event_list.append({
+                'title': event.comment_staff,
+                'start': event.start_date.strftime('%Y-%m-%d'),
+                'end': event.end_date.strftime('%Y-%m-%d'),
+                'allDay': True,
+                'backgroundColor': 'red',
+            })
     return JsonResponse(event_list, safe=False)
