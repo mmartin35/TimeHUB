@@ -8,8 +8,9 @@ from django.utils import timezone
 class Event(models.Model):
     intern = models.ForeignKey(Intern, on_delete=models.CASCADE)
     reason = models.CharField(max_length=200, default='Initial request')
-    start_date = models.DateField(default=timezone.now)
-    end_date = models.DateField(default=timezone.now)
+    request_date = models.DateField(default=timezone.now)
+    start_date = models.DateField(default=None)
+    end_date = models.DateField(default=None)
     duration = models.IntegerField(default=0)
     approved = models.IntegerField(default=0)
     is_archived = models.BooleanField(default=False)

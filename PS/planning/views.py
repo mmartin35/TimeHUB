@@ -63,35 +63,21 @@ def planning(request):
 
 @login_required
 def events_json(request):
-    # Fetch all events for all users or logged in user
-    if request.user.is_staff:
-        events = Event.objects.all()
-    else:
-        events = Event.objects.filter(intern=request.user.intern)
+    # Fetch all events for logged in user
+    events = Event.objects.filter(intern=request.user.intern)
     event_list = []
     for event in events:
         if event.approved == 0:
-            event_list.append({
-                'title': event.reason,
-                'start': event.start_date.strftime('%Y-%m-%d'),
-                'end': event.end_date.strftime('%Y-%m-%d'),
-                'allDay': True,
-                'backgroundColor': 'blue',
-            })
+            background_color = 'blue'
         elif event.approved == 1:
-            event_list.append({
-                'title': event.reason,
-                'start': event.start_date.strftime('%Y-%m-%d'),
-                'end': event.end_date.strftime('%Y-%m-%d'),
-                'allDay': True,
-                'backgroundColor': 'green',
-            })
+            background_color = 'green'
         elif event.approved == 2:
-            event_list.append({
-                'title': event.comment_staff,
-                'start': event.start_date.strftime('%Y-%m-%d'),
-                'end': event.end_date.strftime('%Y-%m-%d'),
-                'allDay': True,
-                'backgroundColor': 'red',
-            })
+            background_color = 'red'
+        event_list.append({
+            'title': event.reason,
+            'start': event.start_date.strftime('%Y-%m-%d'),
+            'end': (event.end_date + timedelta(days=1)).strftime('%Y-%m-%d'),
+            'backgroundColor': background_color,
+        })
+
     return JsonResponse(event_list, safe=False)
