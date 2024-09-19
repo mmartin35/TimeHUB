@@ -172,7 +172,6 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="event_id" value="{{ event.id }}">
                                 <textarea name="staff_comment" placeholder="Add a comment" required></textarea>
-
                                 <div class="action-buttons">
                                     <button type="submit" name="approve_event" value="true" class="btn btn-success">Approve</button>
                                     <button type="submit" name="reject_event" value="true" class="btn btn-danger">Reject</button>

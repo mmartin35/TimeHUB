@@ -5,7 +5,7 @@ from pointer.models import Timer
 from planning.models import Event
 from .forms import EventApprovalForm
 from django.http import JsonResponse, HttpResponse
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 @staff_member_required
 def admin_panel(request):
@@ -24,6 +24,8 @@ def admin_panel(request):
                 event.is_archived = True
             elif form.cleaned_data['reject_event']:
                 event.approbation = 2
+                event.days_off_left += event.duration
+                intern.days_off_onhold -= event.duration
                 event.is_archived = True
             event.save()
             intern.save()
@@ -66,8 +68,8 @@ def admin_events_json(request):
             background_color = 'red'
         event_list.append({
             'title': intern.user.first_name + ' ' + intern.user.last_name,
-            'start': event.start_date.strftime('%Y-%m-%d'),
-            'end': event.end_date + timedelta(days=1).strftime('%Y-%m-%d'),
+            'start': event.start_date,
+            'end': event.end_date,
             'backgroundColor': background_color,
         })
     return JsonResponse(event_list, safe=False)

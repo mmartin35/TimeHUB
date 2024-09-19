@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from .forms import EventForm
 from .models import Event, Intern
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 @login_required
 def planning(request):
@@ -79,8 +79,8 @@ def events_json(request):
             background_color = 'red'
         event_list.append({
             'title': event.reason,
-            'start': event.start_date.strftime('%Y-%m-%d'),
-            'end': event.end_date + timedelta(days=1).strftime('%Y-%m-%d'),
+            'start': event.start_date,
+            'end': event.end_date,
             'backgroundColor': background_color,
         })
     return JsonResponse(event_list, safe=False)
