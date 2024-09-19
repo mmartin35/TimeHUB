@@ -76,7 +76,7 @@
     </head>
     <body>
         <div class="menu">
-            <strong>Logged as {{ user }}</strong>
+            <strong>Logged as {{ name }}</strong>
             <a href="../">Home</a>
             <a href="../planning">Planning</a>
             <a href="../reporting">Reporting</a>
@@ -131,7 +131,7 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" id="action_input" name="action" value="">
-                <button type="button" name="action" value="pointer" id="pointerButton">Log Time</button>
+                <button type="button" name="action" value="pointer" id="pointerButton">Click here</button>
             </form>
             <script>
                 document.getElementById("pointerButton").addEventListener("click", function() {

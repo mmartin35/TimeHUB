@@ -3,3 +3,5 @@ PS/db.sqlite3
 PS/__pycache__
 PS/__init__.py
 PS/*/__pycache__
+PS/*/migrations/00*
+PS/*/migrations/__pycache__/*

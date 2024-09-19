@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
+from pointer.models import Timer
 from planning.models import Event
 from .forms import EventApprovalForm
 from django.http import JsonResponse, HttpResponse
@@ -12,27 +13,30 @@ def admin_panel(request):
         if form.is_valid():
             event_id = form.cleaned_data['event_id']
             event = get_object_or_404(Event, id=event_id)
-
-            if form.cleaned_data['comment_staff']:
-                event.comment_staff = form.cleaned_data['comment_staff']
-                event.save()
-
+            intern = event.intern
+            if form.cleaned_data['staff_comment']:
+                event.staff_comment = form.cleaned_data['staff_comment']
             if form.cleaned_data['approve_event']:
-                event.approved = 1
+                event.approbation = 1
+                intern.days_off_left -= intern.days_off_onhold
+                intern.days_off_onhold = 0
                 event.is_archived = True
-                event.save()
-
             elif form.cleaned_data['reject_event']:
-                event.approved = 2
+                event.approbation = 2
                 event.is_archived = True
-                event.save()
+            event.save()
+            intern.save()
 
-            elif form.cleaned_data['archive_event']:
-                event.is_archived = True
-                event.save()
+    for intern in Intern.objects.all():
+        intern.total_hours = 0
+        for timer in Timer.objects.filter(intern=intern):
+            intern.total_hours += timer.working_hours
+        intern.save()
 
     interns_with_timers = Intern.objects.prefetch_related('timer_set', 'event_set').all()
     context = {
+        '': 'monthly_working_hours',
+        '': 'monthly_days_off',
         'interns_with_timers': interns_with_timers,
         'active_users': Intern.objects.filter(is_active=True),
         'inactive_users': Intern.objects.filter(is_active=False),
@@ -49,24 +53,20 @@ def archive(request):
 
 @staff_member_required
 def admin_events_json(request):
-    # Fetch all events
     events = Event.objects.select_related('intern').all()
     event_list = []
+    intern = event.intern
     for event in events:
-        intern = event.intern
-        if event.approved == 0:
+        if event.approbation == 0:
             background_color = 'blue'
-        elif event.approved == 1:
+        elif event.aprobation == 1:
             background_color = 'green'
-        elif event.approved == 2:
+        elif event.approbation == 2:
             background_color = 'red'
-
         event_list.append({
             'title': intern.user.first_name + ' ' + intern.user.last_name,
             'start': event.start_date.strftime('%Y-%m-%d'),
-            'end': event.end_date.strftime('%Y-%m-%d'),
-            'allDay': True,
+            'end': event.end_date + timedelta(days=1).strftime('%Y-%m-%d'),
             'backgroundColor': background_color,
         })
-
     return JsonResponse(event_list, safe=False)
