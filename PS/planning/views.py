@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
-from datetime import timedelta
 from .forms import EventForm
 from .models import Event, Intern
 
@@ -9,11 +8,8 @@ from .models import Event, Intern
 def planning(request):
     if request.user.is_staff:
         return redirect('admin_panel')
-
-    # Calculate remaining days off
     intern = request.user.intern
 
-    # Check form submission
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
@@ -22,11 +18,11 @@ def planning(request):
             reason = form.cleaned_data['reason']
             half_day_start = form.cleaned_data['half_day_start']
             half_day_end = form.cleaned_data['half_day_end']
-            duration = (end_date - start_date).days + 1
+            duration = (end_date - start_date).days - (1/2 * half_day_start) + (1/2 * half_day_end)
 
-            # Ensure start date is before or equal to end date, if user has enough days, if start date isnt in the past
+            # Check values
             if start_date > end_date:
-                return HttpResponse('Start date cannot be after end date.', status=401)
+                return HttpResponse('Start date cannot be after end date', status=401)
             if duration > intern.days_off_left:
                 return HttpResponse('Requested time off exceeds the remaining days off', status=401)
             if start_date < start_date.today():
@@ -34,15 +30,11 @@ def planning(request):
             existing_events = Event.objects.filter(intern=intern, start_date__lte=end_date, end_date__gte=start_date)
             if existing_events.exists():
                 return HttpResponse('An event already exists within the selected date range', status=401)
+            # Assign values
+            intern.days_off_onhold += duration
+            intern.save()
 
-            # Add days to event
-            for i in range(duration):
-                if half_day_start == 1 and i == 0:
-                    intern.days_off_left -= 0.5
-                elif half_day_end == 0 and i == duration - 1:
-                    intern.days_off_left -= 0.5
-                else:
-                    intern.days_off_left -= 1
+            # Create event
             Event.objects.create(
                 intern=intern,
                 reason=reason,
@@ -50,28 +42,28 @@ def planning(request):
                 end_date=end_date,
                 duration=duration,
             )
-            intern.save()
             return redirect('planning')
     else:
         form = EventForm()
+
     context = {
-        'user': request.user,
-        'daysoff_left': intern.days_off_left,
-        'form': form
+        'form': form,
+        'name': request.user.first_name,
+        'days_off_left': intern.days_off_left,
+        'days_off_onhold': intern.days_off_onhold,
     }
     return render(request, 'planning.html', context)
 
 @login_required
 def events_json(request):
-    # Fetch all events for logged in user
     events = Event.objects.filter(intern=request.user.intern)
     event_list = []
     for event in events:
-        if event.approved == 0:
+        if event.approbation == 0:
             background_color = 'blue'
-        elif event.approved == 1:
+        elif event.approbation == 1:
             background_color = 'green'
-        elif event.approved == 2:
+        elif event.approbation == 2:
             background_color = 'red'
         event_list.append({
             'title': event.reason,
@@ -79,5 +71,4 @@ def events_json(request):
             'end': (event.end_date + timedelta(days=1)).strftime('%Y-%m-%d'),
             'backgroundColor': background_color,
         })
-
     return JsonResponse(event_list, safe=False)

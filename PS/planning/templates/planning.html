@@ -88,7 +88,7 @@
     </head>
     <body>
         <div class="menu">
-            <strong> Logged as {{ user }}</strong>
+            <strong> Logged as {{ name }}</strong>
             <a href="../">Home</a>
             <a href="../planning">Planning</a>
             <a href="../reporting">Reporting</a>
@@ -120,8 +120,9 @@
                     </select>
                     <button type="submit">Submit</button>
                 </form>
-                <h2>Data of {{ user }}</h2>
-                <p>Days off remaining: {{ daysoff_left }}</p>
+                <h2>Infos:</h2>
+                <p>Days off remaining: {{ days_off_left }}</p>
+                <p>Days off on hold: {{ days_off_onhold }}</p>
             </div>
         </div>
     </body>
