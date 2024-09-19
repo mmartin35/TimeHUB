@@ -47,6 +47,14 @@ def admin_panel(request):
     return render(request, 'admin_panel.html', context)
 
 @staff_member_required
+def setup(request):
+    interns_list = Intern.objects.all()
+    context = {
+        'interns_list': interns_list,
+    }
+    return render(request, 'setup.html', context)
+
+@staff_member_required
 def archive(request):
     interns_list = Intern.objects.prefetch_related('event_set').all()
     context = {
