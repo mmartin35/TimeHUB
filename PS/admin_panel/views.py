@@ -5,6 +5,7 @@ from pointer.models import Timer
 from planning.models import Event
 from .forms import EventApprovalForm
 from django.http import JsonResponse, HttpResponse
+from datetime import timedelta
 
 @staff_member_required
 def admin_panel(request):
@@ -55,11 +56,11 @@ def archive(request):
 def admin_events_json(request):
     events = Event.objects.select_related('intern').all()
     event_list = []
-    intern = event.intern
     for event in events:
+        intern = event.intern
         if event.approbation == 0:
             background_color = 'blue'
-        elif event.aprobation == 1:
+        elif event.approbation == 1:
             background_color = 'green'
         elif event.approbation == 2:
             background_color = 'red'

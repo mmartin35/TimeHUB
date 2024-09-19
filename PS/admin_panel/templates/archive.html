@@ -35,13 +35,13 @@
                     <ul>
                         <strong>{{ intern.user.first_name }} {{ intern.user.last_name }}:</strong>
                         {% for event in intern.event_set.all %}
-                        {% if event.is_archived and event.approved != 0 %}
+                        {% if event.is_archived %}
                         <li>
                             Reason: {{ event.reason }}<br>
-                            Staff comment: {{ event.comment_staff }}<br>
+                            Staff comment: {{ event.staff_comment }}<br>
                             Date: from {{ event.start_date }} until {{ event.end_date }}<br>
                             Duration: {{ event.duration }} days<br>
-                            Approved: {{ event.approved }}<br>
+                            Approved: {{ event.approbation }}<br>
                         </li>
                         {% endif %}
                         {% endfor %}

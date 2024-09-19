@@ -11,7 +11,6 @@ def create_user_profile(sender, instance, created, **kwargs):
 
 class Intern(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField()
     arrival = models.DateField(default=timezone.now)
     departure = models.DateField(default=timezone.now)
     is_ongoing = models.BooleanField(default=True)

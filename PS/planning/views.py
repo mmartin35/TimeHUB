@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from .forms import EventForm
 from .models import Event, Intern
+from datetime import timedelta
 
 @login_required
 def planning(request):
@@ -19,6 +20,17 @@ def planning(request):
             half_day_start = form.cleaned_data['half_day_start']
             half_day_end = form.cleaned_data['half_day_end']
             duration = (end_date - start_date).days - (1/2 * half_day_start) + (1/2 * half_day_end)
+
+
+            if start_date == end_date:
+                if half_day_start == 0 and half_day_end == 0:
+                    duration = 0.5
+                if half_day_start == 1 and half_day_end == 1:
+                    duration = 0.5
+                if half_day_start == 1 and half_day_end == 0:
+                    return HttpResponse('You cannot start a half day off in the afternoon and end it in the morning', status=401)
+                if half_day_start == 0 and half_day_end == 1:
+                    duration = 1
 
             # Check values
             if start_date > end_date:
@@ -68,7 +80,7 @@ def events_json(request):
         event_list.append({
             'title': event.reason,
             'start': event.start_date.strftime('%Y-%m-%d'),
-            'end': (event.end_date + timedelta(days=1)).strftime('%Y-%m-%d'),
+            'end': event.end_date + timedelta(days=1).strftime('%Y-%m-%d'),
             'backgroundColor': background_color,
         })
     return JsonResponse(event_list, safe=False)
