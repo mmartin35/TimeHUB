@@ -40,6 +40,7 @@ def admin_panel(request):
     context = {
         '': 'monthly_working_hours',
         '': 'monthly_days_off',
+        'name': request.user.first_name,
         'interns_with_timers': interns_with_timers,
         'active_users': Intern.objects.filter(is_active=True),
         'inactive_users': Intern.objects.filter(is_active=False),
