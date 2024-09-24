@@ -1,123 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        {% load static %}
-        <title>Planning</title>
-        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-        <!-- FullCalendar CSS -->
-        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-        <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
-        <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    dateClick: function(info) {
-                        document.getElementById('eventDate').value = info.dateStr;
-                        document.getElementById('reason').focus();
-                    },
-                    events: "{% url 'events_json' %}",
-                    eventDidMount: function(info) {
-                        info.el.style.backgroundColor = info.event.backgroundColor;
-                    }
-                });
-                calendar.render();
-            });
-        </script>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(190deg, rgba(2,0,36,1) 0%, rgba(9,121,60,1) 35%, rgba(0,212,255,1) 100%);
-            color: #000;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-decoration: none;
-        }
-        .container {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .nav-tabs .nav-link {
-            color: #495057;
-        }
-        .nav-tabs .nav-link.active {
-            background-color: #007bff;
-            color: white;
-        }
-        h2 {
-            margin-top: 20px;
-        }
-        button {
-            margin-top: 20px;
-        }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="row">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link" href="../">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Planning</a>
-                    </li>
-<!--
-                    <li class="nav-item">
-                        <a class="nav-link" href="../reporting">Report</a>
-                    </li>
---!>
-                    <li class="nav-item ms-auto">
-                        <a class="nav-link" href="../logout">Logout from {{ name }}</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div id='calendar'></div>
-                </div>
-                <div class="col">
-                    <div id="eventFormSection">
-                        <h3>Submit a day-off</h3>
-                        <form id="eventForm" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" id="eventDate" name="start_date">
-                            <label for="reason" class="form-label">Reason:</label><br>
-                            <input type="text" class="form-control" placeholder="Sick, day-off, other..." id="reason" name="reason" required><br>
-                            <label for="start_date" class="form-label">Start Date:</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" required>
-                            <label for="end_date" class="form-label">End Date:</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date" required><br>
-                            <label for="half_day_start" class="form-label">When do you leave ?</label>
-                            <select class="form-select" id="half_day_start" name="half_day_start" required>
-                                <option value="" disabled selected>Select an option</option>
-                                <option value="1">In the morning</option>
-                                <option value="2">In the afternoon</option>
-                            </select>
-                            <label for="half_day_end" class="form-label">When do you come back ?</label>
-                            <select class="form-select" id="half_day_end" name="half_day_end" required>
-                                <option value="" disabled selected>Select an option</option>
-                                <option value="1">In the morning</option>
-                                <option value="2">In the afternoon</option>
-                            </select>
-                            <button class="btn btn-outline-secondary" type="submit">Submit</button>
-                        </form>
-                        <h3>Infos:</h3>
-                        <p>Days off remaining: {{ days_off_left }}</p>
-                        <p>Days off on hold: {{ days_off_onhold }}</p>
-                    </div>
-                </div>
-            </div>
+{% extends 'base.html' %}
+
+{% block title %}Planning{% endblock %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'planning/css/planning.css' %}">
+<style>
+.fc-daygrid-day-number, .fc-toolbar-title, .fc-col-header-cell-cushion {
+    color: white !important;
+}
+.fc-daygrid-day.fc-day-today {
+    background-color: #007bff !important;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
+<script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            contentHeight: 'auto',
+            dateClick: function(info) {
+                document.getElementById('eventDate').value = info.dateStr;
+                document.getElementById('reason').focus();
+            },
+            events: "{% url 'events_json' %}",
+            eventDidMount: function(info) {
+                info.el.style.backgroundColor = info.event.backgroundColor;
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-8">
+        <div id='calendar'></div>
+    </div>
+    <div class="col-sm-4">
+        <div id="eventFormSection">
+            <h3>Submit a day-off</h3>
+            <form id="eventForm" method="post">
+            {% csrf_token %}
+                <input type="hidden" id="eventDate" name="start_date">
+                <label for="reason" class="form-label">Reason:</label><br>
+                <input type="text" class="form-control" placeholder="Sick, day-off, other..." id="reason" name="reason" required><br>
+
+                <label for="start_date" class="form-label">Start Date:</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                <label for="end_date" class="form-label">End Date:</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required><br>
+
+                <label for="half_day_start" class="form-label">When do you leave ?</label>
+                <select class="form-select" id="half_day_start" name="half_day_start" required>
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="1">In the morning</option>
+                    <option value="2">In the afternoon</option>
+                </select>
+                <br>
+                <label for="half_day_end" class="form-label">When do you come back ?</label>
+                <select class="form-select" id="half_day_end" name="half_day_end" required>
+                    <option value="" disabled selected>Select an option</option>
+                    <option value="1">In the morning</option>
+                    <option value="2">In the afternoon</option>
+                </select>
+
+                <button class="btn btn-outline-secondary" type="submit">Submit</button>
+            </form>
+            <h3>Infos:</h3>
+            <p>Days off remaining: {{ days_off_left }}</p>
+            <p>Days off on hold: {{ days_off_onhold }}</p>
         </div>
-    </body>
-</html>
+    </div>
+</div>
+{% endblock %}

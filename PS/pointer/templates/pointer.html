@@ -1,125 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        {% load static %}
-        <title>Home</title>
-        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <!-- Bootstrap JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(190deg, rgba(2,0,36,1) 0%, rgba(9,121,60,1) 35%, rgba(0,212,255,1) 100%);
-            color: #000;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-decoration: none;
-        }
-        .container {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .nav-tabs .nav-link {
-            color: #495057;
-        }
-        .nav-tabs .nav-link.active {
-            background-color: #007bff;
-            color: white;
-        }
-        table {
-            margin-top: 20px;
-        }
-        button {
-            margin-top: 20px;
-        }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="row">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="../planning">Planning</a>
-                    </li>
-<!--
-                        <li class="nav-item">
-                        <a class="nav-link" href="../reporting">Report</a>
-                        </li>
---!>
-                    <li class="nav-item ms-auto">
-                        <a class="nav-link" href="../logout">Logout from {{ name }}</a>
-                    </li>
-                </ul>
-            </div>
-            <div class="row">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Status</th>
-                            {% if status %}
-                            <th scope="col">Active</th>
-                            {% else %}
-                            <th scope="col">Inactive</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">Morning Start</th>
-                            {% if work_start_morning %}
-                            <td>{{ work_start_morning }}</td>
-                            {% else %}
-                            <td>None</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <th scope="row">Morning End</th>
-                            {% if work_end_morning %}
-                            <td>{{ work_end_morning }}</td>
-                            {% else %}
-                            <td>None</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <th scope="row">Afternoon Start</th>
-                            {% if work_start_afternoon %}
-                            <td>{{ work_start_afternoon }}</td>
-                            {% else %}
-                            <td>None</td>
-                            {% endif %}
-                        </tr>
-                        <tr>
-                            <th scope="row">Afternoon End</th>
-                            {% if work_end_afternoon %}
-                            <td>{{ work_end_afternoon }}</td>
-                            {% else %}
-                            <td>None</td>
-                            {% endif %}
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" id="action_input" name="action" value="">
-                <button type="button" class="btn btn-outline-secondary" id="pointerButton">Click here</button>
-            </form>
-            <script>
-                document.getElementById("pointerButton").addEventListener("click", function() {
-                    document.forms[0].submit();
-                });
-            </script>
-        </div>
-    </body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Pointer{% endblock %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'pointer/css/pointer.css' %}">
+{% endblock %}
+{% block script %}{% endblock %}
+
+{% block content %}
+<div class="row" id="table-container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Status</th>
+                {% if status %}
+                <th scope="col">Active</th>
+                {% else %}
+                <th scope="col">Inactive</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row">Morning Start</th>
+                {% if work_start_morning %}
+                <td>{{ work_start_morning }}</td>
+                {% else %}
+                <td>None</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th scope="row">Morning End</th>
+                {% if work_end_morning %}
+                <td>{{ work_end_morning }}</td>
+                {% else %}
+                <td>None</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th scope="row">Afternoon Start</th>
+                {% if work_start_afternoon %}
+                <td>{{ work_start_afternoon }}</td>
+                {% else %}
+                <td>None</td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th scope="row">Afternoon End</th>
+                {% if work_end_afternoon %}
+                <td>{{ work_end_afternoon }}</td>
+                {% else %}
+                <td>None</td>
+                {% endif %}
+            </tr>
+        </tbody>
+    </table>
+    <div class="btn-container">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="action_input" name="action" value="">
+            <button type="button" class="btn btn-outline-secondary" id="pointerButton">Click here</button>
+        </form>
+        <script>
+            document.getElementById("pointerButton").addEventListener("click", function() {
+                document.forms[0].submit();
+            });
+        </script>
+    </div>
+</div>
+{% endblock %}

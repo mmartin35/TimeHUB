@@ -1,0 +1,11 @@
+<ul class="nav nav-tabs">
+    <li class="nav-item" id="pages">
+        <a class="nav-link {% if request.resolver_match.url_name == 'pointer' %}active{% endif %}" href="{% url 'pointer' %}">Home</a>
+    </li>
+    <li class="nav-item" id="pages">
+        <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Planning</a>
+    </li>
+    <li class="nav-item" id="user-tool">
+        <a class="nav-link" href="{% url 'logout' %}">Logout from {{ name }}</a>
+    </li>
+</ul>

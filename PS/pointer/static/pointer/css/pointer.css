@@ -1,0 +1,9 @@
+#table-container {
+    margin: auto;
+    justify-content: center;
+}
+
+.table {
+    color: white;
+    margin-top: 50px;
+}

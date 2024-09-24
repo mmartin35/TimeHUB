@@ -1,0 +1,27 @@
+.nav-tabs {
+    background-color: #000814;
+    align-items: center;
+    border: none;
+    width: 100%;
+    left: 0px;
+    right: 0px;
+}
+.nav-tabs .nav-link {
+    color: #FFD60A;
+    border-radius: 0;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #000814;
+    color: #FFD60A;
+}
+
+.nav-tabs .nav-item {
+    margin: 0;
+}
+
+.nav-tabs #pages {}
+
+.nav-tabs #user-tool {
+    margin-left: auto;
+}
