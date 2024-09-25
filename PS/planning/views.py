@@ -17,20 +17,12 @@ def planning(request):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             reason = form.cleaned_data['reason']
-            half_day_start = form.cleaned_data['half_day_start']
-            half_day_end = form.cleaned_data['half_day_end']
-            duration = (end_date - start_date).days - (1/2 * half_day_start) + (1/2 * half_day_end)
-
-
-            if start_date == end_date:
-                if half_day_start == 0 and half_day_end == 0:
-                    duration = 0.5
-                if half_day_start == 1 and half_day_end == 1:
-                    duration = 0.5
-                if half_day_start == 1 and half_day_end == 0:
-                    return HttpResponse('You cannot start a half day off in the afternoon and end it in the morning', status=401)
-                if half_day_start == 0 and half_day_end == 1:
-                    duration = 1
+            half_day = form.cleaned_data['half_day']
+            duration = 0
+            if start_date == end_date and half_day != 0:
+                duration = 0.5
+            else:
+                duration = (end_date - start_date).days
 
             # Check values
             if start_date > end_date:
@@ -42,6 +34,7 @@ def planning(request):
             existing_events = Event.objects.filter(intern=intern, start_date__lte=end_date, end_date__gte=start_date)
             if existing_events.exists():
                 return HttpResponse('An event already exists within the selected date range', status=401)
+
             # Assign values
             intern.days_off_onhold += duration
             intern.save()
@@ -53,6 +46,7 @@ def planning(request):
                 start_date=start_date,
                 end_date=end_date,
                 duration=duration,
+                half_day=half_day,
             )
             return redirect('planning')
     else:

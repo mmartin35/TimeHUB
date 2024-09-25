@@ -20,11 +20,11 @@ def admin_panel(request):
             if form.cleaned_data['approve_event']:
                 event.approbation = 1
                 intern.days_off_left -= intern.days_off_onhold
-                intern.days_off_onhold = 0
+                intern.days_off_onhold -= event.duration
                 event.is_archived = True
             elif form.cleaned_data['reject_event']:
                 event.approbation = 2
-                event.days_off_left += event.duration
+                intern.days_off_left += event.duration
                 intern.days_off_onhold -= event.duration
                 event.is_archived = True
             event.save()

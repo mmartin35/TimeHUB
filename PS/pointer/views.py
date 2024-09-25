@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from datetime import date, datetime
 from .models import Timer, Intern
+from planning.models import Event
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -35,34 +36,47 @@ def pointer(request):
         current_time = timezone.now().time()
 
         # Check values
-        if timer.work_start_morning is None:
-            timer.work_start_morning = current_time
-        elif timer.work_end_morning is None:
-            timer.work_end_morning = current_time
-            timer.working_hours += convert_time_to_hours_from_midnight(timer.work_end_morning) - convert_time_to_hours_from_midnight(timer.work_start_morning)
-        elif timer.work_start_afternoon is None:
-            timer.work_start_afternoon = current_time
-        elif timer.work_end_afternoon is None:
-            timer.work_end_afternoon = current_time
-            timer.working_hours += convert_time_to_hours_from_midnight(timer.work_end_afternoon) - convert_time_to_hours_from_midnight(timer.work_start_afternoon)
+        if timer.t1 is None:
+            timer.t1 = current_time
+        elif timer.t2 is None:
+            timer.t2 = current_time
+            timer.working_hours += convert_time_to_hours_from_midnight(timer.t2) - convert_time_to_hours_from_midnight(timer.t1)
+        elif timer.t3 is None:
+            timer.t3 = current_time
+        elif timer.t4 is None:
+            timer.t4 = current_time
+            timer.working_hours += convert_time_to_hours_from_midnight(timer.t4) - convert_time_to_hours_from_midnight(timer.t3)
         else:
             return HttpResponse('You have already completed the day', status=400)
         timer.save()
 
     # Set status
-    if (timer.work_start_morning is not None and timer.work_end_morning is None) or (timer.work_start_afternoon is not None and timer.work_end_afternoon is None):
+    if (timer.t1 is not None and timer.t2 is None) or (timer.t3 is not None and timer.t4 is None):
         intern.is_active = True
     else:
         intern.is_active = False
     intern.save()
 
+    half_day = False
+    full_day = False
+    events = Event.objects.filter(start_date__lte=date.today(), end_date__gte=date.today(), intern=intern, approbation=1)
+    if events.exists():
+        if events.filter(half_day='1').exists():
+            half_day = True
+        else :
+            half_day = False
+    else:
+        full_day = True
+
     context = {
         'name': request.user.first_name,
         'status': intern.is_active,
-        'work_start_morning': timer.work_start_morning,
-        'work_end_morning': timer.work_end_morning,
-        'work_start_afternoon': timer.work_start_afternoon,
-        'work_end_afternoon': timer.work_end_afternoon,
+        't1': timer.t1,
+        't2': timer.t2,
+        't3': timer.t3,
+        't4': timer.t4,
+        'half_day': half_day,
+        'full_day': full_day,
     }
     return render(request, 'pointer.html', context)
 

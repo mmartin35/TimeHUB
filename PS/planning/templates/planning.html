@@ -35,6 +35,31 @@
             }
         });
         calendar.render();
+
+        var halfDayCheckbox = document.getElementById('is_half_day');
+        var endDateField = document.getElementById('end_date').parentElement;
+        var halfDayField = document.getElementById('half_day').parentElement;
+        halfDayCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                endDateField.style.display = 'none';
+                halfDayField.style.display = 'block';
+            } else {
+                endDateField.style.display = 'block';
+                halfDayField.style.display = 'none';
+            }
+        });
+        if (halfDayCheckbox.checked) {
+            endDateField.style.display = 'none';
+            halfDayField.style.display = 'block';
+        } else {
+            endDateField.style.display = 'block';
+            halfDayField.style.display = 'none';
+        }
+        var startDateField = document.getElementById('start_date');
+        var endDateFieldInput = document.getElementById('end_date');
+        startDateField.addEventListener('change', function() {
+            endDateFieldInput.value = this.value;
+        });
     });
 </script>
 {% endblock %}
@@ -53,24 +78,25 @@
                 <label for="reason" class="form-label">Reason:</label><br>
                 <input type="text" class="form-control" placeholder="Sick, day-off, other..." id="reason" name="reason" required><br>
 
+                <p>Is it a half day ?</p>
+                <input type="checkbox" id="is_half_day" name="is_half_day" value="1"><br>
+
                 <label for="start_date" class="form-label">Start Date:</label>
                 <input type="date" class="form-control" id="start_date" name="start_date" required>
-                <label for="end_date" class="form-label">End Date:</label>
-                <input type="date" class="form-control" id="end_date" name="end_date" required><br>
 
-                <label for="half_day_start" class="form-label">When do you leave ?</label>
-                <select class="form-select" id="half_day_start" name="half_day_start" required>
-                    <option value="" disabled selected>Select an option</option>
-                    <option value="1">In the morning</option>
-                    <option value="2">In the afternoon</option>
-                </select>
-                <br>
-                <label for="half_day_end" class="form-label">When do you come back ?</label>
-                <select class="form-select" id="half_day_end" name="half_day_end" required>
-                    <option value="" disabled selected>Select an option</option>
-                    <option value="1">In the morning</option>
-                    <option value="2">In the afternoon</option>
-                </select>
+                <div>
+                    <label for="end_date" class="form-label">End Date:</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" required><br>
+                </div>
+
+                <div>
+                    <label for="half_day" class="form-label">When do you leave ?</label>
+                    <select class="form-select" id="half_day" name="half_day" required>
+                        <option value="" disabled selected>Select an option</option>
+                        <option value="1">In the morning</option>
+                        <option value="2">In the afternoon</option>
+                    </select>
+                </div>
 
                 <button class="btn btn-outline-secondary" type="submit">Submit</button>
             </form>

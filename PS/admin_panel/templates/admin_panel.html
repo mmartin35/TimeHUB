@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Panel{% endblock %}
+{% block title %}Admin Panel: Dashboard{% endblock %}
 {% load static %}
 
 {% block styles %}
@@ -67,10 +67,10 @@
                         {% for timer in intern.timer_set.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
                             <p><strong>{{ timer.date }}</strong><br>
-                            <strong>Started morning at: </strong>{{ timer.work_start_morning }}<br>
-                            <strong>Ended morning at: </strong>{{ timer.work_end_morning }}<br>
-                            <strong>Started afternoon at: </strong>{{ timer.work_start_afternoon }}<br>
-                            <strong>Ended afternoon at: </strong>{{ timer.work_end_afternoon }}<br>
+                            <strong>Started morning at: </strong>{{ timer.t1 }}<br>
+                            <strong>Ended morning at: </strong>{{ timer.t2 }}<br>
+                            <strong>Started afternoon at: </strong>{{ timer.t3 }}<br>
+                            <strong>Ended afternoon at: </strong>{{ timer.t4 }}<br>
                             <strong>Working Time: </strong>{{ timer.working_hours|floatformat:2 }}h</p>
                         </div>
                         {% endfor %}

@@ -10,6 +10,7 @@
 
 {% block content %}
 <div class="row" id="table-container">
+    {% if half_day or full_day %}
     <table class="table">
         <thead>
             <tr>
@@ -23,37 +24,39 @@
         </thead>
         <tbody>
             <tr>
-                <th scope="row">Morning Start</th>
-                {% if work_start_morning %}
-                <td>{{ work_start_morning }}</td>
+                <th scope="row">T1</th>
+                {% if t1 %}
+                <td>{{ t1 }}</td>
                 {% else %}
                 <td>None</td>
                 {% endif %}
             </tr>
             <tr>
-                <th scope="row">Morning End</th>
-                {% if work_end_morning %}
-                <td>{{ work_end_morning }}</td>
+                <th scope="row">T2</th>
+                {% if t2 %}
+                <td>{{ t2 }}</td>
+                {% else %}
+                <td>None</td>
+                {% endif %}
+            </tr>
+            {% if not half_day %}
+            <tr>
+                <th scope="row">T3</th>
+                {% if t3 %}
+                <td>{{ t3 }}</td>
                 {% else %}
                 <td>None</td>
                 {% endif %}
             </tr>
             <tr>
-                <th scope="row">Afternoon Start</th>
-                {% if work_start_afternoon %}
-                <td>{{ work_start_afternoon }}</td>
+                <th scope="row">T4</th>
+                {% if t4 %}
+                <td>{{ t4 }}</td>
                 {% else %}
                 <td>None</td>
                 {% endif %}
             </tr>
-            <tr>
-                <th scope="row">Afternoon End</th>
-                {% if work_end_afternoon %}
-                <td>{{ work_end_afternoon }}</td>
-                {% else %}
-                <td>None</td>
-                {% endif %}
-            </tr>
+            {% endif %}
         </tbody>
     </table>
     <div class="btn-container">
@@ -68,5 +71,6 @@
             });
         </script>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

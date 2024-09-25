@@ -10,7 +10,7 @@ class Timer(models.Model):
     week_number = models.IntegerField(default=timezone.now().isocalendar()[1])
 
     working_hours = models.FloatField(default=0)
-    work_start_morning = models.TimeField(null=True, blank=True)
-    work_end_morning = models.TimeField(null=True, blank=True)
-    work_start_afternoon = models.TimeField(null=True, blank=True)
-    work_end_afternoon = models.TimeField(null=True, blank=True)
+    t1 = models.TimeField(null=True, blank=True)
+    t2 = models.TimeField(null=True, blank=True)
+    t3 = models.TimeField(null=True, blank=True)
+    t4 = models.TimeField(null=True, blank=True)

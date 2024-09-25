@@ -7,8 +7,9 @@ class Event(models.Model):
 
     reason = models.CharField(max_length=64, default='NA') 
     request_date = models.DateField(default=timezone.now)
+    half_day = models.IntegerField(default=0)
     start_date = models.DateField(default=None)
-    end_date = models.DateField(default=None)
+    end_date = models.DateField(default=start_date)
     duration = models.FloatField(default=0)
 
     approbation = models.IntegerField(default=0)
