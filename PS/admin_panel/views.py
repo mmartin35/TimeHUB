@@ -3,7 +3,6 @@ from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
 from pointer.models import Timer
 from planning.models import Event
-from reporting.models import Report
 from .forms import EventApprovalForm, InternUserCreationForm
 from django.http import JsonResponse, HttpResponse
 from datetime import timedelta, datetime
@@ -21,7 +20,7 @@ def admin_panel(request):
             if form.cleaned_data['approve_event']:
                 event.approbation = 1
                 event.is_archived = True
-                intern.days_off_left -= intern.days_off_onhold
+                intern.days_off_left -= event.duration
                 intern.days_off_onhold -= event.duration
             elif form.cleaned_data['reject_event']:
                 event.approbation = 2
@@ -34,8 +33,6 @@ def admin_panel(request):
     interns_with_timers = Intern.objects.prefetch_related('timer_set').all()
     week_groups = []
     context = {
-        '': 'monthly_working_hours',
-        '': 'monthly_days_off',
         'name': request.user.first_name,
         'interns_with_timers': interns_with_timers,
         'week_groups_per_interns': week_groups,
@@ -75,7 +72,6 @@ def admin_events_json(request):
 def setup(request):
     context = {
         'interns': Intern.objects.all(),
-        'report_list': Report.objects.all(),
         'events': Event.objects.prefetch_related('intern').all(),
     }
     return render(request, 'setup.html', context)
@@ -106,7 +102,6 @@ def setup(request):
     context = {
         'form': form,
         'interns': Intern.objects.all(),
-        'report_list': Report.objects.all(),
         'events': Event.objects.prefetch_related('intern').all(),
     }
     return render(request, 'setup.html', context)

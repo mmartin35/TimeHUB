@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'intern',
     'pointer',
     'planning',
-    'reporting',
     'admin_panel',
 ]
 
