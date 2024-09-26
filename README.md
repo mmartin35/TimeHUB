@@ -1,5 +1,20 @@
 # Pointing System
 
+## Table of Contents
+
+Links:<br>
+https://trello.com/w/dlhpointingsystem<br>
+
+- [Project Overview](#project-overview)
+- [Technologies Used](#technologies-used)
+- [Installation Instructions](#installation-instructions)
+- [Directory Structure](#directory-structure)
+- [Models Overview](#models-overview)
+- [Future Enhancements](#future-enhancements)
+- [Troubleshooting](#troubleshooting)
+- [Additional Information](#additional-information)
+- [Contact Information](#contact-information)
+
 ## Project Overview
 
 This project is a web-based planning and event management tool built using Django for the backend and FullCalendar and Bootstrap for the frontend. It allows users to submit day-off requests, view a calendar of events, and manage various aspects of their schedule. The project includes a stopwatch feature to track work times and functionality to manage interns and events through an admin panel.
