@@ -1,4 +1,16 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
+class InternUserCreationForm(UserCreationForm):
+    arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
+    departure = forms.DateField(required=True, widget=forms.SelectDateWidget)
+    days_off_total = forms.FloatField(required=True)
+    mandatory_hours = forms.FloatField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
 class EventApprovalForm(forms.Form):
     event_id = forms.IntegerField(widget=forms.HiddenInput)

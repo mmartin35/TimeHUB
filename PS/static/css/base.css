@@ -1,19 +1,16 @@
 body {
     font-family: Arial, sans-serif;
-    display: flex;
     justify-content: center;
     align-items: center;
     text-decoration: none;
 }
 
-body, .container {
+body, .container-custom {
     background-color: #001D3D;
 }
 
-.container {
-    width: 100%;
-    top: 0px;
-    bottom: 0px;
-    right: 0;
-    left: 0;
+.container-custom {
+    margin:50px;
+    padding: 20px;
+    border-radius: 10px;
 }

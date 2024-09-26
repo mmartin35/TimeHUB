@@ -1,0 +1,8 @@
+.table {
+    color: white;
+}
+
+#add_intern, #show_interns, #report_list {
+    width: 100%;
+    font-size: 15px;
+}

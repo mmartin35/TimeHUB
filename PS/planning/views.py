@@ -32,7 +32,7 @@ def planning(request):
             if start_date < start_date.today():
                 return HttpResponse('Start date cannot be in the past', status=401)
             existing_events = Event.objects.filter(intern=intern, start_date__lte=end_date, end_date__gte=start_date)
-            if existing_events.exists():
+            if existing_events.filter(approbation=0).exists():
                 return HttpResponse('An event already exists within the selected date range', status=401)
 
             # Assign values
@@ -52,11 +52,14 @@ def planning(request):
     else:
         form = EventForm()
 
+    responses = Event.objects.filter(intern=intern, approbation__in=[1, 2])
+
     context = {
         'form': form,
         'name': request.user.first_name,
         'days_off_left': intern.days_off_left,
         'days_off_onhold': intern.days_off_onhold,
+        'responses': responses,
     }
     return render(request, 'planning.html', context)
 

@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
 from pointer.models import Timer
 from planning.models import Event
-from .forms import EventApprovalForm
+from reporting.models import Report
+from .forms import EventApprovalForm, InternUserCreationForm
 from django.http import JsonResponse, HttpResponse
 from datetime import timedelta, datetime
 
@@ -19,29 +20,25 @@ def admin_panel(request):
                 event.staff_comment = form.cleaned_data['staff_comment']
             if form.cleaned_data['approve_event']:
                 event.approbation = 1
+                event.is_archived = True
                 intern.days_off_left -= intern.days_off_onhold
                 intern.days_off_onhold -= event.duration
-                event.is_archived = True
             elif form.cleaned_data['reject_event']:
                 event.approbation = 2
+                event.is_archived = True
                 intern.days_off_left += event.duration
                 intern.days_off_onhold -= event.duration
-                event.is_archived = True
             event.save()
             intern.save()
 
-    for intern in Intern.objects.all():
-        intern.total_hours = 0
-        for timer in Timer.objects.filter(intern=intern):
-            intern.total_hours += timer.working_hours
-        intern.save()
-
-    interns_with_timers = Intern.objects.prefetch_related('timer_set', 'event_set').all()
+    interns_with_timers = Intern.objects.prefetch_related('timer_set').all()
+    week_groups = []
     context = {
         '': 'monthly_working_hours',
         '': 'monthly_days_off',
         'name': request.user.first_name,
         'interns_with_timers': interns_with_timers,
+        'week_groups_per_interns': week_groups,
         'active_users': Intern.objects.filter(is_active=True),
         'inactive_users': Intern.objects.filter(is_active=False),
     }
@@ -54,14 +51,6 @@ def setup(request):
         'interns_list': interns_list,
     }
     return render(request, 'setup.html', context)
-
-@staff_member_required
-def archive(request):
-    interns_list = Intern.objects.prefetch_related('event_set').all()
-    context = {
-        'interns_list': interns_list,
-    }
-    return render(request, 'archive.html', context)
 
 @staff_member_required
 def admin_events_json(request):
@@ -82,3 +71,42 @@ def admin_events_json(request):
             'backgroundColor': background_color,
         })
     return JsonResponse(event_list, safe=False)
+
+def setup(request):
+    context = {
+        'interns': Intern.objects.all(),
+        'report_list': Report.objects.all(),
+        'events': Event.objects.prefetch_related('intern').all(),
+    }
+    return render(request, 'setup.html', context)
+
+@staff_member_required
+def setup(request):
+    if request.method == 'POST':
+        form = InternUserCreationForm(request.POST)
+        if form.errors:
+            code = form.errors.as_data().popitem()
+            return HttpResponse(code, status=401)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_staff = False
+            user.save()
+            Intern.objects.create(
+                user=user,
+                arrival=form.cleaned_data['arrival'],
+                departure=form.cleaned_data['departure'],
+                days_off_total=form.cleaned_data['days_off_total'],
+                mandatory_hours=form.cleaned_data['mandatory_hours'],
+                days_off_left=form.cleaned_data['days_off_total']
+            )
+            print('Intern created successfully!')
+            return redirect('setup')
+    else:
+        form = InternUserCreationForm()
+    context = {
+        'form': form,
+        'interns': Intern.objects.all(),
+        'report_list': Report.objects.all(),
+        'events': Event.objects.prefetch_related('intern').all(),
+    }
+    return render(request, 'setup.html', context)

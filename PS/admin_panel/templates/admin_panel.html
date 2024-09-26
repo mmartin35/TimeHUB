@@ -64,16 +64,14 @@
             <div class="card card-body">
                 <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
                     <div class="carousel-inner">
-                        {% for timer in intern.timer_set.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
                             <p><strong>{{ timer.date }}</strong><br>
-                            <strong>Started morning at: </strong>{{ timer.t1 }}<br>
-                            <strong>Ended morning at: </strong>{{ timer.t2 }}<br>
-                            <strong>Started afternoon at: </strong>{{ timer.t3 }}<br>
-                            <strong>Ended afternoon at: </strong>{{ timer.t4 }}<br>
+                            <strong>T1 at: </strong>{{ timer.t1 }}<br>
+                            <strong>T2 at: </strong>{{ timer.t2 }}<br>
+                            <strong>T3 at: </strong>{{ timer.t3 }}<br>
+                            <strong>T4 at: </strong>{{ timer.t4 }}<br>
                             <strong>Working Time: </strong>{{ timer.working_hours|floatformat:2 }}h</p>
                         </div>
-                        {% endfor %}
                     </div>
                     <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity: 0">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
