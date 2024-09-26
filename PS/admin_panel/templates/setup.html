@@ -58,15 +58,7 @@
                 <label for="departure">Last day:</label>
                 <input type="date" class="form-control" id="departure" name="departure" required>
             </div>
-            <div class="col-md-3">
-                <label for="days_off_total">Days-off total:</label>
-                <input type="number" class="form-control" id="days_off_total" name="days_off_total" required>
-            </div>
-            <div class="col-md-3">
-                <label for="mandatory_hours">Mandatory hours:</label>
-                <input type="number" class="form-control" id="mandatory_hours" name="mandatory_hours" required>
-            </div>
-            <div class="col-md-3" style="margin-top: 10px">
+            <div class="col-md-3" style="margin-top: 30px">
                 <button type="submit" class="btn btn-primary">Add Intern</button>
             </div>
         </form>
@@ -81,7 +73,7 @@
                     <th scope="col">Last day</th>
                     <th scope="col">Days missed</th>
                     <th scope="col">Days-off left</th>
-                    <th scope="col">Hours left</th>
+                    <th scope="col">Hours done</th>
                     <th scope="col">Report</th>
                 </tr>
             </thead>
@@ -93,7 +85,7 @@
                     <td>{{ intern.arrival }}</td>
                     <td>{{ intern.departure }}</td>
                     <td>{{ intern.non_attendance }}</td>
-                    <td>{{ intern.days_off_left }} / {{ intern.days_off_total }}</td>
+                    <td>{{ intern.days_off_left }}</td>
                     <td>{{ intern.total_hours|floatformat:2 }} / {{ intern.mandatory_hours }}</td>
                     <td><a href="#">Get report</a></td>
                 </tr>
@@ -137,27 +129,3 @@
     </div>
 </div>
 {% endblock %}
-<!--
-    <div class="col" id="event_list">
-    <h2>Event list</h2>
-    <ul>
-    {% for intern in interns %}
-    <li>
-    <ul>
-    <strong>{{ intern.user.first_name }} {{ intern.user.last_name }}:</strong>
-    {% for event in intern.event_set.all %}
-    <li>
-    Reason: {{ event.reason }}<br>
-    Staff comment: {{ event.staff_comment }}<br>
-    Date: from {{ event.start_date }} until {{ event.end_date }}<br>
-    Duration: {{ event.duration }} days<br>
-    Approved: {{ event.approbation }}<br>
-    </li>
-    {% endfor %}
-    </ul>
-    </li>
-    {% endfor %}
-    </ul>
-    </div>
-    </div>
--->

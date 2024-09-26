@@ -68,6 +68,10 @@ def pointer(request):
     else:
         full_day = True
 
+    show_days_off_alert = False
+    if (intern.mandatory_hours - intern.total_hours) <= 3 * intern.days_off_left:
+        show_days_off_alert = True
+
     context = {
         'name': request.user.first_name,
         'status': intern.is_active,
@@ -77,6 +81,7 @@ def pointer(request):
         't4': timer.t4,
         'half_day': half_day,
         'full_day': full_day,
+        'show_days_off_alert': show_days_off_alert,
     }
     return render(request, 'pointer.html', context)
 

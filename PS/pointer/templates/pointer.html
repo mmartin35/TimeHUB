@@ -9,7 +9,7 @@
 {% block script %}{% endblock %}
 
 {% block content %}
-<div class="row" id="table-container">
+<div class="d-flex flex-column" id="table-container">
     {% if half_day or full_day %}
     <table class="table">
         <thead>
@@ -70,6 +70,11 @@
                 document.forms[0].submit();
             });
         </script>
+    </div>
+    {% endif %}
+    {% if show_days_off_alert %}
+    <div class="alert alert-danger" role="alert">
+        Your internship is finishing soon ! Use your days-off before the end of it.
     </div>
     {% endif %}
 </div>

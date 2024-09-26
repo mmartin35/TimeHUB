@@ -5,8 +5,6 @@ from django.contrib.auth.forms import UserCreationForm
 class InternUserCreationForm(UserCreationForm):
     arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
     departure = forms.DateField(required=True, widget=forms.SelectDateWidget)
-    days_off_total = forms.FloatField(required=True)
-    mandatory_hours = forms.FloatField(required=True)
 
     class Meta:
         model = User

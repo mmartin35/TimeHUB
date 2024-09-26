@@ -53,6 +53,7 @@ def planning(request):
         form = EventForm()
 
     responses = Event.objects.filter(intern=intern, approbation__in=[1, 2])
+    ongoings = Event.objects.filter(intern=intern, approbation=0)
 
     context = {
         'form': form,
@@ -60,6 +61,7 @@ def planning(request):
         'days_off_left': intern.days_off_left,
         'days_off_onhold': intern.days_off_onhold,
         'responses': responses,
+        'ongoings': ongoings,
     }
     return render(request, 'planning.html', context)
 

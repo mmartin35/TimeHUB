@@ -107,33 +107,45 @@
     </div>
 </div>
 <div class="row">
-    <table class="table" style="color: white">
-        <thead>
-            <tr>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Reason</th>
-                <th>Half Day</th>
-                <th>Staff Comment</th>
-                <th>Approbation</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for response in responses %}
-            <tr>
-                <td>{{ response.start_date }}</td>
-                <td>{{ response.end_date }}</td>
-                <td>{{ response.reason }}</td>
-                <td>{{ response.half_day }}</td>
-                <td>{{ response.staff_comment }}</td>
-                {% if response.approbation == 1 %}
-                <td>Approved</td>
-                {% elif response.approbation == 2 %}
-                <td>Refused</td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="col-sm-12">
+        <table class="table" style="color: white; margin-top: 20px">
+            <thead>
+                <tr>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Half Day</th>
+                    <th>Staff Comment</th>
+                    <th>Approbation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ongoings in ongoings %}
+                <tr>
+                    <td>{{ ongoings.start_date }}</td>
+                    <td>{{ ongoings.end_date }}</td>
+                    <td>{{ ongoings.reason }}</td>
+                    <td>{{ ongoings.half_day }}</td>
+                    <td>{{ ongoings.staff_comment }}</td>
+                    <td>Request sent</td>
+                </tr>
+                {% endfor %}
+                {% for response in responses %}
+                <tr>
+                    <td>{{ response.start_date }}</td>
+                    <td>{{ response.end_date }}</td>
+                    <td>{{ response.reason }}</td>
+                    <td>{{ response.half_day }}</td>
+                    <td>{{ response.staff_comment }}</td>
+                    {% if response.approbation == 1 %}
+                    <td>Approved</td>
+                    {% elif response.approbation == 2 %}
+                    <td>Refused</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

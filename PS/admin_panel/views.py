@@ -25,7 +25,6 @@ def admin_panel(request):
             elif form.cleaned_data['reject_event']:
                 event.approbation = 2
                 event.is_archived = True
-                intern.days_off_left += event.duration
                 intern.days_off_onhold -= event.duration
             event.save()
             intern.save()
@@ -87,13 +86,16 @@ def setup(request):
             user = form.save(commit=False)
             user.is_staff = False
             user.save()
+            arrival = form.cleaned_data['arrival']
+            departure = form.cleaned_data['departure']
+            day_gap = (departure - arrival).days
             Intern.objects.create(
                 user=user,
-                arrival=form.cleaned_data['arrival'],
-                departure=form.cleaned_data['departure'],
-                days_off_total=form.cleaned_data['days_off_total'],
-                mandatory_hours=form.cleaned_data['mandatory_hours'],
-                days_off_left=form.cleaned_data['days_off_total']
+                arrival=arrival,
+                departure=departure,
+                days_off_total=round(day_gap * (26 / 365), 2),
+                days_off_left=round(day_gap * (26 / 365), 2),
+                mandatory_hours=round(day_gap * (40 / 7), 2),
             )
             print('Intern created successfully!')
             return redirect('setup')
