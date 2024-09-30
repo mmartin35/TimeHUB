@@ -76,22 +76,20 @@ def setup(request):
     return render(request, 'setup.html', context)
 
 @staff_member_required
-def update_data(request):
-    for service_timer in ServiceTimer.objects.all():
-        if service_timer.t2_service is None and service_timer.date != datetime.now().date():
-            service_timer.t2_service = "19:30"
-        service_timer.save()
-    for intern in Intern.objects.all():
-        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
-            intern.is_ongoing = True
-        else:
-            intern.is_ongoing = False
-#        for timer in Timer.objects.filter(intern=intern):
-#            if not timer.half_day:
-#                if not timer.t1:
-#                    intern.non_attendance += 1
-#            if timer.half_day:
-#                if not timer.t3 and not timer.t4:
-#                    intern.non_attendance += 0.5
-#        intern.save()
-
+def admin_events_json(request):
+    events = Event.objects.select_related('intern').all()
+    event_list = []
+    for event in events:
+        if event.approbation == 0:
+            background_color = 'blue'
+        elif event.approbation == 1:
+            background_color = 'green'
+        elif event.approbation == 2:
+            background_color = 'red'
+        event_list.append({
+            'title': event.intern.user.first_name + ' ' + event.intern.user.last_name,
+            'start': event.start_date,
+            'end': event.end_date,
+            'backgroundColor': background_color,
+        })
+    return JsonResponse(event_list, safe=False)
