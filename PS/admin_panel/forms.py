@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 class InternUserCreationForm(UserCreationForm):
     arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
     departure = forms.DateField(required=True, widget=forms.SelectDateWidget)
+    regime = forms.IntegerField(required=True)
 
     class Meta:
         model = User

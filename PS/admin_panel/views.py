@@ -9,6 +9,18 @@ from datetime import timedelta, datetime
 
 @staff_member_required
 def admin_panel(request):
+    # UPDATE DATA
+#    for intern in Intern.objects.all():
+#        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
+#            intern.is_ongoing = True
+#        for timer in Timer.objects.filter(intern=intern):
+#            if not timer.half_day:
+#                if not timer.t1:
+#                    intern.non_attendance += 1
+#            if timer.half_day:
+#                if not timer.t3 and not timer.t4:
+#                    intern.non_attendance += 0.5
+
     if request.method == 'POST':
         form = EventApprovalForm(request.POST)
         if form.is_valid():
@@ -88,6 +100,7 @@ def setup(request):
             user.save()
             arrival = form.cleaned_data['arrival']
             departure = form.cleaned_data['departure']
+            regime = form.cleaned_data['regime']
             day_gap = (departure - arrival).days
             Intern.objects.create(
                 user=user,
@@ -95,7 +108,7 @@ def setup(request):
                 departure=departure,
                 days_off_total=round(day_gap * (26 / 365), 2),
                 days_off_left=round(day_gap * (26 / 365), 2),
-                mandatory_hours=round(day_gap * (40 / 7), 2),
+                mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
             )
             print('Intern created successfully!')
             return redirect('setup')

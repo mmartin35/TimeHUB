@@ -59,11 +59,12 @@
             {% endif %}
         </tbody>
     </table>
+
     <div class="btn-container">
         <form method="POST">
             {% csrf_token %}
             <input type="hidden" id="action_input" name="action" value="">
-            <button type="button" class="btn btn-outline-secondary" id="pointerButton">Click here</button>
+            <button type="button" class="btn btn-outline-secondary" id="pointerButton">Pointer</button>
         </form>
         <script>
             document.getElementById("pointerButton").addEventListener("click", function() {
@@ -72,9 +73,28 @@
         </script>
     </div>
     {% endif %}
+
+    <div class="btn-container">
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" id="action_input" name="service" value="">
+            <button type="button" class="btn btn-outline-secondary" id="serviceButton">
+            {% if not service_state %}
+            Départ en service
+            {% else %}
+            Retour de service
+            {% endif %}
+            </button>
+        </form>
+        <script>
+            document.getElementById("serviceButton").addEventListener("click", function() {
+                document.forms[1].submit();
+            });
+        </script>
+    </div>
     {% if show_days_off_alert %}
     <div class="alert alert-danger" role="alert">
-        Your internship is finishing soon ! Use your days-off before the end of it.
+        Votre stage se termine bientôt ! Utilisez vos jours de congés avant la fin de celui-ci.
     </div>
     {% endif %}
 </div>

@@ -6,7 +6,7 @@ class Intern(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     arrival = models.DateField(default=timezone.now)
     departure = models.DateField(default=timezone.now)
-    is_ongoing = models.BooleanField(default=True)
+    is_ongoing = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     days_off_total = models.FloatField(default=0)
     days_off_left = models.FloatField(default=0)
@@ -14,3 +14,4 @@ class Intern(models.Model):
     non_attendance = models.FloatField(default=0)
     mandatory_hours = models.FloatField(default=0)
     total_hours = models.FloatField(default=0)
+    regime = models.IntegerField(default=100)

@@ -71,38 +71,55 @@
     </div>
     <div class="col-sm-4">
         <div id="eventFormSection">
-            <h3>Submit a day-off</h3>
+            <h3>Demande de congé</h3>
             <form id="eventForm" method="post">
             {% csrf_token %}
                 <input type="hidden" id="eventDate" name="start_date">
-                <label for="reason" class="form-label">Reason:</label><br>
-                <input type="text" class="form-control" placeholder="Sick, day-off, other..." id="reason" name="reason" required><br>
 
-                <p>Is it a half day ?</p>
+                {% if request.user.is_staff %}
+                <label for="intern" class="form-label">Interne:</label><br>
+                <select class="form-select" id="intern" name="intern" required>
+                    <option value="" disabled selected>Selectionner un interne:</option>
+                    {% for intern in interns %}
+                    <option value="{{ intern.id }}">{{ intern.user.first_name }} {{ intern.user.last_name }}</option>
+                    {% endfor %}
+                </select><br>
+                {% else %}
+                <input type="hidden" value="{{ interns.id }}" id="intern" name="intern">
+                {% endif %}
+
+                <label for="reason" class="form-label">Motif:</label><br>
+                <select class="form-select" id="reason" name="reason">
+                    <option value="" disabled selected>Selectionner une option</option>
+                    {% for reason in reasons %}
+                    <option value="{{ reason }}">{{ reason }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <p>Pour une demi-journée</p>
                 <input type="checkbox" id="is_half_day" name="is_half_day" value="1"><br>
 
-                <label for="start_date" class="form-label">Start Date:</label>
+                <label for="start_date" class="form-label">Date de début:</label>
                 <input type="date" class="form-control" id="start_date" name="start_date" required>
 
                 <div>
-                    <label for="end_date" class="form-label">End Date:</label>
+                    <label for="end_date" class="form-label">Date de fin:</label>
                     <input type="date" class="form-control" id="end_date" name="end_date" required><br>
                 </div>
 
                 <div>
-                    <label for="half_day" class="form-label">When do you leave ?</label>
+                    <label for="half_day" class="form-label">A quel moment de la journée ?</label>
                     <select class="form-select" id="half_day" name="half_day" required>
-                        <option value="" disabled selected>Select an option</option>
-                        <option value="1">In the morning</option>
-                        <option value="2">In the afternoon</option>
+                        <option value="1" selected>Dans la matinée</option>
+                        <option value="2">Dans l'après-midi</option>
                     </select>
                 </div>
 
-                <button class="btn btn-outline-secondary" type="submit">Submit</button>
+                <button class="btn btn-outline-secondary" type="submit">Soumettre la demande</button>
             </form>
             <h3>Infos:</h3>
-            <p>Days off remaining: {{ days_off_left }}</p>
-            <p>Days off on hold: {{ days_off_onhold }}</p>
+            <p>Jours de congé restants: {{ days_off_left }}</p>
+            <p>Jours de congé en attente: {{ days_off_onhold }}</p>
         </div>
     </div>
 </div>
@@ -111,36 +128,48 @@
         <table class="table" style="color: white; margin-top: 20px">
             <thead>
                 <tr>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Reason</th>
-                    <th>Half Day</th>
-                    <th>Staff Comment</th>
-                    <th>Approbation</th>
+                    {% if request.user.is_staff %}
+                    <th colspan="6">Nom</th>
+                    {% endif %}
+                    <th>Date de la demande</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Motif</th>
+                    <th>Demi-journée</th>
+                    <th>Comentaire RH</th>
+                    <th>Réponse</th>
                 </tr>
             </thead>
             <tbody>
                 {% for ongoings in ongoings %}
                 <tr>
+                    {% if request.user.is_staff %}
+                    <td colspan="6">{{ ongoings.intern.user.first_name }} {{ ongoings.intern.user.last_name }}</td>
+                    {% endif %}
+                    <td>{{ ongoings.request_date }}</td>
                     <td>{{ ongoings.start_date }}</td>
                     <td>{{ ongoings.end_date }}</td>
                     <td>{{ ongoings.reason }}</td>
                     <td>{{ ongoings.half_day }}</td>
                     <td>{{ ongoings.staff_comment }}</td>
-                    <td>Request sent</td>
+                    <td>Envoyé</td>
                 </tr>
                 {% endfor %}
                 {% for response in responses %}
                 <tr>
+                    {% if request.user.is_staff %}
+                    <td colspan="6">{{ response.intern.user.first_name }} {{ response.intern.user.last_name }}</td>
+                    {% endif %}
+                    <td>{{ response.request_date }}</td>
                     <td>{{ response.start_date }}</td>
                     <td>{{ response.end_date }}</td>
                     <td>{{ response.reason }}</td>
                     <td>{{ response.half_day }}</td>
                     <td>{{ response.staff_comment }}</td>
                     {% if response.approbation == 1 %}
-                    <td>Approved</td>
+                    <td>Approuvé</td>
                     {% elif response.approbation == 2 %}
-                    <td>Refused</td>
+                    <td>Refusé</td>
                     {% endif %}
                 </tr>
                 {% endfor %}
