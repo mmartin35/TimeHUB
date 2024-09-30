@@ -124,4 +124,11 @@
     {% endif %}
     {% endfor %}
 </div>
+<div class="row">
+    {% for service_timer in service_timers %}
+    <div class="alert alert-danger" role="alert" style="width: 30%">
+    {{ service_timer.intern.user.first_name }}: Depuis  {{ service_timer.t1_service|date:"H:i"}}
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}

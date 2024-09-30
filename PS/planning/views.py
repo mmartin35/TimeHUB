@@ -82,9 +82,16 @@ def planning(request):
 
 @login_required
 def events_json(request):
-    events = Event.objects.filter(intern=request.user.intern)
+    if request.user.is_staff:
+        events = Event.objects.select_related('intern').all()
+    else:
+        events = Event.objects.filter(intern=request.user.intern)
     event_list = []
     for event in events:
+        if request.user.is_staff:
+            title = event.intern.user.first_name + ' ' + event.intern.user.last_name
+        else:
+            title = event.reason
         if event.approbation == 0:
             background_color = 'blue'
         elif event.approbation == 1:
@@ -92,7 +99,7 @@ def events_json(request):
         elif event.approbation == 2:
             background_color = 'red'
         event_list.append({
-            'title': event.reason,
+            'title': title,
             'start': event.start_date,
             'end': event.end_date,
             'backgroundColor': background_color,

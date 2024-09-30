@@ -1,26 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
-from pointer.models import Timer
+from pointer.models import Timer, ServiceTimer
 from planning.models import Event
 from .forms import EventApprovalForm, InternUserCreationForm
 from django.http import JsonResponse, HttpResponse
 from datetime import timedelta, datetime
 
+
 @staff_member_required
 def admin_panel(request):
-    # UPDATE DATA
-#    for intern in Intern.objects.all():
-#        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
-#            intern.is_ongoing = True
-#        for timer in Timer.objects.filter(intern=intern):
-#            if not timer.half_day:
-#                if not timer.t1:
-#                    intern.non_attendance += 1
-#            if timer.half_day:
-#                if not timer.t3 and not timer.t4:
-#                    intern.non_attendance += 0.5
-
+    update_data(request)
     if request.method == 'POST':
         form = EventApprovalForm(request.POST)
         if form.is_valid():
@@ -41,51 +31,16 @@ def admin_panel(request):
             event.save()
             intern.save()
 
-    interns_with_timers = Intern.objects.prefetch_related('timer_set').all()
     week_groups = []
     context = {
         'name': request.user.first_name,
-        'interns_with_timers': interns_with_timers,
+        'interns_with_timers': Intern.objects.prefetch_related('timer_set').all(),
+        'service_timers': ServiceTimer.objects.prefetch_related('intern').filter(t2_service__isnull=True),
         'week_groups_per_interns': week_groups,
         'active_users': Intern.objects.filter(is_active=True),
         'inactive_users': Intern.objects.filter(is_active=False),
     }
     return render(request, 'admin_panel.html', context)
-
-@staff_member_required
-def setup(request):
-    interns_list = Intern.objects.all()
-    context = {
-        'interns_list': interns_list,
-    }
-    return render(request, 'setup.html', context)
-
-@staff_member_required
-def admin_events_json(request):
-    events = Event.objects.select_related('intern').all()
-    event_list = []
-    for event in events:
-        intern = event.intern
-        if event.approbation == 0:
-            background_color = 'blue'
-        elif event.approbation == 1:
-            background_color = 'green'
-        elif event.approbation == 2:
-            background_color = 'red'
-        event_list.append({
-            'title': intern.user.first_name + ' ' + intern.user.last_name,
-            'start': event.start_date,
-            'end': event.end_date,
-            'backgroundColor': background_color,
-        })
-    return JsonResponse(event_list, safe=False)
-
-def setup(request):
-    context = {
-        'interns': Intern.objects.all(),
-        'events': Event.objects.prefetch_related('intern').all(),
-    }
-    return render(request, 'setup.html', context)
 
 @staff_member_required
 def setup(request):
@@ -109,14 +64,34 @@ def setup(request):
                 days_off_total=round(day_gap * (26 / 365), 2),
                 days_off_left=round(day_gap * (26 / 365), 2),
                 mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
+                is_ongoing=True # TEMPORARY
             )
             print('Intern created successfully!')
             return redirect('setup')
-    else:
-        form = InternUserCreationForm()
     context = {
-        'form': form,
+        'form': InternUserCreationForm(),
         'interns': Intern.objects.all(),
         'events': Event.objects.prefetch_related('intern').all(),
     }
     return render(request, 'setup.html', context)
+
+@staff_member_required
+def update_data(request):
+    for service_timer in ServiceTimer.objects.all():
+        if service_timer.t2_service is None and service_timer.date != datetime.now().date():
+            service_timer.t2_service = "19:30"
+        service_timer.save()
+    for intern in Intern.objects.all():
+        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
+            intern.is_ongoing = True
+        else:
+            intern.is_ongoing = False
+#        for timer in Timer.objects.filter(intern=intern):
+#            if not timer.half_day:
+#                if not timer.t1:
+#                    intern.non_attendance += 1
+#            if timer.half_day:
+#                if not timer.t3 and not timer.t4:
+#                    intern.non_attendance += 0.5
+#        intern.save()
+
