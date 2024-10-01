@@ -7,6 +7,26 @@ from .forms import EventApprovalForm, InternUserCreationForm
 from django.http import JsonResponse, HttpResponse
 from datetime import timedelta, datetime
 
+@staff_member_required
+def update_data(request):
+    for service_timer in ServiceTimer.objects.all():
+        if service_timer.t2_service is None and service_timer.date != datetime.now().date():
+            service_timer.t2_service = "19:30"
+        service_timer.save()
+    for intern in Intern.objects.all():
+        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
+            intern.is_ongoing = True
+        else:
+            intern.is_ongoing = False
+        intern.save()
+#        for timer in Timer.objects.filter(intern=intern):
+#            if not timer.half_day:
+#                if not timer.t1:
+#                    intern.non_attendance += 1
+#            if timer.half_day:
+#                if not timer.t3 and not timer.t4:
+#                    intern.non_attendance += 0.5
+#        intern.save()
 
 @staff_member_required
 def admin_panel(request):
