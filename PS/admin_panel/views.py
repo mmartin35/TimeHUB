@@ -5,12 +5,12 @@ from pointer.models import Timer, ServiceTimer
 from planning.models import Event
 from .forms import EventApprovalForm, InternUserCreationForm
 from django.http import JsonResponse, HttpResponse
-from datetime import timedelta, datetime
+from datetime import datetime
 
 @staff_member_required
 def update_data(request):
     for service_timer in ServiceTimer.objects.all():
-        if service_timer.t2_service is None and service_timer.date != datetime.now().date():
+        if service_timer.t2_service is None and service_timer.date != datetime.now().date() and datetime.now().date() == "19:30":
             service_timer.t2_service = "19:30"
         service_timer.save()
     for intern in Intern.objects.all():
@@ -19,6 +19,32 @@ def update_data(request):
         else:
             intern.is_ongoing = False
         intern.save()
+
+    class Intern_item:
+        def __init__(self, user):
+            self.user = user
+            self.months = {month: [] for month in range(1, 13)}
+
+    intern_timers = []
+
+    for intern in Intern.objects.all():
+        intern_item = Intern_item(intern.user)
+        intern_item.months = {month: [] for month in range(1, 13)}
+        for timer in Timer.objects.filter(intern=intern):
+            intern_item.months[timer.date.month].append(timer)
+        intern_timers.append(intern_item)
+
+    # Accessing data for verification
+    for intern_item in intern_timers:
+        print(f"User: {intern_item.user}")
+        for month, timers in intern_item.months.items():
+            month_total = 0
+            for timer in timers:
+                month_total += timer.working_hours
+            print(f"Total in month {month}: {month_total}")
+
+
+
 #        for timer in Timer.objects.filter(intern=intern):
 #            if not timer.half_day:
 #                if not timer.t1:
@@ -66,9 +92,6 @@ def admin_panel(request):
 def setup(request):
     if request.method == 'POST':
         form = InternUserCreationForm(request.POST)
-        if form.errors:
-            code = form.errors.as_data().popitem()
-            return HttpResponse(code, status=401)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_staff = False
@@ -84,7 +107,6 @@ def setup(request):
                 days_off_total=round(day_gap * (26 / 365), 2),
                 days_off_left=round(day_gap * (26 / 365), 2),
                 mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
-                is_ongoing=True # TEMPORARY
             )
             print('Intern created successfully!')
             return redirect('setup')
