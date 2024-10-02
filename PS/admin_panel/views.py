@@ -36,6 +36,16 @@ def admin_panel(request):
         intern_data = structure_data(request, intern.id)
         interns_data.append((intern, intern_data))
     
+    # Get alerts for work time
+    alerts = []
+    for intern, intern_data in interns_data:
+        if intern.is_ongoing:
+            week = intern_data.weeks[datetime.now().isocalendar()[1] - 1]
+            weekly_hours = sum(timer.working_hours for timer in week)
+            if weekly_hours < 40 * intern.regime / 100:
+                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is less than the mandatory {round(40 * intern.regime / 100)}h.")
+            if weekly_hours > 40 * intern.regime / 100:
+                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is more than the mandatory {round(40 * intern.regime / 100)}h.")   
     # Get services for the last week
     services_list = []
     for service in ServiceTimer.objects.all():
@@ -47,8 +57,8 @@ def admin_panel(request):
         'interns_weeks_data': interns_data,
         'services_list': services_list,
         'events_list': Event.objects.select_related('intern').all(),
+        'alerts': alerts,
     }
-
     return render(request, 'admin_panel.html', context)
 
 @staff_member_required
@@ -124,6 +134,8 @@ def report(request, intern, month):
     if monthly_hours > 173:
         monthly_hours = 173
 
+    days_left = (datetime.now().date() - intern.departure).days * -1
+
     context = {
         'intern': intern,
         'intern_item': intern_item,
@@ -131,6 +143,7 @@ def report(request, intern, month):
         'date': datetime.now().date(),
         'monthly_hours': monthly_hours,
         'weeks_data': weeks_data,
+        'days_left': days_left,
     }
     return render(request, 'report.html', context)
 

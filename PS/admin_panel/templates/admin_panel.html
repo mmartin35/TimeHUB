@@ -48,7 +48,11 @@
     </div>
     {% endif %}
     {% endfor %}
-
+    {% for alert in alerts %}
+    <div class="alert alert-danger" role="alert" style="width: 100%">
+    {{ alert }}
+    </div>
+    {% endfor %}
 </div>
 <div class="row">
     <div class="col">
