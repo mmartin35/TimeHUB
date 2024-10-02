@@ -46,6 +46,7 @@ def admin_panel(request):
                 alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is less than the mandatory {round(40 * intern.regime / 100)}h.")
             if weekly_hours > 40 * intern.regime / 100:
                 alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is more than the mandatory {round(40 * intern.regime / 100)}h.")   
+
     # Get services for the last week
     services_list = []
     for service in ServiceTimer.objects.all():
