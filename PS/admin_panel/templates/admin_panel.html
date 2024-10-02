@@ -40,16 +40,23 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column" style="margin-top: 20px">
-    <div class="p-2">
-        {% for intern in interns_with_timers %}
-        {% if intern.is_ongoing %}
-        <p>
-        <a class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">
-            {{ intern.user.get_full_name }}</a>
-        <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
-        </p>
+<div class="row">
+    {% for service_timer in services_list %}
+    {% if service_timer.t2_service is None %}
+    <div class="alert alert-danger" role="alert" style="width: 100%">
+    {{ service_timer.intern.user.first_name }} en sortie de service depuis {{ service_timer.t1_service|date:"H:i"}}.
+    </div>
+    {% endif %}
+    {% endfor %}
 
+</div>
+<div class="row">
+    <div class="col">
+        {% for intern in interns_list %}
+        <p>
+            <a class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" role="button" aria-expanded="false">{{ intern.user.get_full_name }}</a>
+            <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
+        </p>
         <div class="collapse" id="collapse{{ intern.user.username }}_infos">
             <div class="card card-body">
                 <p><strong>Full name:</strong> {{ intern.user.get_full_name }}<br>
@@ -60,40 +67,80 @@
                 <strong>Days off:</strong> {{ intern.days_off_left }}/{{ intern.days_off_total }}</p>
             </div>
         </div>
-        <div class="collapse" id="collapse{{ intern.user.username }}">
-            <div class="card card-body">
-                <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
-                    <div class="carousel-inner">
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <p><strong>{{ timer.date }}</strong><br>
-                            <strong>T1 at: </strong>{{ timer.t1 }}<br>
-                            <strong>T2 at: </strong>{{ timer.t2 }}<br>
-                            <strong>T3 at: </strong>{{ timer.t3 }}<br>
-                            <strong>T4 at: </strong>{{ timer.t4 }}<br>
-                            <strong>Working Time: </strong>{{ timer.working_hours|floatformat:2 }}h</p>
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity: 0">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden"></span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity: 0">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        {% endif %}
         {% endfor %}
     </div>
     <div class="col">
-        <div id="calendar"></div>
+        <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
+            <div class="carousel-inner">
+                {% for intern_data in interns_weeks_data %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <table class="table table" style="color: white">
+                        <thead>
+                            <tr>
+                                <th>Week {{ week }}</th>
+                                <th>Lundi</th>
+                                <th>Mardi</th>
+                                <th>Mercredi</th>
+                                <th>Jeudi</th>
+                                <th>Vendredi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>T1: </th>
+                                <td>1:0</td>
+                                <td>1:0</td>
+                                <td>1:0</td>
+                                <td>1:0</td>
+                                <td>1:0</td>
+                            </tr>
+                            <tr>
+                                <th>T2: </th>
+                                <td>1:5</td>
+                                <td>1:5</td>
+                                <td>1:5</td>
+                                <td>1:5</td>
+                                <td>1:5</td>
+                            </tr>
+                            <tr>
+                                <th>T3: </th>
+                                <td>2:0</td>
+                                <td>2:0</td>
+                                <td>2:0</td>
+                                <td>2:0</td>
+                                <td>2:0</td>
+                            </tr>
+                            <tr>
+                                <th>T4: </th>
+                                <td>2:5</td>
+                                <td>2:5</td>
+                                <td>2:5</td>
+                                <td>2:5</td>
+                                <td>2:5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity: 0">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity: 0">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden"></span>
+            </button>
+        </div>
     </div>
 </div>
+
 <div class="row">
-    {% for intern in interns_with_timers %}
-    {% if intern.is_ongoing %}
+    <div id="calendar"></div>
+</div>
+
+<div class="row">
+    {% for intern in interns_list %}
     <div class="col">
         {% for event in intern.event_set.all %}
         {% if not event.is_archived %}
@@ -120,14 +167,6 @@
         </div>
         {% endif %}
         {% endfor %}
-    </div>
-    {% endif %}
-    {% endfor %}
-</div>
-<div class="row">
-    {% for service_timer in service_timers %}
-    <div class="alert alert-danger" role="alert" style="width: 30%">
-    {{ service_timer.intern.user.first_name }}: Depuis  {{ service_timer.t1_service|date:"H:i"}}
     </div>
     {% endfor %}
 </div>

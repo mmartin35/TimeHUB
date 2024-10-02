@@ -4,55 +4,8 @@ from intern.models import Intern
 from pointer.models import Timer, ServiceTimer
 from planning.models import Event
 from .forms import EventApprovalForm, InternUserCreationForm
-from django.http import JsonResponse, HttpResponse
-from datetime import datetime
-
-@staff_member_required
-def update_data(request):
-    for service_timer in ServiceTimer.objects.all():
-        if service_timer.t2_service is None and service_timer.date != datetime.now().date() and datetime.now().date() == "19:30":
-            service_timer.t2_service = "19:30"
-        service_timer.save()
-    for intern in Intern.objects.all():
-        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
-            intern.is_ongoing = True
-        else:
-            intern.is_ongoing = False
-        intern.save()
-
-    class Intern_item:
-        def __init__(self, user):
-            self.user = user
-            self.months = {month: [] for month in range(1, 13)}
-
-    intern_timers = []
-
-    for intern in Intern.objects.all():
-        intern_item = Intern_item(intern.user)
-        intern_item.months = {month: [] for month in range(1, 13)}
-        for timer in Timer.objects.filter(intern=intern):
-            intern_item.months[timer.date.month].append(timer)
-        intern_timers.append(intern_item)
-
-    # Accessing data for verification
-    for intern_item in intern_timers:
-        print(f"User: {intern_item.user}")
-        for month, timers in intern_item.months.items():
-            month_total = 0
-            for timer in timers:
-                month_total += timer.working_hours
-            print(f"Total in month {month}: {month_total}")
-
-
-
-#        for timer in Timer.objects.filter(intern=intern):
-#            if not timer.half_day:
-#                if not timer.t1:
-#                    intern.non_attendance += 1
-#            if timer.half_day:
-#                if not timer.t3 and not timer.t4:
-#                    intern.non_attendance += 0.5
-#        intern.save()
+from django.http import JsonResponse
+from datetime import datetime, timedelta
 
 @staff_member_required
 def admin_panel(request):
@@ -76,20 +29,29 @@ def admin_panel(request):
                 intern.days_off_onhold -= event.duration
             event.save()
             intern.save()
-
-    week_groups = []
+    
+    # Get data for each intern
+    interns_data = []
+    for intern in Intern.objects.all():
+        intern_data = structure_data(request, intern.id)
+        interns_data.append((intern, intern_data))
+    # Get services for the last week
+    services_list = []
+    for service in ServiceTimer.objects.all():
+        if service.date >= datetime.now().date() - timedelta(days=7):
+            services_list.append(service)
     context = {
         'name': request.user.first_name,
-        'interns_with_timers': Intern.objects.prefetch_related('timer_set').all(),
-        'service_timers': ServiceTimer.objects.prefetch_related('intern').filter(t2_service__isnull=True),
-        'week_groups_per_interns': week_groups,
-        'active_users': Intern.objects.filter(is_active=True),
-        'inactive_users': Intern.objects.filter(is_active=False),
+        'interns_list': Intern.objects.filter(is_ongoing=True),
+        'interns_weeks_data': interns_data,
+        'services_list': services_list,
+        'events_list': Event.objects.select_related('intern').all(),
     }
     return render(request, 'admin_panel.html', context)
 
 @staff_member_required
 def setup(request):
+    update_data(request)
     if request.method == 'POST':
         form = InternUserCreationForm(request.POST)
         if form.is_valid():
@@ -111,11 +73,54 @@ def setup(request):
             print('Intern created successfully!')
             return redirect('setup')
     context = {
+        'name': request.user.first_name,
         'form': InternUserCreationForm(),
         'interns': Intern.objects.all(),
-        'events': Event.objects.prefetch_related('intern').all(),
+        'events': Event.objects.select_related('intern').all(),
     }
     return render(request, 'setup.html', context)
+
+@staff_member_required
+def structure_data(request, intern_id):
+    class Intern_item:
+        def __init__(self):
+            self.months = {month: [] for month in range(1, 12)}
+            self.weeks = {week: [] for week in range(1, 53)}
+    intern_data = Intern_item()
+    for timer in Timer.objects.filter(intern=intern_id):
+        if datetime.now().year != timer.date.year:
+            continue
+        intern_data.months[timer.date.month].append(timer)
+        intern_data.weeks[timer.date.isocalendar()[1]].append(timer)
+    return intern_data
+
+@staff_member_required
+def print_data(request, intern_id, intern_item):
+    # Print monthly total
+    for month, timers in intern_item.months.items():
+        month_total = sum(timer.working_hours for timer in timers)
+        print(f"Total in month {month} for user: {month_total}")
+
+    # Print weekly total
+    for week, timers in intern_item.weeks.items():
+        weekly_total = sum(timer.working_hours for timer in timers)
+        print(f"Total in week {week} for user: {weekly_total}")
+
+@staff_member_required
+def update_data(request):
+    # Manage service timers
+    for service_timer in ServiceTimer.objects.all():
+        if service_timer.t2_service is None and service_timer.date != datetime.now().date() and datetime.now().date() == "19:30":
+            service_timer.t2_service = "19:30"
+        service_timer.save()
+
+    # Manage intern status
+    for intern in Intern.objects.all():
+        if datetime.now().date() < intern.departure and datetime.now().date() > intern.arrival:
+            intern.is_ongoing = True
+        else:
+            intern.is_ongoing = False
+        intern.save()
 
 @staff_member_required
 def admin_events_json(request):

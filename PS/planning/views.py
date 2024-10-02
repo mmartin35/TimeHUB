@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from .forms import EventForm
 from .models import Event, Intern
-from datetime import timedelta, datetime
 
 @login_required
 def planning(request):

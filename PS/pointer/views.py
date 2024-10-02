@@ -4,9 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
 from datetime import date, datetime
-from .models import Timer, ServiceTimer, Intern
+from .models import Timer, ServiceTimer
 from planning.models import Event
-from .forms import PointerForm, ServiceForm
 
 def login_view(request):
     if request.user.is_authenticated:

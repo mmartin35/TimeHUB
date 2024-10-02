@@ -4,9 +4,9 @@ from django.utils import timezone
 
 class Event(models.Model):
     intern = models.ForeignKey(Intern, on_delete=models.CASCADE)
+    request_date = models.DateField(default=timezone.now)
 
     reason = models.CharField(max_length=64, default='NA') 
-    request_date = models.DateField(default=timezone.now)
     half_day = models.IntegerField(default=0)
     start_date = models.DateField(default=None)
     end_date = models.DateField(default=start_date)
