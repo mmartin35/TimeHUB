@@ -66,9 +66,11 @@
 
 {% block content %}
 <div class="row">
+    {% if not request.user.is_staff %}
     <div class="col-sm-8">
         <div id='calendar'></div>
     </div>
+    {% endif %}
     <div class="col-sm-4">
         <div id="eventFormSection">
             <h3>Demande de congé</h3>

@@ -35,6 +35,7 @@ def admin_panel(request):
     for intern in Intern.objects.all():
         intern_data = structure_data(request, intern.id)
         interns_data.append((intern, intern_data))
+    
     # Get services for the last week
     services_list = []
     for service in ServiceTimer.objects.all():
@@ -47,6 +48,7 @@ def admin_panel(request):
         'services_list': services_list,
         'events_list': Event.objects.select_related('intern').all(),
     }
+
     return render(request, 'admin_panel.html', context)
 
 @staff_member_required
@@ -76,9 +78,61 @@ def setup(request):
         'name': request.user.first_name,
         'form': InternUserCreationForm(),
         'interns': Intern.objects.all(),
-        'events': Event.objects.select_related('intern').all(),
+        'events': Event.objects.select_related('intern').filter(approbation__in=[1, 2]),
     }
     return render(request, 'setup.html', context)
+
+# CALL WITH     ex: return report(request, Intern.objects.first(), 11)
+@staff_member_required
+def report(request, intern, month):
+    intern_item = structure_data(request, intern.id)
+    monthly_hours = 0
+    weeks_data = []
+    
+    # Calculate monthly hours
+    for timer in intern_item.months[month]:
+        monthly_hours += timer.working_hours
+    
+    # Calculate weekly hours and accepted vacations
+    for timer in intern_item.months[month]:
+        week_number = timer.date.isocalendar()[1]
+        if not any(week['week_number'] == week_number for week in weeks_data):
+            weekly_hours = sum(t.working_hours for t in intern_item.weeks[week_number])
+            accepted_vacations = 0
+            for event in Event.objects.filter(intern=intern, start_date__week=week_number):
+                if event.approbation == 1 and event.half_day:
+                    accepted_vacations += 0.5
+                elif event.approbation == 1:
+                    accepted_vacations += 1
+            weeks_data.append({
+                'week_number': week_number,
+                'weekly_hours': weekly_hours,
+                'accepted_vacations': accepted_vacations
+            })
+    
+    for event in Event.objects.filter(intern=intern):
+        if event.approbation == 1:
+            monthly_hours += 8 * event.duration
+
+    month_names = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    month = month_names[month - 1]
+
+    # Adjustments
+    if monthly_hours > 173:
+        monthly_hours = 173
+
+    context = {
+        'intern': intern,
+        'intern_item': intern_item,
+        'month': month,
+        'date': datetime.now().date(),
+        'monthly_hours': monthly_hours,
+        'weeks_data': weeks_data,
+    }
+    return render(request, 'report.html', context)
 
 @staff_member_required
 def structure_data(request, intern_id):

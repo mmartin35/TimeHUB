@@ -104,6 +104,7 @@
             <thead>
                 <tr>
                     <th>Intern</th>
+                    <th>Request date</th>
                     <th>Start Date</th>
                     <th>End Date</th>
                     <th>Reason</th>
@@ -116,6 +117,7 @@
                 {% for event in events %}
                 <tr>
                     <td>{{ event.intern.user.first_name }} {{ event.intern.user.last_name }}</td>
+                    <td>{{ event.request_date }}</td>
                     <td>{{ event.start_date }}</td>
                     <td>{{ event.end_date }}</td>
                     <td>{{ event.reason }}</td>
