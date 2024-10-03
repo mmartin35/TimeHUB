@@ -92,7 +92,7 @@
                     <td>{{ intern.non_attendance }}</td>
                     <td>{{ intern.days_off_left }} / {{ intern.days_off_total }}</td>
                     <td>{{ intern.total_hours|floatformat:2 }} / {{ intern.mandatory_hours }}</td>
-                    <td><a href="#">Get report</a></td>
+                    <td><a href="{% url 'report' intern.user.username requested_month %}">Get report</a></td>
                 </tr>
                 {% endif %}
                 {% endfor %}

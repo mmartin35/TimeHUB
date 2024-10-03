@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from .forms import EventForm
-from .models import Event, Intern
+from .models import Event, PublicHolidays, Intern
 
 @login_required
 def planning(request):
@@ -30,7 +30,12 @@ def planning(request):
             existing_events = Event.objects.filter(intern=intern, start_date__lte=end_date, end_date__gte=start_date, approbation__in=[1])
             if existing_events.exists():
                 return HttpResponse('An event already exists within the selected date range', status=401)
-
+            print(duration)
+            if PublicHolidays.objects.filter(date__range=[start_date, end_date]).exists():
+                duration -= PublicHolidays.objects.filter(date__range=[start_date, end_date]).count()
+            print(duration)
+            if duration < 0:
+                return HttpResponse('The selected date range is during public holidays', status=401)
             # Assign values
             intern.days_off_onhold += duration
             intern.save()

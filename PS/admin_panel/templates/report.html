@@ -75,6 +75,26 @@
                 </table>
                 {% endfor %}
             </div>
+            <table class="table">
+                <h3>Days-off:</h3>
+                <thead>
+                    <tr>
+                        <th>Start</th>
+                        <th>End</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in event_list %}
+                    <tr>
+                        <td>{{ event.1 }}</td>
+                        {% if event.2 %}
+                        <td>{{ event.2 }}</td>
+                        {% else %}
+                        <td>{{ event.1 }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+            </table>
         </div>
     </body>
 </html>

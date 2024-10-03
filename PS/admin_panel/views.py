@@ -1,3 +1,4 @@
+from tracemalloc import start
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
@@ -89,13 +90,14 @@ def setup(request):
         'name': request.user.first_name,
         'form': InternUserCreationForm(),
         'interns': Intern.objects.all(),
+        'requested_month' : datetime.now().month,
         'events': Event.objects.select_related('intern').filter(approbation__in=[1, 2]),
     }
     return render(request, 'setup.html', context)
 
-# CALL WITH     ex: return report(request, Intern.objects.first(), 11)
 @staff_member_required
-def report(request, intern, month):
+def report(request, username, month):
+    intern = get_object_or_404(Intern, user__username=username)
     intern_item = structure_data(request, intern.id)
     monthly_hours = 0
     weeks_data = []
@@ -120,20 +122,20 @@ def report(request, intern, month):
                 'weekly_hours': weekly_hours,
                 'accepted_vacations': accepted_vacations
             })
-    
-    for event in Event.objects.filter(intern=intern):
-        if event.approbation == 1:
-            monthly_hours += 8 * event.duration
+    event_list = []
+    for event in Event.objects.filter(intern=intern, approbation=1):
+        event_list.append([event.start_date, event.end_date])
+        monthly_hours += 8 * event.duration
+
+    # Adjustments
+    if monthly_hours > 173:
+        monthly_hours = 173
 
     month_names = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ]
     month = month_names[month - 1]
-
-    # Adjustments
-    if monthly_hours > 173:
-        monthly_hours = 173
 
     days_left = (datetime.now().date() - intern.departure).days * -1
 
@@ -145,6 +147,7 @@ def report(request, intern, month):
         'monthly_hours': monthly_hours,
         'weeks_data': weeks_data,
         'days_left': days_left,
+        'event_list': event_list,
     }
     return render(request, 'report.html', context)
 
