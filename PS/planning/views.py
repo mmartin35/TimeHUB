@@ -43,6 +43,8 @@ def planning(request):
             # Create event
             if request.user.is_staff:
                 approbation = 1
+                intern.days_off_left -= duration
+                intern.days_off_onhold -= duration
             else:
                 approbation = 0
             Event.objects.create(

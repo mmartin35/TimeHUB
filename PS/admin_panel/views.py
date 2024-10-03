@@ -1,4 +1,3 @@
-from tracemalloc import start
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
@@ -96,6 +95,23 @@ def setup(request):
     return render(request, 'setup.html', context)
 
 @staff_member_required
+def global_report(request, month):
+    interns_data = []
+    for intern in Intern.objects.all():
+        intern_data = structure_data(request, intern.id)
+        interns_data.append((intern, intern_data))
+    month_names = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+    month = month_names[month - 1]
+    context = {
+        'interns_data': interns_data,
+        'month': month,
+    }
+    return render(request, 'global_report.html', context)
+
+@staff_member_required
 def report(request, username, month):
     intern = get_object_or_404(Intern, user__username=username)
     intern_item = structure_data(request, intern.id)
@@ -181,7 +197,7 @@ def print_data(request, intern_id, intern_item):
 def update_data(request):
     # Manage service timers
     for service_timer in ServiceTimer.objects.all():
-        if service_timer.t2_service is None and service_timer.date != datetime.now().date() and datetime.now().date() == "19:30":
+        if service_timer.t2_service is None and service_timer.date != datetime.now().date() and datetime.now().date() >= "19:30":
             service_timer.t2_service = "19:30"
         service_timer.save()
 
