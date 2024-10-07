@@ -41,13 +41,6 @@
 
 {% block content %}
 <div class="row">
-    {% for service_timer in services_list %}
-    {% if service_timer.t2_service is None %}
-    <div class="alert alert-danger" role="alert" style="width: 100%">
-    {{ service_timer.intern.user.first_name }} en sortie de service depuis {{ service_timer.t1_service|date:"H:i"}}.
-    </div>
-    {% endif %}
-    {% endfor %}
     {% for alert in alerts %}
     <div class="alert alert-danger" role="alert" style="width: 100%">
     {{ alert }}
@@ -55,11 +48,17 @@
     {% endfor %}
 </div>
 <div class="row">
-    <div class="col">
+    <div class="col-4">
         {% for intern in interns_list %}
         <p>
-            <a class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" role="button" aria-expanded="false">{{ intern.user.get_full_name }}</a>
-            <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
+            <div class="row">
+                <div class="col">
+                    <a class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" role="button" aria-expanded="false" style="width: 100%">{{ intern.user.get_full_name }}</a>
+                </div>
+                <div class="col">
+                    <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
+                </div>
+            </div>
         </p>
         <div class="collapse" id="collapse{{ intern.user.username }}_infos">
             <div class="card card-body">
@@ -69,14 +68,16 @@
                 <strong>Departure:</strong> {{ intern.departure }}<br>
                 <strong>Total hours:</strong> {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours }}h<br>
                 <strong>Days off:</strong> {{ intern.days_off_left }}/{{ intern.days_off_total }}</p>
+                <a href="{% url 'report' intern.user.username requested_month %}" target="_blank">Print report</a>
             </div>
         </div>
         {% endfor %}
+        <a class="btn btn-dark" href="{% url 'global_report' requested_month %}" target="_blank" style="width: 100%">Get report of every interns</a>
     </div>
-    <div class="col">
+    <div class="col-8">
         <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
             <div class="carousel-inner">
-                {% for intern_data in interns_weeks_data %}
+                {% for week in intern_weeks_data %}
                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                     <table class="table table" style="color: white">
                         <thead>
@@ -91,36 +92,20 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <th>T1: </th>
-                                <td>1:0</td>
-                                <td>1:0</td>
-                                <td>1:0</td>
-                                <td>1:0</td>
-                                <td>1:0</td>
+                                <th>T1:</th>
+                                <td>{{ day.t1 }}</td>
                             </tr>
                             <tr>
-                                <th>T2: </th>
-                                <td>1:5</td>
-                                <td>1:5</td>
-                                <td>1:5</td>
-                                <td>1:5</td>
-                                <td>1:5</td>
+                                <th>T2:</th>
+                                <td>{{ day.t2 }}</td>
                             </tr>
                             <tr>
-                                <th>T3: </th>
-                                <td>2:0</td>
-                                <td>2:0</td>
-                                <td>2:0</td>
-                                <td>2:0</td>
-                                <td>2:0</td>
+                                <th>T3:</th>
+                                <td>{{ day.t3 }}</td>
                             </tr>
                             <tr>
-                                <th>T4: </th>
-                                <td>2:5</td>
-                                <td>2:5</td>
-                                <td>2:5</td>
-                                <td>2:5</td>
-                                <td>2:5</td>
+                                <th>T4:</th>
+                                <td>{{ day.t4 }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -139,6 +124,7 @@
     </div>
 </div>
 
+<hr>
 <div class="row">
     <div id="calendar"></div>
 </div>

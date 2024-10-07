@@ -5,7 +5,7 @@ from pointer.models import Timer, ServiceTimer
 from planning.models import Event
 from .forms import EventApprovalForm, InternUserCreationForm, ServiceTimerForm
 from django.http import JsonResponse
-from datetime import datetime, timedelta
+from datetime import datetime
 
 month_names = [
     "January", "February", "March", "April", "May", "June",
@@ -36,33 +36,32 @@ def admin_panel(request):
             intern.save()
     
     # Get data for each intern
-    interns_data = []
-    for intern in Intern.objects.all():
-        intern_data = structure_data(request, intern.id)
-        interns_data.append((intern, intern_data))
-    
+    intern_weeks_data = structure_data(request, 1).weeks
+
+    for week in intern_weeks_data:
+        for day in intern_weeks_data[week]:
+            print(day.t1)
+
     # Get alerts for work time
     alerts = []
-    for intern, intern_data in interns_data:
-        if intern.is_ongoing:
-            week = intern_data.weeks[datetime.now().isocalendar()[1] - 1]
-            weekly_hours = sum(timer.working_hours for timer in week)
-            if weekly_hours < 40 * intern.regime / 100:
-                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is less than the mandatory {round(40 * intern.regime / 100)}h.")
-            if weekly_hours > 40 * intern.regime / 100:
-                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is more than the mandatory {round(40 * intern.regime / 100)}h.")   
+#    for intern, intern_data in interns_data:
+#        if intern.is_ongoing:
+#            week = intern_data.weeks[datetime.now().isocalendar()[1] - 1]
+#            weekly_hours = sum(timer.working_hours for timer in week)
+#            if weekly_hours < 40 * intern.regime / 100:
+#                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is less than the mandatory {round(40 * intern.regime / 100)}h.")
+#            if weekly_hours > 40 * intern.regime / 100:
+#                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is more than the mandatory {round(40 * intern.regime / 100)}h.")
 
-    # Get services for the last week
-    services_list = []
-    for service in ServiceTimer.objects.all():
-        if service.date >= datetime.now().date() - timedelta(days=7):
-            services_list.append(service)
+    for service in ServiceTimer.objects.filter(comment='NA'):
+        alerts.append(f"{service.intern.user.first_name} {service.intern.user.last_name} added a service entry.")
+    
     context = {
         'name': request.user.first_name,
         'interns_list': Intern.objects.filter(is_ongoing=True),
-        'interns_weeks_data': interns_data,
-        'services_list': services_list,
+        'intern_weeks_data': intern_weeks_data,
         'events_list': Event.objects.select_related('intern').all(),
+        'requested_month': datetime.now().month,
         'alerts': alerts,
     }
     return render(request, 'admin_panel.html', context)

@@ -23,134 +23,59 @@
 
 {% block content %}
 <div class="d-flex flex-column">
-    <div class="p-2" id="add_service">
+    <div class="p-2" id="update_service">
+        <h4>Update Service</h4>
         <form class="row g-3" method="post">
             {% csrf_token %}
             <div class="col-md-4">
                 <select class="form-select" id="service_id" name="service_id" required>
-                    <option value="" disabled selected>Select a service</option>
+                    <option value="" disabled selected>Select a service entry</option>
                     {% for service in services %}
-                    <option value="{{ service.id }}">{{ service.intern.user.first_name }} {{ service.intern.user.last_name }}</option>
+                    <option value="{{ service.id }}">{{ service.intern.user.get_full_name }} at {{ service.t2_service }}</option>
                     {% endfor %}
                 </select>
                 <label for="comment">Comment:</label>
                 <input type="text" class="form-control" id="service_comment" name="service_comment" required>
             </div>
-            <button type="submit" class="btn btn-primary">Add Service</button>
+            <button type="submit" class="btn btn-primary">Close service entry</button>
         </form>
     </div>
     <div class="p-2" id="add_intern">
+        <h4>Add Intern</h4>
         <form class="row g-3" method="post">
             {% csrf_token %}
             <div class="col-md-4">
                 <label for="username">Username:</label>
                 <input type="text" class="form-control" id="username" name="username" required>
+                <hr>
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <hr>
+                <label for="arrival">First day:</label>
+                <input type="date" class="form-control" id="arrival" name="arrival" required>
             </div>
             <div class="col-md-4">
                 <label for="first_name">First name:</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" required>
+                <hr>
+                <label for="password1">Password:</label>
+                <input type="password" class="form-control" id="password1" name="password1" required>
+                <hr>
+                <label for="departure">Last day:</label>
+                <input type="date" class="form-control" id="departure" name="departure" required>
             </div>
             <div class="col-md-4">
                 <label for="last_name">Last name:</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" required>
-            </div>
-            <div class="col-md-4">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="col-md-4">
-                <label for="password1">Password:</label>
-                <input type="password" class="form-control" id="password1" name="password1" required>
-            </div>
-            <div class="col-md-4">
+                <hr>
                 <label for="password2">Confirm password:</label>
                 <input type="password" class="form-control" id="password2" name="password2" required>
-            </div>
-            <div class="col-md-3">
-                <label for="arrival">First day:</label>
-                <input type="date" class="form-control" id="arrival" name="arrival" required>
-            </div>
-            <div class="col-md-3">
-                <label for="departure">Last day:</label>
-                <input type="date" class="form-control" id="departure" name="departure" required>
-            </div>
-            <div class="col-md-3">
+                <hr>
                 <label for="regime">Regime (in %):</label>
                 <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
             </div>
-            <div class="col-md-3" style="margin-top: 30px">
-                <button type="submit" class="btn btn-primary">Add Intern</button>
-            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top:10px ;width: 100%">Add Intern</button>
         </form>
-    </div>
-    <div class="p-2" id="show_interns">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">First day</th>
-                    <th scope="col">Last day</th>
-                    <th scope="col">Days missed</th>
-                    <th scope="col">Days-off left</th>
-                    <th scope="col">Hours done</th>
-                    <th scope="col">Report</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for intern in interns %}
-                {% if intern.is_ongoing %}
-                <tr>
-                    <th scope="p-2">{{ intern.user.first_name }} {{ intern.user.last_name }}</th>
-                    <td>{{ intern.user.email }}</td>
-                    <td>{{ intern.arrival }}</td>
-                    <td>{{ intern.departure }}</td>
-                    <td>{{ intern.non_attendance }}</td>
-                    <td>{{ intern.days_off_left }} / {{ intern.days_off_total }}</td>
-                    <td>{{ intern.total_hours|floatformat:2 }} / {{ intern.mandatory_hours }}</td>
-                    <td><a href="{% url 'report' intern.user.username requested_month %}" target="_blank">Get report</a></td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <a href="{% url 'global_report' requested_month %}" target="_blank">Get report of every interns</a>
-    <div class="p-2" id="report_list">
-        <table class="table" style="color: white">
-            <thead>
-                <tr>
-                    <th>Intern</th>
-                    <th>Request date</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Reason</th>
-                    <th>Half Day</th>
-                    <th>Staff Comment</th>
-                    <th>Approbation</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for event in events %}
-                <tr>
-                    <td>{{ event.intern.user.first_name }} {{ event.intern.user.last_name }}</td>
-                    <td>{{ event.request_date }}</td>
-                    <td>{{ event.start_date }}</td>
-                    <td>{{ event.end_date }}</td>
-                    <td>{{ event.reason }}</td>
-                    <td>{{ event.half_day }}</td>
-                    <td>{{ event.staff_comment }}</td>
-                    {% if event.approbation == 1 %}
-                    <td>Approved</td>
-                    {% elif event.approbation == 2 %}
-                    <td>Refused</td>
-                    {% else %}
-                    <td>Pending</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 </div>
 {% endblock %}

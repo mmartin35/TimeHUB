@@ -2,7 +2,7 @@
     color: white;
 }
 
-#add_intern, #show_interns, #report_list {
+#add_intern, #update_service {
     width: 100%;
     font-size: 15px;
 }
