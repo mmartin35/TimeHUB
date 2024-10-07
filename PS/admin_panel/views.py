@@ -3,7 +3,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
 from pointer.models import Timer, ServiceTimer
 from planning.models import Event
-from .forms import EventApprovalForm, InternUserCreationForm
+from .forms import EventApprovalForm, InternUserCreationForm, ServiceTimerForm
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 
@@ -71,14 +71,14 @@ def admin_panel(request):
 def setup(request):
     update_data(request)
     if request.method == 'POST':
-        form = InternUserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
+        user_form = InternUserCreationForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.save(commit=False)
             user.is_staff = False
             user.save()
-            arrival = form.cleaned_data['arrival']
-            departure = form.cleaned_data['departure']
-            regime = form.cleaned_data['regime']
+            arrival = user_form.cleaned_data['arrival']
+            departure = user_form.cleaned_data['departure']
+            regime = user_form.cleaned_data['regime']
             day_gap = (departure - arrival).days
             Intern.objects.create(
                 user=user,
@@ -90,10 +90,20 @@ def setup(request):
             )
             print('Intern created successfully!')
             return redirect('setup')
+        service_form = ServiceTimerForm(request.POST)
+        if service_form.is_valid():
+            service = ServiceTimer.objects.get(id=service_form.cleaned_data['service_id'])
+            service.t2_service = datetime.now().time()
+            service.comment = service_form.cleaned_data['service_comment']
+            service.save()
+            print('Service updated successfully!')
+            return redirect('setup')
+
     context = {
         'name': request.user.first_name,
         'form': InternUserCreationForm(),
         'interns': Intern.objects.all(),
+        'services': ServiceTimer.objects.filter(comment='NA'),
         'requested_month' : datetime.now().month,
         'events': Event.objects.select_related('intern').filter(approbation__in=[1, 2]),
     }

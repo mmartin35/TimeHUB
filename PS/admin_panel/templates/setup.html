@@ -23,6 +23,22 @@
 
 {% block content %}
 <div class="d-flex flex-column">
+    <div class="p-2" id="add_service">
+        <form class="row g-3" method="post">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <select class="form-select" id="service_id" name="service_id" required>
+                    <option value="" disabled selected>Select a service</option>
+                    {% for service in services %}
+                    <option value="{{ service.id }}">{{ service.intern.user.first_name }} {{ service.intern.user.last_name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="comment">Comment:</label>
+                <input type="text" class="form-control" id="service_comment" name="service_comment" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Service</button>
+        </form>
+    </div>
     <div class="p-2" id="add_intern">
         <form class="row g-3" method="post">
             {% csrf_token %}
@@ -96,13 +112,10 @@
                 </tr>
                 {% endif %}
                 {% endfor %}
-                <tr>
-                    <td>Get all reports</td>
-                    <td><a href="{% url 'global_report' requested_month %}" target="_blank">Get report</a></td>
-                </tr>
             </tbody>
         </table>
     </div>
+    <a href="{% url 'global_report' requested_month %}" target="_blank">Get report of every interns</a>
     <div class="p-2" id="report_list">
         <table class="table" style="color: white">
             <thead>

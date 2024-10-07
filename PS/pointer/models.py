@@ -16,7 +16,7 @@ class Timer(models.Model):
 class ServiceTimer(models.Model):
     intern = models.ForeignKey(Intern, on_delete=models.CASCADE)
 
-    reason = models.CharField(default="NA", max_length=100)
+    comment = models.CharField(default="NA", max_length=100)
     date = models.DateField(default=timezone.now)
     t1_service = models.TimeField(null=True, blank=True)
     t2_service = models.TimeField(null=True, blank=True)

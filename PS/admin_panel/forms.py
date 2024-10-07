@@ -16,3 +16,7 @@ class EventApprovalForm(forms.Form):
     approve_event = forms.BooleanField(required=False)
     reject_event = forms.BooleanField(required=False)
     staff_comment = forms.CharField(required=False, widget=forms.Textarea)
+
+class ServiceTimerForm(forms.Form):
+    service_id = forms.IntegerField(widget=forms.HiddenInput)
+    service_comment = forms.CharField(required=False, widget=forms.Textarea)
