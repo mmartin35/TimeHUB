@@ -46,12 +46,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for intern in intern_list %}
+                        {% for intern_data in interns_data %}
                         <tr>
-                            <td>{{ intern.user.first_name }} {{ intern.user.last_name }}</td>
-                            <td>{{ intern_extended.monthly_hours }}</td>
-                            <td>{{ intern.days_off_left }} / {{ intern.days_off_total }}</td>
-                            <td>{{ intern.non_attendance }}</td>
+                            <td>{{ intern_data.intern.user.first_name }} {{ intern_data.intern.user.last_name }}</td>
+                            <td>{{ intern_data.monthly_hours|floatformat:1 }}</td>
+                            <td>{{ intern_data.intern.days_off_left }} / {{ intern_data.intern.days_off_total }}</td>
+                            <td>{{ intern_data.intern.non_attendance }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -60,19 +60,25 @@
                 <h3>Days-off:</h3>
                 <thead>
                     <tr>
+                        <th>Intern</th>
+                        <th>Reason</th>
                         <th>Start</th>
                         <th>End</th>
+                        <th>Duration</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for event in event_list %}
                     <tr>
-                        <td>{{ event.1 }}</td>
-                        {% if event.2 %}
-                        <td>{{ event.2 }}</td>
+                        <td>{{ event.intern }}</td>
+                        <td>{{ event.reason }}</td>
+                        <td>{{ event.start_date }}</td>
+                        {% if event.end_date %}
+                        <td>{{ event.end_date }}</td>
                         {% else %}
-                        <td>{{ event.1 }}</td>
+                        <td>{{ event.start_date }}</td>
                         {% endif %}
+                        <td>{{ event.duration }}</td>
                     </tr>
                     {% endfor %}
             </table>

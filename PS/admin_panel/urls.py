@@ -6,4 +6,5 @@ urlpatterns = [
     path('admin_events/', views.admin_events_json, name='admin_events_json'),
     path('setup/', views.setup, name='setup'),
     path('report/<str:username>/<int:month>', views.report, name='report'),
+    path('global_report/<int:month>', views.global_report, name='global_report'),
 ]

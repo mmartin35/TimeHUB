@@ -22,8 +22,7 @@
             }
 
             .content {
-                max-width: 500px;
-                margin: auto;
+                margin: 20px;
             }
         </style>
     </head>
@@ -56,44 +55,44 @@
 
                 <div class="tables" style="margin-top: 80px">
                     <h3>Details:</h3>
-                    {% for week in weeks_data %}
                     <table class="table" style="width: 700px">
                         <thead>
                             <tr>
+                                {% for week in weeks_data %}
                                 <th>Week {{ week.week_number }}</th>
-                                <th></th>
+                                {% endfor %}
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <th>Weekly Hours</th>
+                                {% for week in weeks_data %}
                                 <td>{{ week.weekly_hours|floatformat:1 }}</td>
-                            </tr>
-                            <tr>
-                                <th>Accepted Vacations</th>
-                                <td>{{ week.accepted_vacations }}</td>
+                                {% endfor %}
                             </tr>
                         </tbody>
                     </table>
-                    {% endfor %}
                 </div>
                 <table class="table">
                     <h3>Days-off:</h3>
                     <thead>
                         <tr>
+                            <th>Reason</th>
                             <th>Start</th>
                             <th>End</th>
+                            <th>Duration</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for event in event_list %}
                         <tr>
-                            <td>{{ event.1 }}</td>
-                            {% if event.2 %}
-                            <td>{{ event.2 }}</td>
+                            <td>{{ event.reason }}</td>
+                            <td>{{ event.start_date }}</td>
+                            {% if event.end_date %}
+                            <td>{{ event.end_date }}</td>
                             {% else %}
-                            <td>{{ event.1 }}</td>
+                            <td>{{ event.start_date }}</td>
                             {% endif %}
+                            <td>{{ event.duration }}</td>
                         </tr>
                         {% endfor %}
                 </table>

@@ -7,6 +7,11 @@ from .forms import EventApprovalForm, InternUserCreationForm
 from django.http import JsonResponse
 from datetime import datetime, timedelta
 
+month_names = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+]
+
 @staff_member_required
 def admin_panel(request):
     update_data(request)
@@ -97,72 +102,76 @@ def setup(request):
 @staff_member_required
 def global_report(request, month):
     interns_data = []
-    for intern in Intern.objects.all():
+    for intern in Intern.objects.filter(is_ongoing=True):
         intern_data = structure_data(request, intern.id)
-        interns_data.append((intern, intern_data))
-    month_names = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ]
+        monthly_hours = sum(timer.working_hours for timer in intern_data.months[month])
+        interns_data.append({
+            'intern': intern,
+            'monthly_hours': monthly_hours
+        })
+    
+    event_list = []
+    for event in Event.objects.filter(approbation=1):
+        event_list.append({
+            'intern': event.intern.user.first_name + ' ' + event.intern.user.last_name,
+            'reason': event.reason,
+            'start_date': event.start_date,
+            'end_date': event.end_date,
+            'duration': event.duration,
+        })
+
     month = month_names[month - 1]
+
     context = {
         'interns_data': interns_data,
+        'event_list': event_list,
         'month': month,
+        'date': datetime.now().date(),
     }
     return render(request, 'global_report.html', context)
 
 @staff_member_required
 def report(request, username, month):
     intern = get_object_or_404(Intern, user__username=username)
-    intern_item = structure_data(request, intern.id)
+    intern_data = structure_data(request, intern.id)
     monthly_hours = 0
     weeks_data = []
-    
-    # Calculate monthly hours
-    for timer in intern_item.months[month]:
-        monthly_hours += timer.working_hours
-    
+
     # Calculate weekly hours and accepted vacations
-    for timer in intern_item.months[month]:
+    for timer in intern_data.months[month]:
         week_number = timer.date.isocalendar()[1]
         if not any(week['week_number'] == week_number for week in weeks_data):
-            weekly_hours = sum(t.working_hours for t in intern_item.weeks[week_number])
-            accepted_vacations = 0
-            for event in Event.objects.filter(intern=intern, start_date__week=week_number):
-                if event.approbation == 1 and event.half_day:
-                    accepted_vacations += 0.5
-                elif event.approbation == 1:
-                    accepted_vacations += 1
+            weekly_hours = sum(t.working_hours for t in intern_data.weeks[week_number])
             weeks_data.append({
                 'week_number': week_number,
                 'weekly_hours': weekly_hours,
-                'accepted_vacations': accepted_vacations
             })
     event_list = []
     for event in Event.objects.filter(intern=intern, approbation=1):
-        event_list.append([event.start_date, event.end_date])
+        event_list.append({
+            'reason': event.reason,
+            'start_date': event.start_date,
+            'end_date': event.end_date,
+            'duration': event.duration,
+        })
         monthly_hours += 8 * event.duration
 
-    # Adjustments
+    # Calculate monthly hours
+    for timer in intern_data.months[month]:
+        monthly_hours += timer.working_hours
     if monthly_hours > 173:
         monthly_hours = 173
 
-    month_names = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ]
     month = month_names[month - 1]
-
-    days_left = (datetime.now().date() - intern.departure).days * -1
 
     context = {
         'intern': intern,
-        'intern_item': intern_item,
+        'intern_data': intern_data,
         'month': month,
         'date': datetime.now().date(),
         'monthly_hours': monthly_hours,
         'weeks_data': weeks_data,
-        'days_left': days_left,
+        'days_left': (datetime.now().date() - intern.departure).days * -1,
         'event_list': event_list,
     }
     return render(request, 'report.html', context)
@@ -197,7 +206,7 @@ def print_data(request, intern_id, intern_item):
 def update_data(request):
     # Manage service timers
     for service_timer in ServiceTimer.objects.all():
-        if service_timer.t2_service is None and service_timer.date != datetime.now().date() and datetime.now().date() >= "19:30":
+        if service_timer.t2_service is None and service_timer.date != datetime.now().date():
             service_timer.t2_service = "19:30"
         service_timer.save()
 
