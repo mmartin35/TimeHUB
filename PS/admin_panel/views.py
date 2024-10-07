@@ -38,11 +38,6 @@ def admin_panel(request):
     # Get data for each intern
     intern_weeks_data = structure_data(request, 1).weeks
 
-    for week in intern_weeks_data:
-        for day in intern_weeks_data[week]:
-            print(day.t1)
-
-    # Get alerts for work time
     alerts = []
 #    for intern, intern_data in interns_data:
 #        if intern.is_ongoing:
