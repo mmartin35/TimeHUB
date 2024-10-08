@@ -1,8 +1,22 @@
-.table {
-    color: white;
+h4 {
+    text-align: center;
 }
 
-#add_intern, #update_service {
-    width: 100%;
-    font-size: 15px;
+.row {
+    margin-top: 20px;
 }
+
+#service_id {
+    height: 110px;
+    width: 100%;
+}
+
+#validate_service form {
+    margin-top: 50px;
+}
+
+form .btn {
+    width: 100%;
+    margin-top: 10px;
+}
+

@@ -20,22 +20,27 @@
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.15/index.global.min.js'></script>
 <script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            contentHeight: 'auto',
-            dateClick: function(info) {
-                document.getElementById('eventDate').value = info.dateStr;
-                document.getElementById('reason').focus();
-            },
-            events: "{% url 'events_json' %}",
-            eventDidMount: function(info) {
-                info.el.style.backgroundColor = info.event.backgroundColor;
-            }
-        });
-        calendar.render();
 
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                contentHeight: 'auto',
+                dateClick: function(info) {
+                    document.getElementById('eventDate').value = info.dateStr;
+                    document.getElementById('reason').focus();
+                },
+                events: "{% url 'events_json' %}",
+                eventDidMount: function(info) {
+                    info.el.style.backgroundColor = info.event.backgroundColor;
+                }
+            });
+            calendar.render();
+        }
+        catch {
+            console.log('No calendar element found');
+        }
         var halfDayCheckbox = document.getElementById('is_half_day');
         var endDateField = document.getElementById('end_date').parentElement;
         var halfDayField = document.getElementById('half_day').parentElement;
@@ -66,9 +71,7 @@
 
 {% block content %}
 <div class="row">
-    {% if request.user.is_staff %}
-    <h2 class="col-sm-8" style="color: white; margin-top: 25%; text-decoration: underline;">Form to add an event to an intern :</h2>
-    {% else %}
+    {% if not request.user.is_staff %}
     <div class="col-sm-8">
         <div id='calendar'></div>
     </div>
@@ -85,7 +88,7 @@
                 <select class="form-select" id="intern" name="intern" required>
                     <option value="" disabled selected>Selectionner un interne:</option>
                     {% for intern in interns %}
-                    <option value="{{ intern.id }}">{{ intern.user.first_name }} {{ intern.user.last_name }}</option>
+                    <option value="{{ intern.id }}">{{ intern.user.get_full_name }}</option>
                     {% endfor %}
                 </select><br>
                 {% else %}
@@ -128,57 +131,55 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-12">
-        <table class="table" style="color: white; margin-top: 20px">
-            <thead>
-                <tr>
-                    {% if request.user.is_staff %}
-                    <th colspan="6">Nom</th>
-                    {% endif %}
-                    <th>Date de la demande</th>
-                    <th>Date de début</th>
-                    <th>Date de fin</th>
-                    <th>Motif</th>
-                    <th>Demi-journée</th>
-                    <th>Comentaire RH</th>
-                    <th>Réponse</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ongoings in ongoings %}
-                <tr>
-                    {% if request.user.is_staff %}
-                    <td colspan="6">{{ ongoings.intern.user.first_name }} {{ ongoings.intern.user.last_name }}</td>
-                    {% endif %}
-                    <td>{{ ongoings.request_date }}</td>
-                    <td>{{ ongoings.start_date }}</td>
-                    <td>{{ ongoings.end_date }}</td>
-                    <td>{{ ongoings.reason }}</td>
-                    <td>{{ ongoings.half_day }}</td>
-                    <td>{{ ongoings.staff_comment }}</td>
-                    <td>Envoyé</td>
-                </tr>
-                {% endfor %}
-                {% for response in responses %}
-                <tr>
-                    {% if request.user.is_staff %}
-                    <td colspan="6">{{ response.intern.user.first_name }} {{ response.intern.user.last_name }}</td>
-                    {% endif %}
-                    <td>{{ response.request_date }}</td>
-                    <td>{{ response.start_date }}</td>
-                    <td>{{ response.end_date }}</td>
-                    <td>{{ response.reason }}</td>
-                    <td>{{ response.half_day }}</td>
-                    <td>{{ response.staff_comment }}</td>
-                    {% if response.approbation == 1 %}
-                    <td>Approuvé</td>
-                    {% elif response.approbation == 2 %}
-                    <td>Refusé</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                {% if request.user.is_staff %}
+                <th colspan="6">Nom</th>
+                {% endif %}
+                <th>Date de la demande</th>
+                <th>Date de début</th>
+                <th>Date de fin</th>
+                <th>Motif</th>
+                <th>Durée</th>
+                <th>Comentaire RH</th>
+                <th>Réponse</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ongoings in ongoings %}
+            <tr>
+                {% if request.user.is_staff %}
+                <td colspan="6">{{ ongoings.intern.user.get_full_name }}</td>
+                {% endif %}
+                <td>{{ ongoings.request_date }}</td>
+                <td>{{ ongoings.start_date }}</td>
+                <td>{{ ongoings.end_date }}</td>
+                <td>{{ ongoings.reason }}</td>
+                <td>{{ ongoings.duration }}</td>
+                <td>{{ ongoings.staff_comment }}</td>
+                <td>En attente</td>
+            </tr>
+            {% endfor %}
+            {% for response in responses %}
+            <tr>
+                {% if request.user.is_staff %}
+                <td colspan="6">{{ response.intern.user.get_full_name }}</td>
+                {% endif %}
+                <td>{{ response.request_date }}</td>
+                <td>{{ response.start_date }}</td>
+                <td>{{ response.end_date }}</td>
+                <td>{{ response.reason }}</td>
+                <td>{{ response.duration }}</td>
+                <td>{{ response.staff_comment }}</td>
+                {% if response.approbation == 1 %}
+                <td>Approuvé</td>
+                {% elif response.approbation == 2 %}
+                <td>Refusé</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

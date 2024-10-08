@@ -5,76 +5,59 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'admin_panel/css/setup.css' %}">
-<style>
-#add_intern, #show_interns, #report_list, #event_list {
-    display: flex;
-    justify-content: space-around;
-    color: white;
-    margin-top: 20px;
-    padding: 50px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-</style>
 {% endblock %}
 
 {% block scripts %}
 {% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column">
-    <div class="p-2" id="update_service">
-        <h4>Update Service</h4>
-        <form class="row g-3" method="post">
+<div class="row">
+    <div class="col" id="validate_service">
+        <h4>Validate service</h4>
+        <form method="post">
             {% csrf_token %}
-            <div class="col-md-4">
-                <select class="form-select" id="service_id" name="service_id" required>
-                    <option value="" disabled selected>Select a service entry</option>
-                    {% for service in services %}
-                    <option value="{{ service.id }}">{{ service.intern.user.get_full_name }} at {{ service.t2_service }}</option>
-                    {% endfor %}
-                </select>
+            <select class="form-select" multiple id="service_id" name="service_id" required>
+                {% for service in services %}
+                <option value="{{ service.id }}">{{ service.intern.user.get_full_name }} at {{ service.t2_service }}</option>
+                {% endfor %}
+            </select>
+            <div class="mb-3">
                 <label for="comment">Comment:</label>
                 <input type="text" class="form-control" id="service_comment" name="service_comment" required>
             </div>
-            <button type="submit" class="btn btn-primary">Close service entry</button>
+            <button type="submit" class="btn btn-primary">Validate</button>
         </form>
     </div>
-    <div class="p-2" id="add_intern">
-        <h4>Add Intern</h4>
-        <form class="row g-3" method="post">
+
+    <div class="col-md-9" id="add_intern">
+        <h4>Add intern</h4>
+        <form class="row" method="post">
             {% csrf_token %}
-            <div class="col-md-4">
+            <div class="col">
                 <label for="username">Username:</label>
                 <input type="text" class="form-control" id="username" name="username" required>
-                <hr>
                 <label for="email">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <hr>
                 <label for="arrival">First day:</label>
                 <input type="date" class="form-control" id="arrival" name="arrival" required>
             </div>
-            <div class="col-md-4">
+            <div class="col">
                 <label for="first_name">First name:</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" required>
-                <hr>
                 <label for="password1">Password:</label>
                 <input type="password" class="form-control" id="password1" name="password1" required>
-                <hr>
                 <label for="departure">Last day:</label>
                 <input type="date" class="form-control" id="departure" name="departure" required>
             </div>
-            <div class="col-md-4">
+            <div class="col">
                 <label for="last_name">Last name:</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" required>
-                <hr>
                 <label for="password2">Confirm password:</label>
                 <input type="password" class="form-control" id="password2" name="password2" required>
-                <hr>
                 <label for="regime">Regime (in %):</label>
                 <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
             </div>
-            <button type="submit" class="btn btn-primary" style="margin-top:10px ;width: 100%">Add Intern</button>
+            <button type="submit" class="btn btn-primary">Add Intern</button>
         </form>
     </div>
 </div>

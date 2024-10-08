@@ -21,8 +21,16 @@
     margin: 0;
 }
 
-.nav-tabs #pages {}
-
 .nav-tabs #user-tool {
     margin-left: auto;
+}
+
+.nav-tabs #user-tool button {
+    color: #FFD60A;
+    margin: 0;
+}
+.nav-tabs a img {
+    width: 40px;
+    height: 40px;
+    margin: 2px 2px 2px 5px;
 }

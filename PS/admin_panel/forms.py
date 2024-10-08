@@ -2,6 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
+class CarouselForm(forms.Form):
+    user_id = forms.IntegerField(widget=forms.HiddenInput)
+
 class InternUserCreationForm(UserCreationForm):
     arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
     departure = forms.DateField(required=True, widget=forms.SelectDateWidget)

@@ -1,5 +1,7 @@
+from sched import Event
 from django.core.management.base import BaseCommand
 from datetime import datetime
+from pointing_system.PS.intern.models import Intern
 
 class Command(BaseCommand):
     help = 'Insert public holidays'
@@ -25,3 +27,6 @@ class Command(BaseCommand):
         for holiday in holidays:
             PublicHolidays.objects.create(name=holiday['name'], date=holiday['date'])
             print(f'{holiday["name"]} on {holiday["date"]} inserted')
+            for intern in Intern.objects.filter(is_ongoing=True):
+                intern.days_off_left += Event.objects.filter(intern=intern, start_date__lte=holiday['date'], end_date__gte=holiday['date'], approbation=1).count()
+                intern.save()

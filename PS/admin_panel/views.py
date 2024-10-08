@@ -1,9 +1,10 @@
+from turtle import st
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
 from pointer.models import Timer, ServiceTimer
 from planning.models import Event
-from .forms import EventApprovalForm, InternUserCreationForm, ServiceTimerForm
+from .forms import CarouselForm, EventApprovalForm, InternUserCreationForm, ServiceTimerForm
 from django.http import JsonResponse
 from datetime import datetime
 
@@ -15,20 +16,24 @@ month_names = [
 @staff_member_required
 def admin_panel(request):
     update_data(request)
+    requested_user = None
     if request.method == 'POST':
-        form = EventApprovalForm(request.POST)
-        if form.is_valid():
-            event_id = form.cleaned_data['event_id']
+        carouselForm = CarouselForm(request.POST)
+        if carouselForm.is_valid():
+            requested_user = carouselForm.cleaned_data['user_id']
+        eventForm = EventApprovalForm(request.POST)
+        if eventForm.is_valid():
+            event_id = eventForm.cleaned_data['event_id']
             event = get_object_or_404(Event, id=event_id)
             intern = event.intern
-            if form.cleaned_data['staff_comment']:
-                event.staff_comment = form.cleaned_data['staff_comment']
-            if form.cleaned_data['approve_event']:
+            if eventForm.cleaned_data['staff_comment']:
+                event.staff_comment = eventForm.cleaned_data['staff_comment']
+            if eventForm.cleaned_data['approve_event']:
                 event.approbation = 1
                 event.is_archived = True
                 intern.days_off_left -= event.duration
                 intern.days_off_onhold -= event.duration
-            elif form.cleaned_data['reject_event']:
+            elif eventForm.cleaned_data['reject_event']:
                 event.approbation = 2
                 event.is_archived = True
                 intern.days_off_onhold -= event.duration
@@ -36,8 +41,12 @@ def admin_panel(request):
             intern.save()
     
     # Get data for each intern
-    intern_weeks_data = structure_data(request, 1).weeks
+    intern_weeks_data = structure_data(request, requested_user).weeks
+    if intern_weeks_data is not None:
+        for week, days in intern_weeks_data.items():
+            intern_weeks_data[week] = days[::-1]
 
+        
     alerts = []
 #    for intern, intern_data in interns_data:
 #        if intern.is_ongoing:
@@ -54,6 +63,7 @@ def admin_panel(request):
     context = {
         'name': request.user.first_name,
         'interns_list': Intern.objects.filter(is_ongoing=True),
+        'requested_user': requested_user,
         'intern_weeks_data': intern_weeks_data,
         'events_list': Event.objects.select_related('intern').all(),
         'requested_month': datetime.now().month,
@@ -184,14 +194,16 @@ def report(request, username, month):
 def structure_data(request, intern_id):
     class Intern_item:
         def __init__(self):
-            self.months = {month: [] for month in range(1, 12)}
-            self.weeks = {week: [] for week in range(1, 53)}
-    intern_data = Intern_item()
+            self.months = {month: [] for month in range(1, datetime.now().month + 1)}
+            self.weeks = {week: [] for week in range(1, datetime.now().isocalendar()[1] + 1)}
+    
+    intern_data = Intern_item()    
     for timer in Timer.objects.filter(intern=intern_id):
         if datetime.now().year != timer.date.year:
             continue
         intern_data.months[timer.date.month].append(timer)
         intern_data.weeks[timer.date.isocalendar()[1]].append(timer)
+
     return intern_data
 
 @staff_member_required

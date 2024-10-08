@@ -35,6 +35,18 @@
             }
         });
         calendar.render();
+        var carousels = document.querySelectorAll('.carousel');
+        carousels.forEach(function(carousel) {
+            var carouselInstance = new bootstrap.Carousel(carousel, {
+                wrap: false,
+                interval: false
+            });
+            var items = carousel.querySelectorAll('.carousel-item');
+            if (items.length > 0) {
+                items[items.length - 1].classList.add('active');
+                items[0].classList.remove('active');
+            }
+        });
     });
 </script>
 {% endblock %}
@@ -53,7 +65,17 @@
         <p>
             <div class="row">
                 <div class="col">
-                    <a class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" role="button" aria-expanded="false" style="width: 100%">{{ intern.user.get_full_name }}</a>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_id" value="{{ intern.id }}">
+                        <button type="submit" name="user_id" value="{{ intern.id }}" class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" style="width: 100%">
+                            {% if intern.id == requested_user %}
+                            <b>{{ intern.user.get_full_name }}</b>
+                            {% else %}
+                            {{ intern.user.get_full_name }}
+                            {% endif %}
+                        </button>
+                    </form>
                 </div>
                 <div class="col">
                     <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
@@ -83,48 +105,32 @@
                         <thead>
                             <tr>
                                 <th>Week {{ week }}</th>
-                                {% for day in days %}
-                                <th>{{ day.date }}</th>
-                                {% endfor %}
+                                <th>T1:</th>
+                                <th>T2:</th>
+                                <th>T3:</th>
+                                <th>T4:</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for day in days %}
                             <tr>
-                                <th>T1:</th>
-                                {% for day in days %}
+                                <td>{{ day.date }}</td>
                                 <td>{{ day.t1 }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th>T2:</th>
-                                {% for day in days %}
                                 <td>{{ day.t2 }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th>T3:</th>
-                                {% for day in days %}
                                 <td>{{ day.t3 }}</td>
-                                {% endfor %}
-                            </tr>
-                            <tr>
-                                <th>T4:</th>
-                                {% for day in days %}
                                 <td>{{ day.t4 }}</td>
-                                {% endfor %}
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
                 {% endfor %}
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity: 0">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden"></span>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity:10%; height:100%; width: 1.5%">
+                <!-- Control content -->
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity: 0">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden"></span>
+            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity:10%; height:100%; width: 1.5%">
+                <!-- Control content -->
             </button>
         </div>
     </div>

@@ -11,87 +11,83 @@
 {% block content %}
 <div class="d-flex flex-column" id="table-container">
     {% if half_day or full_day %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Status</th>
-                {% if status %}
-                <th scope="col">Active</th>
-                {% else %}
-                <th scope="col">Inactive</th>
+    <div class="row">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Status</th>
+                    {% if status %}
+                    <th scope="col">Active</th>
+                    {% else %}
+                    <th scope="col">Inactive</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">T1</th>
+                    {% if t1 %}
+                    <td>{{ t1 }}</td>
+                    {% else %}
+                    <td>None</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th scope="row">T2</th>
+                    {% if t2 %}
+                    <td>{{ t2 }}</td>
+                    {% else %}
+                    <td>None</td>
+                    {% endif %}
+                </tr>
+                {% if not half_day %}
+                <tr>
+                    <th scope="row">T3</th>
+                    {% if t3 %}
+                    <td>{{ t3 }}</td>
+                    {% else %}
+                    <td>None</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <th scope="row">T4</th>
+                    {% if t4 %}
+                    <td>{{ t4 }}</td>
+                    {% else %}
+                    <td>None</td>
+                    {% endif %}
+                </tr>
                 {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <th scope="row">T1</th>
-                {% if t1 %}
-                <td>{{ t1 }}</td>
-                {% else %}
-                <td>None</td>
-                {% endif %}
-            </tr>
-            <tr>
-                <th scope="row">T2</th>
-                {% if t2 %}
-                <td>{{ t2 }}</td>
-                {% else %}
-                <td>None</td>
-                {% endif %}
-            </tr>
-            {% if not half_day %}
-            <tr>
-                <th scope="row">T3</th>
-                {% if t3 %}
-                <td>{{ t3 }}</td>
-                {% else %}
-                <td>None</td>
-                {% endif %}
-            </tr>
-            <tr>
-                <th scope="row">T4</th>
-                {% if t4 %}
-                <td>{{ t4 }}</td>
-                {% else %}
-                <td>None</td>
-                {% endif %}
-            </tr>
-            {% endif %}
-        </tbody>
-    </table>
-
-    <div class="btn-container">
-        <form method="POST">
-            {% csrf_token %}
-            <input type="hidden" id="action_input" name="action" value="">
-            <button type="button" class="btn btn-outline-secondary" id="pointerButton">Pointer</button>
-        </form>
-        <script>
-            document.getElementById("pointerButton").addEventListener("click", function() {
-                document.forms[0].submit();
-            });
-        </script>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="btn-container">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="action_input" name="action" value="">
+                    <button type="submit" class="btn btn-outline-secondary" id="pointerButton">Pointer</button>
+                </form>
+            </div>
+        </div>
+        <div class="col">
+            <div class="btn-container">
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="action_input" name="service" value="">
+                    <button type="submit" class="btn btn-outline-secondary" id="serviceButton">
+                    {% if not service_state %}
+                    Départ en service
+                    {% else %}
+                    Retour de service
+                    {% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
     {% endif %}
-
-    <div class="btn-container">
-        <form method="POST">
-            {% csrf_token %}
-            <input type="hidden" id="action_input" name="service" value="">
-            <button type="button" class="btn btn-outline-secondary" id="serviceButton">
-            {% if not service_state %}
-            Départ en service
-            {% else %}
-            Retour de service
-            {% endif %}
-            </button>
-        </form>
-        <script>
-            document.getElementById("serviceButton").addEventListener("click", function() {
-                document.forms[1].submit();
-            });
-        </script>
-    </div>
     {% if show_days_off_alert %}
     <div class="alert alert-danger" role="alert">
         Votre stage se termine bientôt ! Utilisez vos jours de congés avant la fin de celui-ci.

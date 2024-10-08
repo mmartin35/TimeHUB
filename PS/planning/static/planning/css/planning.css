@@ -1,9 +1,11 @@
-h2 {
+h2, button {
     margin-top: 20px;
 }
 
-button {
-    margin-top: 10px;
+.row .table {
+    color: white;
+    width: 100%;
+    margin-top: 20px;
 }
 
 #calendar, #eventFormSection {
@@ -11,14 +13,12 @@ button {
     margin-top: 20px;
 }
 
-#calendar {
-    height: 100%;
+#calendar, #eventFormSection {
+    height: 95%;
 }
 
 #eventFormSection {
     font-size: 15px;
-    height: 95%;
-    color: white;
     background-color: #000814;
     padding: 10px;
 }
