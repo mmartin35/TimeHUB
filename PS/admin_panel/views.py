@@ -1,4 +1,3 @@
-from turtle import st
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
