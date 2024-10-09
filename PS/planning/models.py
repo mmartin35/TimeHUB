@@ -13,7 +13,6 @@ class Event(models.Model):
     duration = models.FloatField(default=0)
 
     approbation = models.IntegerField(default=0)
-    is_archived = models.BooleanField(default=False)
     staff_comment = models.CharField(max_length=256, default='No comment given')
 
 class PublicHolidays(models.Model):

@@ -6,3 +6,6 @@ class EventForm(forms.Form):
     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     half_day = forms.BooleanField(required=False)
+ 
+class CancelEventForm(forms.Form):
+    cancel_event = forms.IntegerField(widget=forms.HiddenInput())

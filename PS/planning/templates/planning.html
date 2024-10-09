@@ -144,20 +144,23 @@
                 <th>Durée</th>
                 <th>Comentaire RH</th>
                 <th>Réponse</th>
+                {% if request.user.is_staff %}
+                <th>Annuler</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
-            {% for ongoings in ongoings %}
+            {% for ongoing in ongoings %}
             <tr>
                 {% if request.user.is_staff %}
-                <td colspan="6">{{ ongoings.intern.user.get_full_name }}</td>
+                <td colspan="6">{{ ongoing.intern.user.get_full_name }}</td>
                 {% endif %}
-                <td>{{ ongoings.request_date }}</td>
-                <td>{{ ongoings.start_date }}</td>
-                <td>{{ ongoings.end_date }}</td>
-                <td>{{ ongoings.reason }}</td>
-                <td>{{ ongoings.duration }}</td>
-                <td>{{ ongoings.staff_comment }}</td>
+                <td>{{ ongoing.request_date }}</td>
+                <td>{{ ongoing.start_date }}</td>
+                <td>{{ ongoing.end_date }}</td>
+                <td>{{ ongoing.reason }}</td>
+                <td>{{ ongoing.duration }}</td>
+                <td>{{ ongoing.staff_comment }}</td>
                 <td>En attente</td>
             </tr>
             {% endfor %}
@@ -174,8 +177,17 @@
                 <td>{{ response.staff_comment }}</td>
                 {% if response.approbation == 1 %}
                 <td>Approuvé</td>
+                {% if request.user.is_staff %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="cancel_event" id="cancel_event" value="{{ response.id }}">
+                    <td><button type="submit" class="btn btn-danger">Annuler</button></td>
+                </form>
+                {% endif %}
                 {% elif response.approbation == 2 %}
                 <td>Refusé</td>
+                {% elif response.approbation == 3 %}
+                <td>Annulé</td>
                 {% endif %}
             </tr>
             {% endfor %}

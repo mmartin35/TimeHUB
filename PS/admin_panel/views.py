@@ -38,15 +38,25 @@ def admin_panel(request):
                 intern.days_off_onhold -= event.duration
             event.save()
             intern.save()
-    
+        service_form = ServiceTimerForm(request.POST)
+        if service_form.is_valid():
+            service = ServiceTimer.objects.get(id=service_form.cleaned_data['service_id'])
+            if service.t2_service is None:
+                service.t2_service = datetime.now().time()
+            service.comment = service_form.cleaned_data['service_comment']
+            service.save()
+            print('Service updated successfully!')
+            return redirect('admin_panel')
     # Get data for each intern
     intern_weeks_data = structure_data(request, requested_user).weeks
+
+    # Invert days order for each week
     if intern_weeks_data is not None:
         for week, days in intern_weeks_data.items():
             intern_weeks_data[week] = days[::-1]
 
         
-    alerts = []
+#    alerts = []
 #    for intern, intern_data in interns_data:
 #        if intern.is_ongoing:
 #            week = intern_data.weeks[datetime.now().isocalendar()[1] - 1]
@@ -56,17 +66,14 @@ def admin_panel(request):
 #            if weekly_hours > 40 * intern.regime / 100:
 #                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is more than the mandatory {round(40 * intern.regime / 100)}h.")
 
-    for service in ServiceTimer.objects.filter(comment='NA'):
-        alerts.append(f"{service.intern.user.first_name} {service.intern.user.last_name} added a service entry.")
-    
     context = {
         'name': request.user.first_name,
         'interns_list': Intern.objects.filter(is_ongoing=True),
+        'service_list': ServiceTimer.objects.filter(comment="NA"),
         'requested_user': requested_user,
         'intern_weeks_data': intern_weeks_data,
-        'events_list': Event.objects.select_related('intern').all(),
+        'event_list': Event.objects.filter(approbation=2),
         'requested_month': datetime.now().month,
-        'alerts': alerts,
     }
     return render(request, 'admin_panel.html', context)
 
@@ -91,15 +98,6 @@ def setup(request):
                 days_off_left=round(day_gap * (26 / 365), 2),
                 mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
             )
-            print('Intern created successfully!')
-            return redirect('setup')
-        service_form = ServiceTimerForm(request.POST)
-        if service_form.is_valid():
-            service = ServiceTimer.objects.get(id=service_form.cleaned_data['service_id'])
-            service.t2_service = datetime.now().time()
-            service.comment = service_form.cleaned_data['service_comment']
-            service.save()
-            print('Service updated successfully!')
             return redirect('setup')
 
     context = {
@@ -144,7 +142,7 @@ def global_report(request, month):
     return render(request, 'global_report.html', context)
 
 @staff_member_required
-def report(request, username, month):
+def individual_report(request, username, month):
     intern = get_object_or_404(Intern, user__username=username)
     intern_data = structure_data(request, intern.id)
     monthly_hours = 0
@@ -187,7 +185,7 @@ def report(request, username, month):
         'days_left': (datetime.now().date() - intern.departure).days * -1,
         'event_list': event_list,
     }
-    return render(request, 'report.html', context)
+    return render(request, 'individual_report.html', context)
 
 @staff_member_required
 def structure_data(request, intern_id):

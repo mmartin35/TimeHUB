@@ -12,23 +12,6 @@
 
 {% block content %}
 <div class="row">
-    <div class="col" id="validate_service">
-        <h4>Validate service</h4>
-        <form method="post">
-            {% csrf_token %}
-            <select class="form-select" multiple id="service_id" name="service_id" required>
-                {% for service in services %}
-                <option value="{{ service.id }}">{{ service.intern.user.get_full_name }} at {{ service.t2_service }}</option>
-                {% endfor %}
-            </select>
-            <div class="mb-3">
-                <label for="comment">Comment:</label>
-                <input type="text" class="form-control" id="service_comment" name="service_comment" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Validate</button>
-        </form>
-    </div>
-
     <div class="col-md-9" id="add_intern">
         <h4>Add intern</h4>
         <form class="row" method="post">

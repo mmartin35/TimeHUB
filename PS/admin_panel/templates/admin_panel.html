@@ -25,6 +25,11 @@
         var calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             contentHeight: 'auto',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
+            },
             dateClick: function(info) {
                 document.getElementById('eventDate').value = info.dateStr;
                 document.getElementById('reason').focus();
@@ -32,7 +37,7 @@
             events: "{% url 'admin_events_json' %}",
             eventDidMount: function(info) {
                 info.el.style.backgroundColor = info.event.backgroundColor;
-            }
+            },
         });
         calendar.render();
         var carousels = document.querySelectorAll('.carousel');
@@ -52,124 +57,174 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    {% for alert in alerts %}
-    <div class="alert alert-danger" role="alert" style="width: 100%">
-    {{ alert }}
+<div class="alert alert-danger" style="background-color: transparent">
+    <div class="row">
+        {% for service in service_list %}
+        {% if service.t2_service %}
+        <div class="alert alert-success" role="alert">
+            {{ service.intern.user.get_full_name }} from {{ service.t1_service }} to {{ service.t2_service }} the {{ service.date }}
+        {% else %}
+        <div class="alert alert-danger" role="alert">
+            {{ service.intern.user.get_full_name }} at {{ service.t1_service }} the {{ service.date }}
+        {% endif %}
+            <form method="post" style="display: flex">
+                {% csrf_token %}
+                <input type="hidden" name="service_id" value="{{ service.id }}">
+                <input type="text" placeholder="Comment" class="form-control" id="service_comment" name="service_comment" required>
+                <button type="submit" class="btn btn-danger">Validate</button>
+            </form>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
-<div class="row">
-    <div class="col-4">
-        {% for intern in interns_list %}
-        <p>
-            <div class="row">
-                <div class="col">
+
+<div class="alert alert-success" style="background-color: transparent">
+    <div class="row">
+        <div class="col-4">
+            {% for intern in interns_list %}
+            <p>
+                <div class="row">
+                    <div class="col">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="user_id" value="{{ intern.id }}">
+                            <button type="submit" name="user_id" value="{{ intern.id }}" class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" style="width: 100%">
+                                {% if intern.id == requested_user %}
+                                <b>{{ intern.user.get_full_name }}</b>
+                                {% else %}
+                                {{ intern.user.get_full_name }}
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
+                    </div>
+                </div>
+            </p>
+            <div class="collapse" id="collapse{{ intern.user.username }}_infos">
+                <div class="card card-body">
+                    <div class="row">
+                        <div class="col">
+                            <strong>Full name</strong><br>
+                            <strong>Email</strong><br>
+                            <strong>Arrival</strong><br>
+                            <strong>Departure</strong><br>
+                            <strong>Total hours</strong><br>
+                            <strong>Days off</strong>
+                        </div>
+                        <div class="col">
+                            {{ intern.user.get_full_name }}<br>
+                            {{ intern.user.email }}<br>
+                            {{ intern.arrival }}<br>
+                            {{ intern.departure }}<br>
+                            {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours }}h<br>
+                            {{ intern.days_off_left }}/{{ intern.days_off_total }}
+                        </div>
+                    </div>
+                    <a href="{% url 'individual_report' intern.user.username requested_month %}" target="_blank">Print report</a>
+                </div>
+            </div>
+            {% endfor %}
+            <a class="btn btn-dark" href="{% url 'global_report' requested_month %}" target="_blank" style="width: 100%">Get report of every interns</a>
+        </div>
+        <div class="col-8">
+            <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
+                <div class="carousel-inner">
+                    {% for week, days in intern_weeks_data.items %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <table class="table table" style="color: white">
+                            <thead>
+                                <tr>
+                                    <th>Week {{ week }}</th>
+                                    <th>T1:</th>
+                                    <th>T2:</th>
+                                    <th>T3:</th>
+                                    <th>T4:</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for day in days %}
+                                <tr>
+                                    {% if day.date.weekday == 0 %}
+                                    <td>Monday {{ day.date }}</td>
+                                    {% elif day.date.weekday == 1 %}
+                                    <td>Tuesday {{ day.date }}</td>
+                                    {% elif day.date.weekday == 2 %}
+                                    <td>Wednesday {{ day.date }}</td>
+                                    {% elif day.date.weekday == 3 %}
+                                    <td>Thursday {{ day.date }}</td>
+                                    {% elif day.date.weekday == 4 %}
+                                    <td>Friday {{ day.date }}</td>
+                                    {% else %}
+                                    <td>Weekend {{ day.date }}</td>
+                                    {% endif %}
+                                    <td>{{ day.t1 }}</td>
+                                    <td>{{ day.t2 }}</td>
+                                    <td>{{ day.t3 }}</td>
+                                    <td>{{ day.t4 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity:10%; height:100%; width: 1.5%">
+                    <!-- Control content -->
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity:10%; height:100%; width: 1.5%">
+                    <!-- Control content -->
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-success" style="background-color: transparent">
+    <div class="row">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<div class="alert alert-primary" style="background-color: transparent">
+    <div class="row">
+        <div class="col">
+            {% for event in event_list %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>Requested on {{ event.request_date }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <strong>Intern</strong><br>
+                            <strong>Reason</strong><br>
+                            <strong>From</strong><br>
+                            <strong>To</strong><br>
+                            <strong>Duration</strong>
+                        </div>
+                        <div class="col">
+                            {{ event.intern.user.get_full_name }}<br>
+                            {{ event.reason }}<br>
+                            {{ event.start_date }}<br>
+                            {{ event.end_date }}<br>
+                            {{ event.duration }} day(s)
+                        </div>
+                    </div>
                     <form method="POST">
                         {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ intern.id }}">
-                        <button type="submit" name="user_id" value="{{ intern.id }}" class="btn {% if intern.is_active %}btn-success{% else %}btn-danger{% endif %}" style="width: 100%">
-                            {% if intern.id == requested_user %}
-                            <b>{{ intern.user.get_full_name }}</b>
-                            {% else %}
-                            {{ intern.user.get_full_name }}
-                            {% endif %}
-                        </button>
+                        <input type="hidden" name="event_id" value="{{ event.id }}">
+                        <textarea name="staff_comment" placeholder="Add a comment" required></textarea>
+                        <div class="action-buttons">
+                            <button type="submit" name="approve_event" value="true" class="btn btn-success">Approve</button>
+                            <button type="submit" name="reject_event" value="true" class="btn btn-danger">Reject</button>
+                        </div>
                     </form>
                 </div>
-                <div class="col">
-                    <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
-                </div>
             </div>
-        </p>
-        <div class="collapse" id="collapse{{ intern.user.username }}_infos">
-            <div class="card card-body">
-                <p><strong>Full name:</strong> {{ intern.user.get_full_name }}<br>
-                <strong>Email:</strong> {{ intern.user.email }}<br>
-                <strong>Arrival:</strong> {{ intern.arrival }}<br>
-                <strong>Departure:</strong> {{ intern.departure }}<br>
-                <strong>Total hours:</strong> {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours }}h<br>
-                <strong>Days off:</strong> {{ intern.days_off_left }}/{{ intern.days_off_total }}</p>
-                <a href="{% url 'report' intern.user.username requested_month %}" target="_blank">Print report</a>
-            </div>
-        </div>
-        {% endfor %}
-        <a class="btn btn-dark" href="{% url 'global_report' requested_month %}" target="_blank" style="width: 100%">Get report of every interns</a>
-    </div>
-    <div class="col-8">
-        <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
-            <div class="carousel-inner">
-                {% for week, days in intern_weeks_data.items %}
-                <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <table class="table table" style="color: white">
-                        <thead>
-                            <tr>
-                                <th>Week {{ week }}</th>
-                                <th>T1:</th>
-                                <th>T2:</th>
-                                <th>T3:</th>
-                                <th>T4:</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for day in days %}
-                            <tr>
-                                <td>{{ day.date }}</td>
-                                <td>{{ day.t1 }}</td>
-                                <td>{{ day.t2 }}</td>
-                                <td>{{ day.t3 }}</td>
-                                <td>{{ day.t4 }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                {% endfor %}
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity:10%; height:100%; width: 1.5%">
-                <!-- Control content -->
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity:10%; height:100%; width: 1.5%">
-                <!-- Control content -->
-            </button>
+            {% endfor %}
         </div>
     </div>
-</div>
-
-<hr>
-<div class="row">
-    <div id="calendar"></div>
-</div>
-
-<div class="row">
-    {% for intern in interns_list %}
-    <div class="col">
-        {% for event in intern.event_set.all %}
-        {% if not event.is_archived %}
-        <div class="card" style="margin: 15px">
-            <div class="card-header">
-                <h4>Requested on {{ event.request_date }}</h4>
-            </div>
-            <div class="card-body">
-                <p><strong>Intern: </strong>{{ event.intern.user.get_full_name }}<br>
-                <strong>Reason: </strong>{{ event.reason }}<br>
-                <strong>From: </strong>{{ event.start_date }}<br>
-                <strong>To: </strong>{{ event.end_date }}<br>
-                <strong>Duration: </strong>{{ event.duration }} day(s)</p>
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="event_id" value="{{ event.id }}">
-                    <textarea name="staff_comment" placeholder="Add a comment" required></textarea>
-                    <div class="action-buttons">
-                        <button type="submit" name="approve_event" value="true" class="btn btn-success">Approve</button>
-                        <button type="submit" name="reject_event" value="true" class="btn btn-danger">Reject</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        {% endif %}
-        {% endfor %}
-    </div>
-    {% endfor %}
 </div>
 {% endblock %}

@@ -1,19 +1,19 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
-from .forms import EventForm
+from .forms import EventForm, CancelEventForm
 from .models import Event, PublicHolidays, Intern
 
 @login_required
 def planning(request):
     if request.method == 'POST':
-        form = EventForm(request.POST)
-        if form.is_valid():
-            intern = Intern.objects.get(pk=form.cleaned_data['intern'])
-            start_date = form.cleaned_data['start_date']
-            end_date = form.cleaned_data['end_date']
-            reason = form.cleaned_data['reason']
-            half_day = form.cleaned_data['half_day']
+        eventForm = EventForm(request.POST)
+        if eventForm.is_valid():
+            intern = Intern.objects.get(pk=eventForm.cleaned_data['intern'])
+            start_date = eventForm.cleaned_data['start_date']
+            end_date = eventForm.cleaned_data['end_date']
+            reason = eventForm.cleaned_data['reason']
+            half_day = eventForm.cleaned_data['half_day']
             duration = 0
             if start_date == end_date and half_day != 0:
                 duration = 0.5
@@ -55,25 +55,35 @@ def planning(request):
                 approbation=approbation,
             )
             return redirect('planning')
+        cancelForm = CancelEventForm(request.POST)
+        if cancelForm.is_valid():
+            print("cancelForm is valid")
+            event = Event.objects.get(pk=cancelForm.cleaned_data['cancel_event'])
+            intern = event.intern
+            intern.days_off_left += event.duration
+            event.approbation = 3
+            intern.save()
+            event.save()
+            return redirect('planning')
     else:
-        form = EventForm()
+        eventForm = EventForm()
 
     reasons = ['Congé', 'Congé de maladie', 'Autre']
     if request.user.is_staff:
         interns = Intern.objects.all()
-        responses = Event.objects.filter(approbation__in=[1, 2])
+        responses = Event.objects.filter(approbation__in=[1, 2, 3])
         ongoings = Event.objects.filter(approbation=0)
         days_off_left = 0
         days_off_onhold = 0
     else:
         interns = request.user.intern
-        responses = Event.objects.filter(intern=interns, approbation__in=[1, 2])
+        responses = Event.objects.filter(intern=interns, approbation__in=[1, 2, 3])
         ongoings = Event.objects.filter(intern=interns, approbation=0)
         days_off_left = interns.days_off_left
         days_off_onhold = interns.days_off_onhold
 
     context = {
-        'form': form,
+        'form': eventForm,
         'name': request.user.first_name,
         'interns': interns,
         'reasons': reasons,
