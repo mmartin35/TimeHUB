@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Create intern{% endblock %}
+{% load static %}
+
+{% block styles %}
+<style>
+    form #create_user {
+        margin-top: 200px;
+    }
+    form button {
+        margin-top: 20px;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Update a specific timer</h3>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        <label for="intern" class="form-label">Intern:</label>
+        <div class="input-group mb-3">
+            <select name="intern" id="intern" required>
+                <option value="" disabled selected>Choose intern</option>
+                {% for intern in intern_list %}
+                <option>{{ intern.user.get_full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <label for="date" class="form-label">Date:</label>
+        <div class="input-group mb-3">
+            <input type="date" id="date" name="date" required>
+        </div>
+        <label for="worked_hours" class="form-label">Worked hours:</label>
+        <div class="input-group mb-3">
+            <input type="number" id="worked_hours" name="worked_hours" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+{% endblock %}

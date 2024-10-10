@@ -14,6 +14,9 @@
         <li class="nav-item" id="pages">
             <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Edit events</a>
         </li>
+        <li class="nav-item" id="pages">
+            <a class="nav-link {% if request.resolver_match.url_name == 'edit_data' %}active{% endif %}" href="{% url 'edit_data' %}">Edit data</a>
+        </li>
       </ul>
     </li>
     <form class="nav-item" method="post" action="{% url 'logout' %}">

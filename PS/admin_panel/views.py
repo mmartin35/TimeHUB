@@ -1,9 +1,10 @@
+from turtle import st
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
 from pointer.models import Timer, ServiceTimer
 from planning.models import Event
-from .forms import CarouselForm, EventApprovalForm, InternUserCreationForm, ServiceTimerForm
+from .forms import CarouselForm, EventApprovalForm, InternUserCreationForm, ServiceTimerForm, UpdateInternData
 from django.http import JsonResponse
 from datetime import datetime
 
@@ -109,6 +110,19 @@ def create_intern(request):
         'events': Event.objects.select_related('intern').filter(approbation__in=[1, 2]),
     }
     return render(request, 'create_intern.html', context)
+
+@staff_member_required
+def edit_data(request):
+    if request.method == 'POST':
+        update_form = UpdateInternData(request.POST)
+        if update_form.is_valid():
+            print("valid form")
+    context = {
+        'name': request.user.first_name,
+        'intern_list': Intern.objects.all(),
+        'timer_list': Timer.objects.all()
+    }
+    return render(request, 'edit_data.html', context)
 
 @staff_member_required
 def global_report(request, month):

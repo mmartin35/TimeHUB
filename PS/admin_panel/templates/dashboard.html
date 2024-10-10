@@ -4,7 +4,7 @@
 {% load static %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'admin_panel/css/admin_panel.css' %}">
+<link rel="stylesheet" href="{% static 'admin_panel/css/dashboard.css' %}">
 <style>
 .fc-daygrid-day-number, .fc-toolbar-title, .fc-col-header-cell-cushion {
     color: white !important;
@@ -60,10 +60,10 @@
 <div class="row">
     {% for service in service_list %}
     {% if service.t2_service %}
-    <div class="alert alert-success" role="alert">
+    <div class="alert alert-success">
         {{ service.intern.user.get_full_name }} from {{ service.t1_service }} to {{ service.t2_service }} the {{ service.date }}
     {% else %}
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger">
         {{ service.intern.user.get_full_name }} at {{ service.t1_service }} the {{ service.date }}
     {% endif %}
         <form method="post" style="display: flex">
@@ -77,7 +77,7 @@
 </div>
 
 <div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 30px">
-    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Intern status</h3>
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Intern datas</h3>
     <hr>
     <div class="row">
         <div class="col-4">
@@ -137,10 +137,11 @@
                             <thead>
                                 <tr>
                                     <th>Week {{ week }}</th>
-                                    <th>T1:</th>
-                                    <th>T2:</th>
-                                    <th>T3:</th>
-                                    <th>T4:</th>
+                                    <th>T1</th>
+                                    <th>T2</th>
+                                    <th>T3</th>
+                                    <th>T4</th>
+                                    <th>Worktime</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -163,6 +164,7 @@
                                     <td>{{ day.t2 }}</td>
                                     <td>{{ day.t3 }}</td>
                                     <td>{{ day.t4 }}</td>
+                                    <td>{{ day.working_hours|floatformat:2 }}h
                                 </tr>
                                 {% endfor %}
                             </tbody>

@@ -23,3 +23,8 @@ class EventApprovalForm(forms.Form):
 class ServiceTimerForm(forms.Form):
     service_id = forms.IntegerField(widget=forms.HiddenInput)
     service_comment = forms.CharField(required=False, widget=forms.Textarea)
+
+class UpdateInternData(forms.Form):
+    intern_id = forms.IntegerField(required=True)
+    data_mod = forms.IntegerField(required=True)
+    mod = forms.IntegerField(required=True)
