@@ -13,7 +13,7 @@ month_names = [
 ]
 
 @staff_member_required
-def admin_panel(request):
+def dashboard(request):
     update_data(request)
     requested_user = None
     if request.method == 'POST':
@@ -46,14 +46,14 @@ def admin_panel(request):
             service.comment = service_form.cleaned_data['service_comment']
             service.save()
             print('Service updated successfully!')
-            return redirect('admin_panel')
+            return redirect('dashboard')
     # Get data for each intern
     intern_weeks_data = structure_data(request, requested_user).weeks
 
     # Invert days order for each week
-    if intern_weeks_data is not None:
-        for week, days in intern_weeks_data.items():
-            intern_weeks_data[week] = days[::-1]
+#    if intern_weeks_data is not None:
+#        for week, days in intern_weeks_data.items():
+#            intern_weeks_data[week] = days[::-1]
 
         
 #    alerts = []
@@ -72,13 +72,13 @@ def admin_panel(request):
         'service_list': ServiceTimer.objects.filter(comment="NA"),
         'requested_user': requested_user,
         'intern_weeks_data': intern_weeks_data,
-        'event_list': Event.objects.filter(approbation=2),
+        'event_list': Event.objects.filter(approbation=0),
         'requested_month': datetime.now().month,
     }
-    return render(request, 'admin_panel.html', context)
+    return render(request, 'dashboard.html', context)
 
 @staff_member_required
-def setup(request):
+def create_intern(request):
     update_data(request)
     if request.method == 'POST':
         user_form = InternUserCreationForm(request.POST)
@@ -98,7 +98,7 @@ def setup(request):
                 days_off_left=round(day_gap * (26 / 365), 2),
                 mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
             )
-            return redirect('setup')
+            return redirect('create_intern')
 
     context = {
         'name': request.user.first_name,
@@ -108,7 +108,7 @@ def setup(request):
         'requested_month' : datetime.now().month,
         'events': Event.objects.select_related('intern').filter(approbation__in=[1, 2]),
     }
-    return render(request, 'setup.html', context)
+    return render(request, 'create_intern.html', context)
 
 @staff_member_required
 def global_report(request, month):
@@ -240,7 +240,7 @@ def admin_events_json(request):
             background_color = 'blue'
         elif event.approbation == 1:
             background_color = 'green'
-        elif event.approbation == 2:
+        elif event.approbation == 2 or event.approbation == 3:
             background_color = 'red'
         event_list.append({
             'title': event.intern.user.first_name + ' ' + event.intern.user.last_name,

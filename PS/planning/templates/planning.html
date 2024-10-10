@@ -71,7 +71,16 @@
 
 {% block content %}
 <div class="row">
-    {% if not request.user.is_staff %}
+    {% if request.user.is_staff %}
+    <div class="col-sm-8">
+        <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+            <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Create or edit events</h3>
+            <hr>
+            On this page, you can create or edit events for interns. You can also cancel events that have been previously approved.<br>
+            If you want an overview of the events, you can check the calendar on the dashboard page or <a href="{% url 'dashboard' %}#calendar">click here</a>.
+        </div>
+    </div>
+    {% else %}
     <div class="col-sm-8">
         <div id='calendar'></div>
     </div>
@@ -131,67 +140,68 @@
     </div>
 </div>
 <div class="row">
-    <table class="table">
-        <thead>
-            <tr>
-                {% if request.user.is_staff %}
-                <th colspan="6">Nom</th>
-                {% endif %}
-                <th>Date de la demande</th>
-                <th>Date de début</th>
-                <th>Date de fin</th>
-                <th>Motif</th>
-                <th>Durée</th>
-                <th>Comentaire RH</th>
-                <th>Réponse</th>
-                {% if request.user.is_staff %}
-                <th>Annuler</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for ongoing in ongoings %}
-            <tr>
-                {% if request.user.is_staff %}
-                <td colspan="6">{{ ongoing.intern.user.get_full_name }}</td>
-                {% endif %}
-                <td>{{ ongoing.request_date }}</td>
-                <td>{{ ongoing.start_date }}</td>
-                <td>{{ ongoing.end_date }}</td>
-                <td>{{ ongoing.reason }}</td>
-                <td>{{ ongoing.duration }}</td>
-                <td>{{ ongoing.staff_comment }}</td>
-                <td>En attente</td>
-            </tr>
-            {% endfor %}
-            {% for response in responses %}
-            <tr>
-                {% if request.user.is_staff %}
-                <td colspan="6">{{ response.intern.user.get_full_name }}</td>
-                {% endif %}
-                <td>{{ response.request_date }}</td>
-                <td>{{ response.start_date }}</td>
-                <td>{{ response.end_date }}</td>
-                <td>{{ response.reason }}</td>
-                <td>{{ response.duration }}</td>
-                <td>{{ response.staff_comment }}</td>
-                {% if response.approbation == 1 %}
-                <td>Approuvé</td>
-                {% if request.user.is_staff %}
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="cancel_event" id="cancel_event" value="{{ response.id }}">
-                    <td><button type="submit" class="btn btn-danger">Annuler</button></td>
-                </form>
-                {% endif %}
-                {% elif response.approbation == 2 %}
-                <td>Refusé</td>
-                {% elif response.approbation == 3 %}
-                <td>Annulé</td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+        <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Event list</h3>
+        <hr>
+        <table class="table">
+            <thead>
+                <tr>
+                    {% if request.user.is_staff %}
+                    <th colspan="6">Nom</th>
+                    {% endif %}
+                    <th>Date de la demande</th>
+                    <th>Date de début</th>
+                    <th>Date de fin</th>
+                    <th>Motif</th>
+                    <th>Durée</th>
+                    <th>Comentaire RH</th>
+                    <th>Réponse</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ongoing in ongoings %}
+                <tr>
+                    {% if request.user.is_staff %}
+                    <td colspan="6">{{ ongoing.intern.user.get_full_name }}</td>
+                    {% endif %}
+                    <td>{{ ongoing.request_date }}</td>
+                    <td>{{ ongoing.start_date }}</td>
+                    <td>{{ ongoing.end_date }}</td>
+                    <td>{{ ongoing.reason }}</td>
+                    <td>{{ ongoing.duration }}</td>
+                    <td>{{ ongoing.staff_comment }}</td>
+                    <td>En attente</td>
+                </tr>
+                {% endfor %}
+                {% for response in responses %}
+                <tr>
+                    {% if request.user.is_staff %}
+                    <td colspan="6">{{ response.intern.user.get_full_name }}</td>
+                    {% endif %}
+                    <td>{{ response.request_date }}</td>
+                    <td>{{ response.start_date }}</td>
+                    <td>{{ response.end_date }}</td>
+                    <td>{{ response.reason }}</td>
+                    <td>{{ response.duration }}</td>
+                    <td>{{ response.staff_comment }}</td>
+                    {% if response.approbation == 1 %}
+                    <td>Approuvé</td>
+                    {% if request.user.is_staff %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="cancel_event" id="cancel_event" value="{{ response.id }}">
+                        <td><button type="submit" class="btn btn-link">Annuler</button></td>
+                    </form>
+                    {% endif %}
+                    {% elif response.approbation == 2 %}
+                    <td>Refusé</td>
+                    {% elif response.approbation == 3 %}
+                    <td>Annulé</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

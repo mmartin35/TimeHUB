@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Panel: Dashboard{% endblock %}
+{% block title %}Dashboard{% endblock %}
 {% load static %}
 
 {% block styles %}
@@ -57,28 +57,28 @@
 {% endblock %}
 
 {% block content %}
-<div class="alert alert-danger" style="background-color: transparent">
-    <div class="row">
-        {% for service in service_list %}
-        {% if service.t2_service %}
-        <div class="alert alert-success" role="alert">
-            {{ service.intern.user.get_full_name }} from {{ service.t1_service }} to {{ service.t2_service }} the {{ service.date }}
-        {% else %}
-        <div class="alert alert-danger" role="alert">
-            {{ service.intern.user.get_full_name }} at {{ service.t1_service }} the {{ service.date }}
-        {% endif %}
-            <form method="post" style="display: flex">
-                {% csrf_token %}
-                <input type="hidden" name="service_id" value="{{ service.id }}">
-                <input type="text" placeholder="Comment" class="form-control" id="service_comment" name="service_comment" required>
-                <button type="submit" class="btn btn-danger">Validate</button>
-            </form>
-        </div>
-        {% endfor %}
+<div class="row">
+    {% for service in service_list %}
+    {% if service.t2_service %}
+    <div class="alert alert-success" role="alert">
+        {{ service.intern.user.get_full_name }} from {{ service.t1_service }} to {{ service.t2_service }} the {{ service.date }}
+    {% else %}
+    <div class="alert alert-danger" role="alert">
+        {{ service.intern.user.get_full_name }} at {{ service.t1_service }} the {{ service.date }}
+    {% endif %}
+        <form method="post" style="display: flex">
+            {% csrf_token %}
+            <input type="hidden" name="service_id" value="{{ service.id }}">
+            <input type="text" placeholder="Comment" class="form-control" id="service_comment" name="service_comment" required>
+            <button type="submit" class="btn btn-danger">Validate</button>
+        </form>
     </div>
+    {% endfor %}
 </div>
 
-<div class="alert alert-success" style="background-color: transparent">
+<div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Intern status</h3>
+    <hr>
     <div class="row">
         <div class="col-4">
             {% for intern in interns_list %}
@@ -181,13 +181,17 @@
     </div>
 </div>
 
-<div class="alert alert-success" style="background-color: transparent">
+<div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Event overview</h3>
+    <hr>
     <div class="row">
         <div id="calendar"></div>
     </div>
 </div>
 
-<div class="alert alert-primary" style="background-color: transparent">
+<div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Tickets for days-off</h3>
+    <hr>
     <div class="row">
         <div class="col">
             {% for event in event_list %}

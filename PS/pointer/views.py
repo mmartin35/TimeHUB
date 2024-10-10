@@ -28,7 +28,7 @@ def logout_view(request):
 @login_required
 def pointer(request):
     if request.user.is_staff:
-        return redirect('admin_panel')
+        return redirect('dashboard')
     
     intern = request.user.intern
     timer, created = Timer.objects.get_or_create(intern=intern, date=date.today())

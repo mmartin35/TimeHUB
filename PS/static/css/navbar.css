@@ -1,4 +1,4 @@
-.nav-tabs {
+.nav-pills {
     background-color: #000814;
     align-items: center;
     border: none;
@@ -7,29 +7,30 @@
     right: 0px;
 }
 
-.nav-tabs .nav-link {
+.nav-pills .nav-link {
     color: #FFD60A;
     border-radius: 0;
 }
 
-.nav-tabs .nav-link.active {
+.nav-pills .nav-link.active {
     background-color: #000814;
     color: #FFD60A;
+    border: solid 2px white;
 }
 
-.nav-tabs .nav-item {
+.nav-pills .nav-item {
     margin: 0;
 }
 
-.nav-tabs #user-tool {
-    margin-left: auto;
-}
-
-.nav-tabs #user-tool button {
+.nav-pills .nav-item button {
     color: #FFD60A;
-    margin: 0;
 }
-.nav-tabs a img {
+
+.nav-pills .dropdown-menu {
+    background-color: #000814;
+}
+
+.nav-pills a img {
     width: 40px;
     height: 40px;
     margin: 2px 2px 2px 5px;

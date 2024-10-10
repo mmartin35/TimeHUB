@@ -1,21 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Panel: Setup{% endblock %}
+{% block title %}Create intern{% endblock %}
 {% load static %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'admin_panel/css/setup.css' %}">
+<style>
+    form #create_user {
+        margin-top: 200px;
+    }
+    form button {
+        margin-top: 20px;
+        width: 100%;
+    }
+</style>
 {% endblock %}
 
 {% block scripts %}
 {% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-9" id="add_intern">
-        <h4>Add intern</h4>
-        <form class="row" method="post">
-            {% csrf_token %}
+<div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Create intern</h3>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
             <div class="col">
                 <label for="username">Username:</label>
                 <input type="text" class="form-control" id="username" name="username" required>
@@ -40,8 +49,8 @@
                 <label for="regime">Regime (in %):</label>
                 <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
             </div>
-            <button type="submit" class="btn btn-primary">Add Intern</button>
-        </form>
-    </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Intern</button>
+    </form>
 </div>
 {% endblock %}

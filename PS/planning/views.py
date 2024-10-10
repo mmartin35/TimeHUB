@@ -103,7 +103,7 @@ def events_json(request):
             background_color = 'blue'
         elif event.approbation == 1:
             background_color = 'green'
-        elif event.approbation == 2:
+        elif event.approbation == 2 or event.approbation == 3:
             background_color = 'red'
         event_list.append({
             'title': event.reason,
