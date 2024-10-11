@@ -1,9 +1,8 @@
-from turtle import st
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
 from pointer.models import ChangingLog, Timer, ServiceTimer
-from planning.models import Event
+from planning.models import Event, PublicHolidays
 from .forms import CarouselForm, EventApprovalForm, InternUserCreationForm, ServiceTimerForm, UpdateInternData
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime
@@ -122,7 +121,7 @@ def edit_data(request):
             if not Timer.objects.filter(intern=intern, date=date).exists():
                 return HttpResponse('Cannot change data: wrong date or intern', status=401)
             member = request.user.username
-            original_hours = Timer.objects.filter(intern=intern, date=date).values('working_hours')[0]['working_hours']
+            original_hours = Timer.objects.get(intern=intern, date=date).working_hours
             ChangingLog.objects.get_or_create(
                 intern=intern,
                 member=member,
@@ -138,6 +137,18 @@ def edit_data(request):
         'timer_list': Timer.objects.all()
     }
     return render(request, 'edit_data.html', context)
+
+@staff_member_required
+def add_publicholiday(request):
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        name = request.POST.get('name')
+        if not date or not name:
+            return HttpResponse('Please fill in all the fields', status=400)
+        if PublicHolidays.objects.filter(date=date).exists():
+            return HttpResponse('This public holiday already exists', status=400)
+        PublicHolidays.objects.create(date=date, name=name)
+    return render(request, 'add_publicholiday.html', {'name': request.user.first_name, 'public_holidays': PublicHolidays.objects.all()})
 
 @staff_member_required
 def global_report(request, month):

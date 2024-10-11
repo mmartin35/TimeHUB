@@ -17,6 +17,8 @@
         <li class="nav-item" id="pages">
             <a class="nav-link {% if request.resolver_match.url_name == 'edit_data' %}active{% endif %}" href="{% url 'edit_data' %}">Edit data</a>
         </li>
+        <li class="nav-item" id="pages">
+            <a class="nav-link {% if request.resolver_match.url_name == 'add_publicholiday' %}active{% endif %}" href="{% url 'add_publicholiday' %}">Add holiday</a>
       </ul>
     </li>
     <form class="nav-item" method="post" action="{% url 'logout' %}">

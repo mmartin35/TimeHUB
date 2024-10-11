@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Add holiday{% endblock %}
+{% load static %}
+
+{% block styles %}
+<style>
+    form #create_user {
+        margin-top: 200px;
+    }
+    form button {
+        margin-top: 20px;
+        width: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Add a public holiday</h3>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        <label for="intern" class="form-label">Name:</label>
+        <textarea class="form-control" id="name" name="name" required></textarea>
+        <label for="date" class="form-label">Date:</label>
+        <div class="input-group mb-3">
+            <input type="date" id="date" name="date" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <div class="row">
+        <table class="table table" style="color: white">
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+            </tr>
+            {% for holiday in public_holidays %}
+            <tr>
+                <td>{{ holiday.name }}</td>
+                <td>{{ holiday.date }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
