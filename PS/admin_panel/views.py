@@ -2,10 +2,10 @@ from turtle import st
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from intern.models import Intern
-from pointer.models import Timer, ServiceTimer
+from pointer.models import ChangingLog, Timer, ServiceTimer
 from planning.models import Event
 from .forms import CarouselForm, EventApprovalForm, InternUserCreationForm, ServiceTimerForm, UpdateInternData
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from datetime import datetime
 
 month_names = [
@@ -116,7 +116,22 @@ def edit_data(request):
     if request.method == 'POST':
         update_form = UpdateInternData(request.POST)
         if update_form.is_valid():
-            print("valid form")
+            intern = Intern.objects.get(id=update_form.cleaned_data['intern'])
+            working_hours = update_form.cleaned_data['working_hours']
+            date = update_form.cleaned_data['date']
+            if not Timer.objects.filter(intern=intern, date=date).exists():
+                return HttpResponse('Cannot change data: wrong date or intern', status=401)
+            member = request.user.username
+            original_hours = Timer.objects.filter(intern=intern, date=date).values('working_hours')[0]['working_hours']
+            ChangingLog.objects.get_or_create(
+                intern=intern,
+                member=member,
+                date=date,
+                original_working_hours=original_hours,
+                altered_working_hours=working_hours
+            )
+            Timer.objects.update(intern=intern, date=date, working_hours=working_hours)
+           
     context = {
         'name': request.user.first_name,
         'intern_list': Intern.objects.all(),

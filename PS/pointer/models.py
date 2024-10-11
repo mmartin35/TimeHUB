@@ -15,7 +15,7 @@ class Timer(models.Model):
 
 class ChangingLog(models.Model):
     intern = models.ForeignKey(Intern, on_delete=models.CASCADE)
-    member = models.ForeignKey(Intern, related_name='member', on_delete=models.CASCADE)
+    member = models.CharField(max_length=64)
 
     date = models.DateField(default=timezone.now)
     original_working_hours = models.FloatField(default=0)
