@@ -12,17 +12,20 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'create_intern' %}active{% endif %}" href="{% url 'create_intern' %}">Create intern</a>
         </li>
         <li class="nav-item" id="pages">
+            <a class="nav-link {% if request.resolver_match.url_name == 'add_publicholiday' %}active{% endif %}" href="{% url 'add_publicholiday' %}">Create holiday</a>
+        </li>
+        <li class="nav-item" id="pages">
             <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Edit events</a>
         </li>
         <li class="nav-item" id="pages">
             <a class="nav-link {% if request.resolver_match.url_name == 'edit_data' %}active{% endif %}" href="{% url 'edit_data' %}">Edit data</a>
         </li>
-        <li class="nav-item" id="pages">
-            <a class="nav-link {% if request.resolver_match.url_name == 'add_publicholiday' %}active{% endif %}" href="{% url 'add_publicholiday' %}">Add holiday</a>
       </ul>
     </li>
-    <form class="nav-item" method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button class="btn btn-link" type="submit">Logout from {{ name }}</button>
-    </form>
-  </ul>
+    <li class="nav-item" id="tools">
+        <form class="nav-item" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <a href="javascript:;" onclick="parentNode.submit()">Logout from {{ request.user.first_name }}</a>
+        </form>
+    </li>
+</ul>

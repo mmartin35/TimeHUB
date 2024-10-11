@@ -69,7 +69,7 @@ def dashboard(request):
     context = {
         'name': request.user.first_name,
         'interns_list': Intern.objects.filter(is_ongoing=True),
-        'service_list': ServiceTimer.objects.filter(comment="NA"),
+        'service_list': ServiceTimer.objects.all(),
         'requested_user': requested_user,
         'intern_weeks_data': intern_weeks_data,
         'event_list': Event.objects.filter(approbation=0),
@@ -111,6 +111,18 @@ def create_intern(request):
     return render(request, 'create_intern.html', context)
 
 @staff_member_required
+def add_publicholiday(request):
+    if request.method == 'POST':
+        date = request.POST.get('date')
+        name = request.POST.get('name')
+        if not date or not name:
+            return HttpResponse('Please fill in all the fields', status=400)
+        if PublicHolidays.objects.filter(date=date).exists():
+            return HttpResponse('This public holiday already exists', status=400)
+        PublicHolidays.objects.create(date=date, name=name)
+    return render(request, 'add_publicholiday.html', {'name': request.user.first_name, 'public_holidays': PublicHolidays.objects.all()})
+
+@staff_member_required
 def edit_data(request):
     if request.method == 'POST':
         update_form = UpdateInternData(request.POST)
@@ -139,18 +151,6 @@ def edit_data(request):
     return render(request, 'edit_data.html', context)
 
 @staff_member_required
-def add_publicholiday(request):
-    if request.method == 'POST':
-        date = request.POST.get('date')
-        name = request.POST.get('name')
-        if not date or not name:
-            return HttpResponse('Please fill in all the fields', status=400)
-        if PublicHolidays.objects.filter(date=date).exists():
-            return HttpResponse('This public holiday already exists', status=400)
-        PublicHolidays.objects.create(date=date, name=name)
-    return render(request, 'add_publicholiday.html', {'name': request.user.first_name, 'public_holidays': PublicHolidays.objects.all()})
-
-@staff_member_required
 def global_report(request, month):
     interns_data = []
     for intern in Intern.objects.filter(is_ongoing=True):
@@ -161,22 +161,12 @@ def global_report(request, month):
             'monthly_hours': monthly_hours
         })
     
-    event_list = []
-    for event in Event.objects.filter(approbation=1):
-        event_list.append({
-            'intern': event.intern.user.first_name + ' ' + event.intern.user.last_name,
-            'reason': event.reason,
-            'start_date': event.start_date,
-            'end_date': event.end_date,
-            'duration': event.duration,
-        })
-
-    month = month_names[month - 1]
-
     context = {
+        'name': request.user.first_name,
+        'type': request.get_full_path(),
         'interns_data': interns_data,
-        'event_list': event_list,
-        'month': month,
+        'event_list': Event.objects.filter(approbation=1, start_date__month=month),
+        'month': month_names[month - 1],
         'date': datetime.now().date(),
     }
     return render(request, 'global_report.html', context)

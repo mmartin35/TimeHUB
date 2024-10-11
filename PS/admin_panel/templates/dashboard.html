@@ -59,6 +59,7 @@
 {% block content %}
 <div class="row">
     {% for service in service_list %}
+    {% if service.comment == "NA" %}
     {% if service.t2_service %}
     <div class="alert alert-success">
         {{ service.intern.user.get_full_name }} from {{ service.t1_service }} to {{ service.t2_service }} the {{ service.date }}
@@ -73,11 +74,12 @@
             <button type="submit" class="btn btn-danger">Validate</button>
         </form>
     </div>
+    {% endif %}
     {% endfor %}
 </div>
 
 <div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 30px">
-    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Intern datas</h3>
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Interns data</h3>
     <hr>
     <div class="row">
         <div class="col-4">
@@ -126,7 +128,7 @@
                 </div>
             </div>
             {% endfor %}
-            <a class="btn btn-dark" href="{% url 'global_report' requested_month %}" target="_blank" style="width: 100%">Get report of every interns</a>
+            <a class="btn btn-dark" href="{% url 'global_report' requested_month %}" target="_blank" style="width: 100%">Print monthly report</a>
         </div>
         <div class="col-8">
             <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
@@ -231,6 +233,28 @@
             </div>
             {% endfor %}
         </div>
+    </div>
+</div>
+<div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Service list</h3>
+    <hr>
+    <div class="row">
+        <table class="table table" style="color: white">
+            <tr>
+                <th>Intern</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Comment</th>
+            </tr>
+            {% for service in service_list %}
+            <tr>
+                <td>{{ service.intern.user.get_full_name }}</td>
+                <td>{{ service.date }}</td>
+                <td>{{ service.t1_service }} to {{ service.t2_service }}</td>
+                <td>{{ service.comment }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
 {% endblock %}

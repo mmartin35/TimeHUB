@@ -70,7 +70,7 @@
                 <tbody>
                     {% for event in event_list %}
                     <tr>
-                        <td>{{ event.intern }}</td>
+                        <td>{{ event.intern.user.get_full_name }}</td>
                         <td>{{ event.reason }}</td>
                         <td>{{ event.start_date }}</td>
                         {% if event.end_date %}

@@ -8,8 +8,10 @@
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Planning</a>
     </li>
-    <form class="nav-item" method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button class="btn btn-link" type="submit">Logout from {{ name }}</button>
-    </form>
+    <li class="nav-item" id="tools">
+        <form class="nav-item" method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <a href="javascript:;" onclick="parentNode.submit()">Logout from {{ request.user.first_name }}</a>
+        </form>
+    </li>
   </ul>

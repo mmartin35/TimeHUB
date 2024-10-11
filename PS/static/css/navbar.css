@@ -35,3 +35,12 @@
     height: 40px;
     margin: 2px 2px 2px 5px;
 }
+
+#tools {
+    margin-left: auto;
+    padding-right: 10px;
+}
+
+#tools form a {
+    color: #FFD60A;
+}
