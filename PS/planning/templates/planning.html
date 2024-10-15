@@ -88,20 +88,20 @@
     <div class="col-sm-4">
         <div id="eventFormSection">
             <h3>Demande de congé</h3>
-            <form id="eventForm" method="post">
+            <form method="post">
             {% csrf_token %}
                 <input type="hidden" id="eventDate" name="start_date">
 
                 {% if request.user.is_staff %}
                 <label for="intern" class="form-label">Interne:</label><br>
-                <select class="form-select" id="intern" name="intern" required>
+                <select class="form-select" id="intern_id" name="intern_id" required>
                     <option value="" disabled selected>Selectionner un interne:</option>
-                    {% for intern in interns %}
+                    {% for intern in intern_list %}
                     <option value="{{ intern.id }}">{{ intern.user.get_full_name }}</option>
                     {% endfor %}
                 </select><br>
                 {% else %}
-                <input type="hidden" value="{{ interns.id }}" id="intern" name="intern">
+                <input type="hidden" value="{{ request.user.id }}" id="intern_id" name="intern_id">
                 {% endif %}
 
                 <label for="reason" class="form-label">Motif:</label><br>
@@ -154,49 +154,44 @@
                     <th>Date de fin</th>
                     <th>Motif</th>
                     <th>Durée</th>
-                    <th>Comentaire RH</th>
+                    <th>Commentaire RH</th>
                     <th>Réponse</th>
+                    {% if request.user.is_staff %}
+                    <th>Annuler</th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
-                {% for ongoing in ongoings %}
+                {% for event in event_list %}
                 <tr>
                     {% if request.user.is_staff %}
-                    <td colspan="6">{{ ongoing.intern.user.get_full_name }}</td>
+                    <td colspan="6">{{ event.intern.user.get_full_name }}</td>
                     {% endif %}
-                    <td>{{ ongoing.request_date }}</td>
-                    <td>{{ ongoing.start_date }}</td>
-                    <td>{{ ongoing.end_date }}</td>
-                    <td>{{ ongoing.reason }}</td>
-                    <td>{{ ongoing.duration }}</td>
-                    <td>{{ ongoing.staff_comment }}</td>
+                    <td>{{ event.request_date }}</td>
+                    <td>{{ event.start_date }}</td>
+                    <td>{{ event.end_date }}</td>
+                    <td>{{ event.reason }}</td>
+                    <td>{{ event.duration }}</td>
+                    <td>{{ event.comment }}</td>
+                    {% if event.approbation == 0 %}
                     <td>En attente</td>
-                </tr>
-                {% endfor %}
-                {% for response in responses %}
-                <tr>
-                    {% if request.user.is_staff %}
-                    <td colspan="6">{{ response.intern.user.get_full_name }}</td>
-                    {% endif %}
-                    <td>{{ response.request_date }}</td>
-                    <td>{{ response.start_date }}</td>
-                    <td>{{ response.end_date }}</td>
-                    <td>{{ response.reason }}</td>
-                    <td>{{ response.duration }}</td>
-                    <td>{{ response.staff_comment }}</td>
-                    {% if response.approbation == 1 %}
+                    {% elif event.approbation == 1 %}
                     <td>Approuvé</td>
-                    {% if request.user.is_staff %}
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="cancel_event" id="cancel_event" value="{{ response.id }}">
-                        <td><button type="submit" class="btn btn-link">Annuler</button></td>
-                    </form>
-                    {% endif %}
-                    {% elif response.approbation == 2 %}
+                    {% elif event.approbation == 2 %}
                     <td>Refusé</td>
-                    {% elif response.approbation == 3 %}
+                    {% elif event.approbation == 3 %}
                     <td>Annulé</td>
+                    {% endif %}
+                    {% if request.user.is_staff %}
+                    {% if event.approbation != 3 %}
+                    <td style="text-align: right">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="event_id" id="event_id" value="{{ event.id }}">
+                            <a href="javascript:;" onclick="parentNode.submit()" style="padding: 0; margin:0">X</a>
+                        </form>
+                    </td>
+                    {% endif %}
                     {% endif %}
                 </tr>
                 {% endfor %}

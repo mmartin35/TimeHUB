@@ -60,12 +60,12 @@
 <div class="row">
     {% for service in service_list %}
     {% if service.comment == "NA" %}
-    {% if service.t2_service %}
+    {% if service.t2 %}
     <div class="alert alert-success">
-        {{ service.intern.user.get_full_name }} from {{ service.t1_service }} to {{ service.t2_service }} the {{ service.date }}
+        {{ service.intern.user.get_full_name }} from {{ service.t1 }} to {{ service.t2 }} the {{ service.date }}
     {% else %}
     <div class="alert alert-danger">
-        {{ service.intern.user.get_full_name }} at {{ service.t1_service }} the {{ service.date }}
+        {{ service.intern.user.get_full_name }} at {{ service.t1 }} the {{ service.date }}
     {% endif %}
         <form method="post" style="display: flex">
             {% csrf_token %}
@@ -83,7 +83,7 @@
     <hr>
     <div class="row">
         <div class="col-4">
-            {% for intern in interns_list %}
+            {% for intern in intern_list %}
             <p>
                 <div class="row">
                     <div class="col">
@@ -121,7 +121,7 @@
                             {{ intern.arrival }}<br>
                             {{ intern.departure }}<br>
                             {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours }}h<br>
-                            {{ intern.days_off_left }}/{{ intern.days_off_total }}
+                            {{ intern.daysoff_left }}/{{ intern.daysoff_total }}
                         </div>
                     </div>
                     <a href="{% url 'individual_report' intern.user.username requested_month %}" target="_blank">Print report</a>
@@ -166,7 +166,7 @@
                                     <td>{{ day.t2 }}</td>
                                     <td>{{ day.t3 }}</td>
                                     <td>{{ day.t4 }}</td>
-                                    <td>{{ day.working_hours|floatformat:2 }}h
+                                    <td>{{ day.worktime|floatformat:2 }}h
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -250,7 +250,7 @@
             <tr>
                 <td>{{ service.intern.user.get_full_name }}</td>
                 <td>{{ service.date }}</td>
-                <td>{{ service.t1_service }} to {{ service.t2_service }}</td>
+                <td>{{ service.t1 }} to {{ service.t2 }}</td>
                 <td>{{ service.comment }}</td>
             </tr>
             {% endfor %}

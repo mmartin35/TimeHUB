@@ -9,8 +9,12 @@
 {% block script %}{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-column" id="table-container">
-    {% if half_day or full_day %}
+<div class="alert alert-secondary" id="table-container" style="background-color: transparent">
+    {% if show_days_off_alert %}
+    <div class="alert alert-danger" role="alert">
+        Votre stage se termine bientôt ! Utilisez vos jours de congés avant la fin de celui-ci.
+    </div>
+    {% endif %}
     <div class="row">
         <table class="table">
             <thead>
@@ -26,33 +30,33 @@
             <tbody>
                 <tr>
                     <th scope="row">T1</th>
-                    {% if t1 %}
-                    <td>{{ t1 }}</td>
+                    {% if timer.t1 %}
+                    <td>{{ timer.t1 }}</td>
                     {% else %}
                     <td>None</td>
                     {% endif %}
                 </tr>
                 <tr>
                     <th scope="row">T2</th>
-                    {% if t2 %}
-                    <td>{{ t2 }}</td>
+                    {% if timer.t2 %}
+                    <td>{{ timer.t2 }}</td>
                     {% else %}
                     <td>None</td>
                     {% endif %}
                 </tr>
-                {% if not half_day %}
+                {% if not timer.half_day %}
                 <tr>
                     <th scope="row">T3</th>
-                    {% if t3 %}
-                    <td>{{ t3 }}</td>
+                    {% if timer.t3 %}
+                    <td>{{ timer.t3 }}</td>
                     {% else %}
                     <td>None</td>
                     {% endif %}
                 </tr>
                 <tr>
                     <th scope="row">T4</th>
-                    {% if t4 %}
-                    <td>{{ t4 }}</td>
+                    {% if timer.t4 %}
+                    <td>{{ timer.t4 }}</td>
                     {% else %}
                     <td>None</td>
                     {% endif %}
@@ -66,8 +70,8 @@
             <div class="btn-container">
                 <form method="POST">
                     {% csrf_token %}
-                    <input type="hidden" id="action_input" name="action" value="">
-                    <button type="submit" class="btn btn-outline-secondary" id="pointerButton">Pointer</button>
+                    <input type="hidden" name="action" value="pointer">
+                    <button type="submit" class="btn btn-outline-secondary">Pointer</button>
                 </form>
             </div>
         </div>
@@ -75,8 +79,8 @@
             <div class="btn-container">
                 <form method="POST">
                     {% csrf_token %}
-                    <input type="hidden" id="action_input" name="service" value="">
-                    <button type="submit" class="btn btn-outline-secondary" id="serviceButton">
+                    <input type="hidden" name="action" value="service">
+                    <button type="submit" class="btn btn-outline-secondary">
                     {% if not service_state %}
                     Départ en service
                     {% else %}
@@ -87,11 +91,50 @@
             </div>
         </div>
     </div>
-    {% endif %}
-    {% if show_days_off_alert %}
-    <div class="alert alert-danger" role="alert">
-        Votre stage se termine bientôt ! Utilisez vos jours de congés avant la fin de celui-ci.
-    </div>
-    {% endif %}
 </div>
+<div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Request a timer correction</h3>
+    <hr>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col">
+                <label for="date">Date</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+                <label for="comment">Comment</label>
+                <input type="text" class="form-control" id="comment" name="comment" required>
+            </div>
+            <div class="col">
+                <label for="t1">T1</label>
+                <input type="time" class="form-control" id="t1" name="t1" required>
+                <label for="t2">T2</label>
+                <input type="time" class="form-control" id="t2" name="t2" required>
+                <label for="t3">T3</label>
+                <input type="time" class="form-control" id="t3" name="t3" required>
+                <label for="t4">T4</label>
+                <input type="time" class="form-control" id="t4" name="t4" required>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-outline-secondary" style="margin-top: 20px">Submit correction</button>
+    </form>
+    <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+        <h5 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Correction requests</h5>
+        <hr>
+        {% for request in request_list %}
+        <hr>
+        <div class="row">
+            <div class="col">
+                <p>Date: {{ request.date }}</p>
+                <p>Description: {{ request.description }}</p>
+            </div>
+            <div class="col">
+                <p>T1: {{ request.t1 }}</p>
+                <p>T2: {{ request.t2 }}</p>
+                <p>T3: {{ request.t3 }}</p>
+                <p>T4: {{ request.t4 }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div> 
 {% endblock %}

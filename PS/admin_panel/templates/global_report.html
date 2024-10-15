@@ -39,6 +39,8 @@
                     <thead>
                         <tr>
                             <th>Intern</th>
+                            <th>Arrival</th>
+                            <th>Departure</th>
                             <th>Worktime</th>
                             <th>Days-off</th>
                             <th>Non attendance</th>
@@ -48,8 +50,10 @@
                         {% for intern_data in interns_data %}
                         <tr>
                             <td>{{ intern_data.intern.user.get_full_name }}</td>
+                            <td>{{ intern_data.intern.arrival }}</td>
+                            <td>{{ intern_data.intern.departure }}</td>
                             <td>{{ intern_data.monthly_hours|floatformat:1 }}</td>
-                            <td>{{ intern_data.intern.days_off_left }} / {{ intern_data.intern.days_off_total }}</td>
+                            <td>{{ intern_data.intern.daysoff_left }} / {{ intern_data.intern.daysoff_total }}</td>
                             <td>{{ intern_data.intern.non_attendance }}</td>
                         </tr>
                         {% endfor %}

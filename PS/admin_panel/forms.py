@@ -2,10 +2,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-class CarouselForm(forms.Form):
-    user_id = forms.IntegerField(widget=forms.HiddenInput)
-
-class InternUserCreationForm(UserCreationForm):
+# Interns
+class CreateInternForm(UserCreationForm):
     arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
     departure = forms.DateField(required=True, widget=forms.SelectDateWidget)
     regime = forms.IntegerField(required=True)
@@ -14,17 +12,31 @@ class InternUserCreationForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
 
-class EventApprovalForm(forms.Form):
-    event_id = forms.IntegerField(widget=forms.HiddenInput)
-    approve_event = forms.BooleanField(required=False)
-    reject_event = forms.BooleanField(required=False)
-    staff_comment = forms.CharField(required=False, widget=forms.Textarea)
+class UpdateInternForm(forms.Form):
+    intern_id = forms.IntegerField(widget=forms.HiddenInput)
+    date = forms.DateField(required=True, widget=forms.SelectDateWidget)
+    worktime = forms.FloatField(required=True)
 
-class ServiceTimerForm(forms.Form):
+# Timers
+class ApproveServiceTimerForm(forms.Form):
     service_id = forms.IntegerField(widget=forms.HiddenInput)
     service_comment = forms.CharField(required=False, widget=forms.Textarea)
 
-class UpdateInternData(forms.Form):
-    intern  = forms.IntegerField(widget=forms.HiddenInput)
-    date = forms.DateField(required=True, widget=forms.SelectDateWidget)
-    working_hours = forms.FloatField(required=True)
+# Events
+class ApproveEventForm(forms.Form):
+    event_id = forms.IntegerField(widget=forms.HiddenInput)
+    event_approve = forms.BooleanField(required=False)
+    event_reject = forms.BooleanField(required=False)
+    event_comment = forms.CharField(required=False, widget=forms.Textarea)
+
+# Public holidays
+class AddPublicHolidayForm(forms.Form):
+    added_holiday_name = forms.CharField(required=True)
+    added_holiday_date = forms.DateField(required=True, widget=forms.SelectDateWidget)
+
+class RemovePublicHolidayForm(forms.Form):
+    removed_holiday_date = forms.DateField(required=True, widget=forms.SelectDateWidget)
+
+# Miscellanous
+class CarouselForm(forms.Form):
+    user_id = forms.IntegerField(widget=forms.HiddenInput)

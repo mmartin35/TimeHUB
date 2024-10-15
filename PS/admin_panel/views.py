@@ -1,9 +1,12 @@
+# Files
+from .forms import CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm
+from intern.models import Intern
+from pointer.models import DailyTimer, ServiceTimer, ChangingLog
+from planning.models import Event, PublicHolidays
+
+# Imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
-from intern.models import Intern
-from pointer.models import ChangingLog, Timer, ServiceTimer
-from planning.models import Event, PublicHolidays
-from .forms import CarouselForm, EventApprovalForm, InternUserCreationForm, ServiceTimerForm, UpdateInternData
 from django.http import JsonResponse, HttpResponse
 from datetime import datetime
 
@@ -14,139 +17,144 @@ month_names = [
 
 @staff_member_required
 def dashboard(request):
+    # Update data
     update_data(request)
-    requested_user = None
+    requested_user = 0
+
+    # Handle POST requests
     if request.method == 'POST':
         carouselForm = CarouselForm(request.POST)
         if carouselForm.is_valid():
             requested_user = carouselForm.cleaned_data['user_id']
-        eventForm = EventApprovalForm(request.POST)
+
+        eventForm = ApproveEventForm(request.POST)
         if eventForm.is_valid():
-            event_id = eventForm.cleaned_data['event_id']
-            event = get_object_or_404(Event, id=event_id)
+            event = Event.objects.get(id=eventForm.cleaned_data['event_id'])
             intern = event.intern
-            if eventForm.cleaned_data['staff_comment']:
-                event.staff_comment = eventForm.cleaned_data['staff_comment']
-            if eventForm.cleaned_data['approve_event']:
+            if eventForm.cleaned_data['event_approve']:
+                event.comment = eventForm.cleaned_data['event_comment']
                 event.approbation = 1
-                event.is_archived = True
-                intern.days_off_left -= event.duration
-                intern.days_off_onhold -= event.duration
-            elif eventForm.cleaned_data['reject_event']:
+                intern.daysoff_left -= event.duration
+                intern.daysoff_onhold -= event.duration
+            elif eventForm.cleaned_data['event_reject']:
+                event.comment = eventForm.cleaned_data['event_comment']
                 event.approbation = 2
-                event.is_archived = True
-                intern.days_off_onhold -= event.duration
+                intern.daysoff_onhold -= event.duration
             event.save()
             intern.save()
-        service_form = ServiceTimerForm(request.POST)
-        if service_form.is_valid():
-            service = ServiceTimer.objects.get(id=service_form.cleaned_data['service_id'])
-            if service.t2_service is None:
-                service.t2_service = datetime.now().time()
-            service.comment = service_form.cleaned_data['service_comment']
+
+        serviceForm = ApproveServiceTimerForm(request.POST)
+        if serviceForm.is_valid():
+            service = ServiceTimer.objects.get(id=serviceForm.cleaned_data['service_id'])
+            if service.t2 is None:
+                service.t2 = '19:30:00'
+            service.comment = serviceForm.cleaned_data['service_comment']
             service.save()
-            print('Service updated successfully!')
             return redirect('dashboard')
-    # Get data for each intern
-    intern_weeks_data = structure_data(request, requested_user).weeks
-
-    # Invert days order for each week
-#    if intern_weeks_data is not None:
-#        for week, days in intern_weeks_data.items():
-#            intern_weeks_data[week] = days[::-1]
-
-        
-#    alerts = []
-#    for intern, intern_data in interns_data:
-#        if intern.is_ongoing:
-#            week = intern_data.weeks[datetime.now().isocalendar()[1] - 1]
-#            weekly_hours = sum(timer.working_hours for timer in week)
-#            if weekly_hours < 40 * intern.regime / 100:
-#                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is less than the mandatory {round(40 * intern.regime / 100)}h.")
-#            if weekly_hours > 40 * intern.regime / 100:
-#                alerts.append(f"{intern.user.first_name} {intern.user.last_name} has worked {round(weekly_hours)}h last week, which is more than the mandatory {round(40 * intern.regime / 100)}h.")
 
     context = {
+        # General variable
         'name': request.user.first_name,
-        'interns_list': Intern.objects.filter(is_ongoing=True),
-        'service_list': ServiceTimer.objects.all(),
+        # Specific variables
         'requested_user': requested_user,
-        'intern_weeks_data': intern_weeks_data,
-        'event_list': Event.objects.filter(approbation=0),
         'requested_month': datetime.now().month,
+        'intern_weeks_data': structure_data(request, requested_user).weeks,
+        # Lists
+        'intern_list': Intern.objects.filter(is_ongoing=True),
+        'service_list': ServiceTimer.objects.all(),
+        'event_list': Event.objects.filter(approbation=0),
     }
     return render(request, 'dashboard.html', context)
 
 @staff_member_required
 def create_intern(request):
+    # Update data
     update_data(request)
+
+    # Handle POST requests
     if request.method == 'POST':
-        user_form = InternUserCreationForm(request.POST)
-        if user_form.is_valid():
-            user = user_form.save(commit=False)
+        createInternForm = CreateInternForm(request.POST)
+        if createInternForm.is_valid():
+            user = createInternForm.save(commit=False)
             user.is_staff = False
             user.save()
-            arrival = user_form.cleaned_data['arrival']
-            departure = user_form.cleaned_data['departure']
-            regime = user_form.cleaned_data['regime']
+            arrival = createInternForm.cleaned_data['arrival']
+            departure = createInternForm.cleaned_data['departure']
+            regime = createInternForm.cleaned_data['regime']
             day_gap = (departure - arrival).days
             Intern.objects.create(
                 user=user,
                 arrival=arrival,
                 departure=departure,
-                days_off_total=round(day_gap * (26 / 365), 2),
-                days_off_left=round(day_gap * (26 / 365), 2),
+                daysoff_total=round(day_gap * (26 / 365), 2),
+                daysoff_left=round(day_gap * (26 / 365), 2),
                 mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
             )
             return redirect('create_intern')
 
     context = {
+        # General variable
         'name': request.user.first_name,
-        'form': InternUserCreationForm(),
-        'interns': Intern.objects.all(),
-        'services': ServiceTimer.objects.filter(comment='NA'),
-        'requested_month' : datetime.now().month,
-        'events': Event.objects.select_related('intern').filter(approbation__in=[1, 2]),
+        # Specific variables
+        'form': CreateInternForm(),
+        # Lists
+        'intern_list': Intern.objects.all(),
     }
     return render(request, 'create_intern.html', context)
 
 @staff_member_required
 def add_publicholiday(request):
+    # Handle POST requests
     if request.method == 'POST':
-        date = request.POST.get('date')
-        name = request.POST.get('name')
-        if not date or not name:
-            return HttpResponse('Please fill in all the fields', status=400)
-        if PublicHolidays.objects.filter(date=date).exists():
-            return HttpResponse('This public holiday already exists', status=400)
-        PublicHolidays.objects.create(date=date, name=name)
+        addPublicHolidayForm = AddPublicHolidayForm(request.POST)
+        if addPublicHolidayForm.is_valid():
+            date = request.POST.get('added_holiday_date')
+            name = request.POST.get('added_holiday_name')
+            if not date or not name:
+                return HttpResponse('Please fill in all the fields', status=400)
+            if PublicHolidays.objects.filter(date=date).exists():
+                return HttpResponse('This public holiday already exists', status=400)
+            PublicHolidays.objects.create(date=date, name=name)
+
+        removePublicHolidayForm = RemovePublicHolidayForm(request.POST)
+        if removePublicHolidayForm.is_valid():
+            date = request.POST.get('removed_holiday_date')
+            if date is None:
+                return HttpResponse('Error trying to remove the holiday.', status=400)
+            PublicHolidays.objects.filter(date=date).delete()
+
     return render(request, 'add_publicholiday.html', {'name': request.user.first_name, 'public_holidays': PublicHolidays.objects.all()})
 
 @staff_member_required
 def edit_data(request):
+    # Handle POST requests
     if request.method == 'POST':
-        update_form = UpdateInternData(request.POST)
-        if update_form.is_valid():
-            intern = Intern.objects.get(id=update_form.cleaned_data['intern'])
-            working_hours = update_form.cleaned_data['working_hours']
-            date = update_form.cleaned_data['date']
-            if not Timer.objects.filter(intern=intern, date=date).exists():
-                return HttpResponse('Cannot change data: wrong date or intern', status=401)
+        updateInternForm = UpdateInternForm(request.POST)
+        if updateInternForm.is_valid():
             member = request.user.username
-            original_hours = Timer.objects.get(intern=intern, date=date).working_hours
-            ChangingLog.objects.get_or_create(
+            intern = Intern.objects.get(id=updateInternForm.cleaned_data['intern_id'])
+            worktime = updateInternForm.cleaned_data['worktime']
+            date = updateInternForm.cleaned_data['date']
+            print(date)
+            print(worktime)
+            if not DailyTimer.objects.filter(intern=intern, date=date).exists():
+                return HttpResponse('Cannot change data: wrong date or intern', status=401)
+
+            ChangingLog.objects.create(
                 intern=intern,
                 member=member,
                 date=date,
-                original_working_hours=original_hours,
-                altered_working_hours=working_hours
+                original_worktime=DailyTimer.objects.get(intern=intern, date=date).worktime,
+                altered_worktime=worktime
             )
-            Timer.objects.update(intern=intern, date=date, working_hours=working_hours)
+            DailyTimer.objects.filter(intern=intern, date=date).update(worktime=worktime)
            
     context = {
+        # General variable
         'name': request.user.first_name,
+        # Lists
         'intern_list': Intern.objects.all(),
-        'timer_list': Timer.objects.all()
+        'timer_list': DailyTimer.objects.all()
     }
     return render(request, 'edit_data.html', context)
 
@@ -155,15 +163,13 @@ def global_report(request, month):
     interns_data = []
     for intern in Intern.objects.filter(is_ongoing=True):
         intern_data = structure_data(request, intern.id)
-        monthly_hours = sum(timer.working_hours for timer in intern_data.months[month])
+        monthly_hours = sum(timer.worktime for timer in intern_data.months[month])
         interns_data.append({
             'intern': intern,
             'monthly_hours': monthly_hours
         })
-    
     context = {
         'name': request.user.first_name,
-        'type': request.get_full_path(),
         'interns_data': interns_data,
         'event_list': Event.objects.filter(approbation=1, start_date__month=month),
         'month': month_names[month - 1],
@@ -177,12 +183,10 @@ def individual_report(request, username, month):
     intern_data = structure_data(request, intern.id)
     monthly_hours = 0
     weeks_data = []
-
-    # Calculate weekly hours and accepted vacations
     for timer in intern_data.months[month]:
         week_number = timer.date.isocalendar()[1]
         if not any(week['week_number'] == week_number for week in weeks_data):
-            weekly_hours = sum(t.working_hours for t in intern_data.weeks[week_number])
+            weekly_hours = sum(t.worktime for t in intern_data.weeks[week_number])
             weeks_data.append({
                 'week_number': week_number,
                 'weekly_hours': weekly_hours,
@@ -196,15 +200,11 @@ def individual_report(request, username, month):
             'duration': event.duration,
         })
         monthly_hours += 8 * event.duration
-
-    # Calculate monthly hours
     for timer in intern_data.months[month]:
-        monthly_hours += timer.working_hours
+        monthly_hours += timer.worktime
     if monthly_hours > 173:
         monthly_hours = 173
-
     month = month_names[month - 1]
-
     context = {
         'intern': intern,
         'intern_data': intern_data,
@@ -218,40 +218,12 @@ def individual_report(request, username, month):
     return render(request, 'individual_report.html', context)
 
 @staff_member_required
-def structure_data(request, intern_id):
-    class Intern_item:
-        def __init__(self):
-            self.months = {month: [] for month in range(1, datetime.now().month + 1)}
-            self.weeks = {week: [] for week in range(1, datetime.now().isocalendar()[1] + 1)}
-    
-    intern_data = Intern_item()    
-    for timer in Timer.objects.filter(intern=intern_id):
-        if datetime.now().year != timer.date.year:
-            continue
-        intern_data.months[timer.date.month].append(timer)
-        intern_data.weeks[timer.date.isocalendar()[1]].append(timer)
-
-    return intern_data
-
-@staff_member_required
-def print_data(request, intern_id, intern_item):
-    # Print monthly total
-    for month, timers in intern_item.months.items():
-        month_total = sum(timer.working_hours for timer in timers)
-        print(f"Total in month {month} for user: {month_total}")
-
-    # Print weekly total
-    for week, timers in intern_item.weeks.items():
-        weekly_total = sum(timer.working_hours for timer in timers)
-        print(f"Total in week {week} for user: {weekly_total}")
-
-@staff_member_required
 def update_data(request):
     # Manage service timers
-    for service_timer in ServiceTimer.objects.all():
-        if service_timer.t2_service is None and service_timer.date != datetime.now().date():
-            service_timer.t2_service = "19:30"
-        service_timer.save()
+    for service in ServiceTimer.objects.all():
+        if service.t2 is None and service.date != datetime.now().date():
+            service.t2 = "19:30:00"
+        service.save()
 
     # Manage intern status
     for intern in Intern.objects.all():
@@ -260,6 +232,20 @@ def update_data(request):
         else:
             intern.is_ongoing = False
         intern.save()
+
+@staff_member_required
+def structure_data(request, intern_id):
+    class Intern_item:
+        def __init__(self):
+            self.months = {month: [] for month in range(1, datetime.now().month + 1)}
+            self.weeks = {week: [] for week in range(1, datetime.now().isocalendar()[1] + 1)}
+    intern_data = Intern_item()    
+    for timer in DailyTimer.objects.filter(intern=intern_id):
+        if datetime.now().year != timer.date.year:
+            continue
+        intern_data.months[timer.date.month].append(timer)
+        intern_data.weeks[timer.date.isocalendar()[1]].append(timer)
+    return intern_data
 
 @staff_member_required
 def admin_events_json(request):

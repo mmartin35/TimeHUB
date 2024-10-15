@@ -26,7 +26,7 @@
         {% csrf_token %}
         <label for="intern" class="form-label">Intern:</label>
         <div class="input-group mb-3">
-            <select name="intern" id="intern" required>
+            <select name="intern_id" id="intern_id" required>
                 <option value="" disabled selected>Choose intern</option>
                 {% for intern in intern_list %}
                 <option value="{{ intern.id }}">{{ intern.user.get_full_name }}</option>
@@ -37,9 +37,9 @@
         <div class="input-group mb-3">
             <input type="date" id="date" name="date" required>
         </div>
-        <label for="working_hours" class="form-label">Worked hours:</label>
+        <label for="worktime" class="form-label">Worked hours:</label>
         <div class="input-group mb-3">
-            <input type="number" id="working_hours" name="working_hours" required>
+            <input type="number" id="worktime" name="worktime" required>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>

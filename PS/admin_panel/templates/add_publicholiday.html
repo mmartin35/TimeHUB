@@ -24,11 +24,11 @@
     <hr>
     <form method="post">
         {% csrf_token %}
-        <label for="intern" class="form-label">Name:</label>
-        <textarea class="form-control" id="name" name="name" required></textarea>
-        <label for="date" class="form-label">Date:</label>
+        <label for="added_holiday_name" class="form-label">Name:</label>
+        <textarea class="form-control" id="added_holiday_name" name="added_holiday_name" required></textarea>
+        <label for="added_holiday_date" class="form-label">Date:</label>
         <div class="input-group mb-3">
-            <input type="date" id="date" name="date" required>
+            <input type="date" id="added_holiday_date" name="added_holiday_date" required>
         </div>
         <button type="submit" class="btn btn-primary">Add</button>
     </form>
@@ -37,11 +37,19 @@
             <tr>
                 <th>Name</th>
                 <th>Date</th>
+                <th>Cancel</th>
             </tr>
             {% for holiday in public_holidays %}
             <tr>
                 <td>{{ holiday.name }}</td>
                 <td>{{ holiday.date }}</td>
+                <td style="text-align: right">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="removed_holiday_date" id="removed_holiday_date" value="{{ holiday.date|date:"Y-m-d" }}">
+                        <a href="javascript:;" onclick="parentNode.submit()" style="padding: 0; margin:0">X</a>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </table>
