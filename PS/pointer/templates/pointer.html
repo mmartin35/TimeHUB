@@ -71,7 +71,7 @@
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="pointer">
-                    <button type="submit" class="btn btn-outline-secondary">Pointer</button>
+                    <button type="submit" class="btn btn-light">Pointer</button>
                 </form>
             </div>
         </div>
@@ -80,7 +80,7 @@
                 <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="action" value="service">
-                    <button type="submit" class="btn btn-outline-secondary">
+                    <button type="submit" class="btn btn-light">
                     {% if not service_state %}
                     Départ en service
                     {% else %}
@@ -91,50 +91,82 @@
             </div>
         </div>
     </div>
-</div>
-<div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
-    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Request a timer correction</h3>
-    <hr>
-    <form method="POST">
-        {% csrf_token %}
-        <div class="row">
-            <div class="col">
-                <label for="date">Date</label>
-                <input type="date" class="form-control" id="date" name="date" required>
-                <label for="comment">Comment</label>
-                <input type="text" class="form-control" id="comment" name="comment" required>
-            </div>
-            <div class="col">
-                <label for="t1">T1</label>
-                <input type="time" class="form-control" id="t1" name="t1" required>
-                <label for="t2">T2</label>
-                <input type="time" class="form-control" id="t2" name="t2" required>
-                <label for="t3">T3</label>
-                <input type="time" class="form-control" id="t3" name="t3" required>
-                <label for="t4">T4</label>
-                <input type="time" class="form-control" id="t4" name="t4" required>
-            </div>
+    <div class="row">
+        <div class="col">
+            <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#RequestSubmit" aria-expanded="false" aria-controls="collapseExample">
+                Demander correction
+            </button>
         </div>
-        <button type="submit" class="btn btn-outline-secondary" style="margin-top: 20px">Submit correction</button>
-    </form>
-    <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
-        <h5 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Correction requests</h5>
-        <hr>
-        {% for request in request_list %}
-        <hr>
-        <div class="row">
-            <div class="col">
-                <p>Date: {{ request.date }}</p>
-                <p>Description: {{ request.description }}</p>
-            </div>
-            <div class="col">
-                <p>T1: {{ request.t1 }}</p>
-                <p>T2: {{ request.t2 }}</p>
-                <p>T3: {{ request.t3 }}</p>
-                <p>T4: {{ request.t4 }}</p>
-            </div>
+        <div class="col">
+            <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#RequestDisplay" aria-expanded="false" aria-controls="collapseExample">
+                Afficher demandes de correction
+            </button>
         </div>
-        {% endfor %}
     </div>
-</div> 
+</div>
+<div class="collapse" id="RequestSubmit">
+    <div class="card card-body">
+        <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Request a timer correction</h3>
+        <hr>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" required>
+                    <label for="comment">Comment</label>
+                    <input type="text" class="form-control" id="comment" name="comment" required>
+                </div>
+                <div class="col">
+                    <label for="t1">T1</label>
+                    <input type="time" class="form-control" id="t1" name="t1" required>
+                    <label for="t2">T2</label>
+                    <input type="time" class="form-control" id="t2" name="t2" required>
+                    <label for="t3">T3</label>
+                    <input type="time" class="form-control" id="t3" name="t3" required>
+                    <label for="t4">T4</label>
+                    <input type="time" class="form-control" id="t4" name="t4" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-secondary" style="margin-top: 20px">Submit correction</button>
+        </form>
+    </div>
+</div>
+<div class="collapse" id="RequestDisplay">
+    <div class="card card-body">
+        <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+            <h5 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Correction requests</h5>
+            <hr>
+            {% for requested in request_list %}
+            <hr>
+            <div class="row">
+                <div class="col" style="text-align: center;">
+                    <p>Date: {{ requested.date }}</p>
+                    <p>Description: {{ requested.comment }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <p>T1:</p>
+                    <p>T2:</p>
+                    <p>T3:</p> 
+                    <p>T4:</p>                    
+                </div>
+                <div class="col">
+                    <p>{{ requested.original_t1 }}</p>
+                    <p>{{ requested.original_t2 }}</p>
+                    <p>{{ requested.original_t3 }}</p>
+                    <p>{{ requested.original_t4 }}</p>
+                </div>
+                <div class="col">
+                    <p>{{ requested.altered_t1 }}</p>
+                    <p>{{ requested.altered_t2 }}</p>
+                    <p>{{ requested.altered_t3 }}</p>
+                    <p>{{ requested.altered_t4 }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,8 +1,10 @@
 # Files
-from .forms import CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm
+from turtle import st
+from .forms import ApproveRequestForm, CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm, PreviewForm
 from intern.models import Intern
-from pointer.models import DailyTimer, ServiceTimer, ChangingLog
+from pointer.models import DailyTimer, RequestTimer, ServiceTimer, ChangingLog
 from planning.models import Event, PublicHolidays
+from pointer.views import convert_time_to_hours_from_midnight
 
 # Imports
 from django.shortcuts import render, redirect, get_object_or_404
@@ -32,16 +34,32 @@ def dashboard(request):
             event = Event.objects.get(id=eventForm.cleaned_data['event_id'])
             intern = event.intern
             if eventForm.cleaned_data['event_approve']:
-                event.comment = eventForm.cleaned_data['event_comment']
                 event.approbation = 1
                 intern.daysoff_left -= event.duration
                 intern.daysoff_onhold -= event.duration
             elif eventForm.cleaned_data['event_reject']:
-                event.comment = eventForm.cleaned_data['event_comment']
                 event.approbation = 2
                 intern.daysoff_onhold -= event.duration
+            event.comment = eventForm.cleaned_data['event_comment']
             event.save()
             intern.save()
+
+        requestForm = ApproveRequestForm(request.POST)
+        if requestForm.is_valid():
+            requested = RequestTimer.objects.get(id=requestForm.cleaned_data['request_id'])
+            if requestForm.cleaned_data['request_approve']:
+                requested.approbation = 1
+                worktime = convert_time_to_hours_from_midnight(requested.altered_t2) - convert_time_to_hours_from_midnight(requested.altered_t1) + convert_time_to_hours_from_midnight(requested.altered_t4) - convert_time_to_hours_from_midnight(requested.altered_t3)
+                DailyTimer.objects.filter(intern=requested.intern, date=requested.date).update(
+                    t1=requested.altered_t1,
+                    t2=requested.altered_t2,
+                    t3=requested.altered_t3,
+                    t4=requested.altered_t4,
+                    worktime=worktime
+                )
+            elif requestForm.cleaned_data['request_reject']:
+                requested.approbation = 2
+            requested.save()
 
         serviceForm = ApproveServiceTimerForm(request.POST)
         if serviceForm.is_valid():
@@ -61,10 +79,37 @@ def dashboard(request):
         'intern_weeks_data': structure_data(request, requested_user).weeks,
         # Lists
         'intern_list': Intern.objects.filter(is_ongoing=True),
-        'service_list': ServiceTimer.objects.all(),
         'event_list': Event.objects.filter(approbation=0),
+        'request_list': RequestTimer.objects.filter(approbation=0),
+        'timer_list': DailyTimer.objects.all(),
+        'service_list': ServiceTimer.objects.all(),
     }
     return render(request, 'dashboard.html', context)
+
+@staff_member_required
+def preview_report(request):
+    if request.method == 'POST':
+        previewForm = PreviewForm(request.POST)
+        if previewForm.is_valid():
+            month = previewForm.cleaned_data['selected_month']
+            return global_report(request, month)
+    month = datetime.now().month
+    interns_data = []
+    for intern in Intern.objects.filter(is_ongoing=True):
+        intern_data = structure_data(request, intern.id)
+        monthly_hours = sum(timer.worktime for timer in intern_data.months[month])
+        interns_data.append({
+            'intern': intern,
+            'monthly_hours': monthly_hours
+        })
+    context = {
+        'name': request.user.first_name,
+        'interns_data': interns_data,
+        'event_list': Event.objects.filter(approbation=1, start_date__month=month),
+        'month': month_names[month - 1],
+        'date': datetime.now().date(),
+    }
+    return render(request, 'preview_report.html', context)
 
 @staff_member_required
 def create_intern(request):

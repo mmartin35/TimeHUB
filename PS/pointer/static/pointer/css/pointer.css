@@ -12,3 +12,17 @@
 button {
     width: 100%;
 }
+
+.card-header {
+    color: white;
+    background-color: #003566;
+}
+
+.card-body {
+    color: white;
+    background-color: #000814;
+}
+
+.card-footer {
+    background-color: #000814;
+}

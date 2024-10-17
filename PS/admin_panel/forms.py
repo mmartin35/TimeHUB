@@ -27,7 +27,13 @@ class ApproveEventForm(forms.Form):
     event_id = forms.IntegerField(widget=forms.HiddenInput)
     event_approve = forms.BooleanField(required=False)
     event_reject = forms.BooleanField(required=False)
-    event_comment = forms.CharField(required=False, widget=forms.Textarea)
+
+# Corrections
+class ApproveRequestForm(forms.Form):
+    request_id = forms.IntegerField(widget=forms.HiddenInput)
+    request_approve = forms.BooleanField(required=False)
+    request_reject = forms.BooleanField(required=False)
+    request_comment = forms.CharField(required=False, widget=forms.Textarea)
 
 # Public holidays
 class AddPublicHolidayForm(forms.Form):
@@ -40,3 +46,6 @@ class RemovePublicHolidayForm(forms.Form):
 # Miscellanous
 class CarouselForm(forms.Form):
     user_id = forms.IntegerField(widget=forms.HiddenInput)
+
+class PreviewForm(forms.Form):
+    selected_month = forms.IntegerField(required=True)

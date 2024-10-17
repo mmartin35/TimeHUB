@@ -45,7 +45,7 @@ def pointer(request):
         if action == 'pointer':
             if timer.t1 is None:
                 timer.t1 = current_time
-            elif timer.t2 is None:
+            elif timer.t2 is None and current_time - timer.t1 < 5:
                 timer.t2 = current_time
                 timer.worktime += convert_time_to_hours_from_midnight(timer.t2) - convert_time_to_hours_from_midnight(timer.t1)
             elif timer.t3 is None:
@@ -66,13 +66,23 @@ def pointer(request):
 
         requestDailyTimerForm = RequestDailyTimerForm(request.POST)
         if requestDailyTimerForm.is_valid():
-            date = requestDailyTimerForm.cleaned_data['date']
-            comment = requestDailyTimerForm.cleaned_data['comment']
-            t1 = requestDailyTimerForm.cleaned_data['t1']
-            t2 = requestDailyTimerForm.cleaned_data['t2']
-            t3 = requestDailyTimerForm.cleaned_data['t3']
-            t4 = requestDailyTimerForm.cleaned_data['t4']
-            RequestTimer.objects.create(intern=intern, date=date, comment=comment, t1=t1, t2=t2, t3=t3, t4=t4)
+            date_edit = requestDailyTimerForm.cleaned_data['date']
+            timer_edit = DailyTimer.objects.get(intern=intern, date=date_edit)
+            RequestTimer.objects.create(
+                intern=intern,
+                date=date_edit,
+                comment=requestDailyTimerForm.cleaned_data['comment'],
+
+                original_t1=timer_edit.t1,
+                original_t2=timer_edit.t2,
+                original_t3=timer_edit.t3,
+                original_t4=timer_edit.t4,
+
+                altered_t1=requestDailyTimerForm.cleaned_data['t1'],
+                altered_t2=requestDailyTimerForm.cleaned_data['t2'],
+                altered_t3=requestDailyTimerForm.cleaned_data['t3'],
+                altered_t4=requestDailyTimerForm.cleaned_data['t4']
+            )
 
     # STATUS CHECK
     if (timer.t1 is not None and timer.t2 is None) or (timer.t3 is not None and timer.t4 is None):
@@ -91,7 +101,7 @@ def pointer(request):
         'service_state': ServiceTimer.objects.filter(intern=intern, date=datetime.today(), t2=None).exists(),
         # Lists
         'service_list': ServiceTimer.objects.filter(intern=intern),
-        'request_list': RequestTimer.objects.filter(intern=intern),
+        'request_list': RequestTimer.objects.filter(intern=intern, approbation=0),
         'alert_list': alert_list,
     }
     return render(request, 'pointer.html', context)

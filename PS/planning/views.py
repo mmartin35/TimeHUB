@@ -14,7 +14,7 @@ def planning(request):
         requestEventForm = RequestEventForm(request.POST)
         print(requestEventForm.errors)
         if requestEventForm.is_valid():
-            intern = Intern.objects.get(pk=requestEventForm.cleaned_data['intern_id'])
+            intern = Intern.objects.get(user=requestEventForm.cleaned_data['intern_id'])
             start_date = requestEventForm.cleaned_data['start_date']
             end_date = requestEventForm.cleaned_data['end_date']
             reason = requestEventForm.cleaned_data['reason']

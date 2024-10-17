@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Interns report{% endblock %}
+{% load static %}
+
+{% block styles %}
+<style>
+.table {
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Monthly report</h3>
+    <hr>
+    <div class="content" style="margin-top: 50px">
+        <h3>Details:</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Intern</th>
+                    <th>Arrival</th>
+                    <th>Departure</th>
+                    <th>Worktime</th>
+                    <th>Days-off</th>
+                    <th>Non attendance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for intern_data in interns_data %}
+                <tr>
+                    <td>{{ intern_data.intern.user.get_full_name }}</td>
+                    <td>{{ intern_data.intern.arrival }}</td>
+                    <td>{{ intern_data.intern.departure }}</td>
+                    <td>{{ intern_data.monthly_hours|floatformat:1 }}</td>
+                    <td>{{ intern_data.intern.daysoff_left }} / {{ intern_data.intern.daysoff_total }}</td>
+                    <td>{{ intern_data.intern.non_attendance }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table class="table">
+            <h3>Days-off:</h3>
+            <thead>
+                <tr>
+                    <th>Intern</th>
+                    <th>Reason</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in event_list %}
+                <tr>
+                    <td>{{ event.intern.user.get_full_name }}</td>
+                    <td>{{ event.reason }}</td>
+                    <td>{{ event.start_date }}</td>
+                    {% if event.end_date %}
+                    <td>{{ event.end_date }}</td>
+                    {% else %}
+                    <td>{{ event.start_date }}</td>
+                    {% endif %}
+                    <td>{{ event.duration }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="margin-top: 30px">
+        <h3>Print report:</h3>
+        <form method="post">
+            {% csrf_token %}
+            <label for="selected_month" class="form-label">Select a month</label>
+            <select class="form-select" id="selected_month" name="selected_month">
+                <option selected>None</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+              <button type="submit" class="btn btn-outline-secondary">Print</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

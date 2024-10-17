@@ -128,7 +128,7 @@
                 </div>
             </div>
             {% endfor %}
-            <a class="btn btn-dark" href="{% url 'global_report' requested_month %}" target="_blank" style="width: 100%">Print monthly report</a>
+            <a class="btn btn-dark" href="{% url 'preview_report' %}" style="width: 100%">Show monthly report</a>
         </div>
         <div class="col-8">
             <div id="carousel{{ intern.user.username }}" class="carousel slide" data-interval="false">
@@ -210,23 +210,73 @@
                             <strong>Reason</strong><br>
                             <strong>From</strong><br>
                             <strong>To</strong><br>
-                            <strong>Duration</strong>
+                            <strong>Duration</strong><br>
                         </div>
                         <div class="col">
                             {{ event.intern.user.get_full_name }}<br>
                             {{ event.reason }}<br>
                             {{ event.start_date }}<br>
                             {{ event.end_date }}<br>
-                            {{ event.duration }} day(s)
+                            {{ event.duration }} day(s)<br>
                         </div>
                     </div>
                     <form method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="event_id" value="{{ event.id }}">
-                        <textarea name="staff_comment" placeholder="Add a comment" required></textarea>
+                        <textarea name="event_comment" placeholder="Add a comment" required></textarea>
                         <div class="action-buttons">
-                            <button type="submit" name="approve_event" value="true" class="btn btn-success">Approve</button>
-                            <button type="submit" name="reject_event" value="true" class="btn btn-danger">Reject</button>
+                            <button type="submit" name="event_approve" value="true" class="btn btn-success">Approve</button>
+                            <button type="submit" name="event_reject" value="true" class="btn btn-danger">Reject</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Tickets for corrections</h3>
+    <hr>
+    <div class="row">
+        <div class="col">
+            {% for requested in request_list %}
+            <div class="card">
+                <div class="card-header">
+                    <h5>Correction for the {{ requested.date }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <strong>Infos:</strong><br>
+                            <strong>User: </strong>{{ requested.intern.user.get_full_name }}<br>
+                            <strong>Date: </strong>{{ requested.date }}<br>
+                            <strong>Comment: </strong>{{ requested.comment }}
+                        </div>
+                        <div class="col">
+                            <p>T1:</p>
+                            <p>T2:</p>
+                            <p>T3:</p>
+                            <p>T4:</p>
+                        </div>
+                        <div class="col">
+                            <p>{{ requested.original_t1 }}</p>
+                            <p>{{ requested.original_t2 }}</p>
+                            <p>{{ requested.original_t3 }}</p>
+                            <p>{{ requested.original_t4 }}</p>
+                        </div>
+                        <div class="col">
+                            <p>{{ requested.altered_t1 }}</p>
+                            <p>{{ requested.altered_t2 }}</p>
+                            <p>{{ requested.altered_t3 }}</p>
+                            <p>{{ requested.altered_t4 }}</p>
+
+                        </div>
+                    </div>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="request_id" value="{{ requested.id }}">
+                        <div class="action-buttons">
+                            <button type="submit" name="request_approve" value="true" class="btn btn-success">Approve</button>
+                            <button type="submit" name="request_reject" value="true" class="btn btn-danger">Reject</button>
                         </div>
                     </form>
                 </div>
@@ -236,9 +286,65 @@
     </div>
 </div>
 <div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 30px">
-    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Service list</h3>
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">History</h3>
     <hr>
-    <div class="row">
+    <p>
+        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#events" aria-expanded="false" aria-controls="collapseExample">
+            Events
+        </button>
+        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#requests" aria-expanded="false" aria-controls="collapseExample">
+            Requests
+        </button>
+        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#services" aria-expanded="false" aria-controls="collapseExample">
+            Services
+        </button>
+    </p>
+    <div class="collapse" id="events">
+        <h4>Events</h4>
+        <table class="table table" style="color: white">
+            <tr>
+                <th>Intern</th>
+                <th>Request Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Approbation</th>
+            </tr>
+            {% for event in event_list %}
+            <tr>
+                <td>{{ event.intern.user.get_full_name }}</td>
+                <td>{{ event.request_date }}</td>
+                <td>{{ event.start_date }}</td>
+                <td>{{ event.end_date }}</td>
+                <td>{{ event.approbation }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="collapse" id="requests">
+        <h4>Requests</h4>
+        <table class="table table" style="color: white">
+            <tr>
+                <th>Intern</th>
+                <th>Date</th>
+                <th>T1</th>
+                <th>T2</th>
+                <th>T3</th>
+                <th>T4</th>
+            </tr>
+            {% for requested in request_list %}
+            <tr>
+                <td>{{ requested.intern.user.get_full_name }}</td>
+                <td>{{ requested.date }}</td>
+                <td>{{ requested.original_t1 }} -> {{ requested.altered_t1 }}</td>
+                <td>{{ requested.original_t2 }} -> {{ requested.altered_t2 }}</td>
+                <td>{{ requested.original_t3 }} -> {{ requested.altered_t3 }}</td>
+                <td>{{ requested.original_t4 }} -> {{ requested.altered_t4 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="collapse" id="services">
+        <h4>Services</h4>
         <table class="table table" style="color: white">
             <tr>
                 <th>Intern</th>
