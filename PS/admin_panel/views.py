@@ -1,5 +1,4 @@
 # Files
-from turtle import st
 from .forms import ApproveRequestForm, CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm, PreviewForm
 from intern.models import Intern
 from pointer.models import DailyTimer, RequestTimer, ServiceTimer, ChangingLog
