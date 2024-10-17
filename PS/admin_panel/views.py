@@ -130,8 +130,8 @@ def create_intern(request):
                 user=user,
                 arrival=arrival,
                 departure=departure,
-                daysoff_total=round(day_gap * (26 / 365), 2),
-                daysoff_left=round(day_gap * (26 / 365), 2),
+                daysoff_total=round(day_gap * (26 / 365), 2) * regime / 100,
+                daysoff_left=round(day_gap * (26 / 365), 2) * regime / 100,
                 mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
             )
             return redirect('create_intern')
@@ -179,8 +179,6 @@ def edit_data(request):
             intern = Intern.objects.get(id=updateInternForm.cleaned_data['intern_id'])
             worktime = updateInternForm.cleaned_data['worktime']
             date = updateInternForm.cleaned_data['date']
-            print(date)
-            print(worktime)
             if not DailyTimer.objects.filter(intern=intern, date=date).exists():
                 return HttpResponse('Cannot change data: wrong date or intern', status=401)
 
