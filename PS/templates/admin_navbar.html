@@ -9,16 +9,16 @@
       <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Edit or Create</a>
       <ul class="dropdown-menu">
         <li class="nav-item" id="pages">
-            <a class="nav-link {% if request.resolver_match.url_name == 'create_intern' %}active{% endif %}" href="{% url 'create_intern' %}">Create intern</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'set_intern' %}active{% endif %}" href="{% url 'set_intern' %}">Interns</a>
         </li>
         <li class="nav-item" id="pages">
-            <a class="nav-link {% if request.resolver_match.url_name == 'add_publicholiday' %}active{% endif %}" href="{% url 'add_publicholiday' %}">Create holiday</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'set_publicholiday' %}active{% endif %}" href="{% url 'set_publicholiday' %}">Holidays</a>
         </li>
         <li class="nav-item" id="pages">
-            <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Edit events</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Events</a>
         </li>
         <li class="nav-item" id="pages">
-            <a class="nav-link {% if request.resolver_match.url_name == 'edit_data' %}active{% endif %}" href="{% url 'edit_data' %}">Edit data</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'set_data' %}active{% endif %}" href="{% url 'set_data' %}">Data</a>
         </li>
       </ul>
     </li>

@@ -111,7 +111,7 @@ def preview_report(request):
     return render(request, 'preview_report.html', context)
 
 @staff_member_required
-def create_intern(request):
+def set_intern(request):
     # Update data
     update_data(request)
 
@@ -119,22 +119,38 @@ def create_intern(request):
     if request.method == 'POST':
         createInternForm = CreateInternForm(request.POST)
         if createInternForm.is_valid():
-            user = createInternForm.save(commit=False)
-            user.is_staff = False
-            user.save()
-            arrival = createInternForm.cleaned_data['arrival']
-            departure = createInternForm.cleaned_data['departure']
-            regime = createInternForm.cleaned_data['regime']
-            day_gap = (departure - arrival).days
-            Intern.objects.create(
-                user=user,
-                arrival=arrival,
-                departure=departure,
-                daysoff_total=round(day_gap * (26 / 365), 2) * regime / 100,
-                daysoff_left=round(day_gap * (26 / 365), 2) * regime / 100,
-                mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
-            )
-            return redirect('create_intern')
+            if createInternForm.cleaned_data['intern']:
+                arrival = createInternForm.cleaned_data['arrival']
+                departure = createInternForm.cleaned_data['departure']
+                regime = createInternForm.cleaned_data['regime']
+                day_gap = (departure - arrival).days
+                Intern.objects.filter(pk=createInternForm.cleaned_data['intern']).update(
+                    arrival=arrival,
+                    departure=departure,
+                    regime=regime,
+                    daysoff_total=round(day_gap * (26 / 365), 2) * regime / 100,
+                    daysoff_left=round(day_gap * (26 / 365), 2) * regime / 100,
+                    mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
+                )
+            else:
+                user = createInternForm.save(commit=False)
+                user.is_staff = False
+                user.username = user.email.split('@')[0]
+                user.save()
+                arrival = createInternForm.cleaned_data['arrival']
+                departure = createInternForm.cleaned_data['departure']
+                regime = createInternForm.cleaned_data['regime']
+                day_gap = (departure - arrival).days
+                Intern.objects.create(
+                    user=user,
+                    arrival=arrival,
+                    departure=departure,
+                    regime=regime,
+                    daysoff_total=round(day_gap * (26 / 365), 2) * regime / 100,
+                    daysoff_left=round(day_gap * (26 / 365), 2) * regime / 100,
+                    mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
+                )
+            return redirect('set_intern')
 
     context = {
         # General variable
@@ -144,10 +160,10 @@ def create_intern(request):
         # Lists
         'intern_list': Intern.objects.all(),
     }
-    return render(request, 'create_intern.html', context)
+    return render(request, 'set_intern.html', context)
 
 @staff_member_required
-def add_publicholiday(request):
+def set_publicholiday(request):
     # Handle POST requests
     if request.method == 'POST':
         addPublicHolidayForm = AddPublicHolidayForm(request.POST)
@@ -167,10 +183,10 @@ def add_publicholiday(request):
                 return HttpResponse('Error trying to remove the holiday.', status=400)
             PublicHolidays.objects.filter(date=date).delete()
 
-    return render(request, 'add_publicholiday.html', {'name': request.user.first_name, 'public_holidays': PublicHolidays.objects.all()})
+    return render(request, 'set_publicholiday.html', {'name': request.user.first_name, 'public_holidays': PublicHolidays.objects.all()})
 
 @staff_member_required
-def edit_data(request):
+def set_data(request):
     # Handle POST requests
     if request.method == 'POST':
         updateInternForm = UpdateInternForm(request.POST)
@@ -198,7 +214,7 @@ def edit_data(request):
         'intern_list': Intern.objects.all(),
         'timer_list': DailyTimer.objects.all()
     }
-    return render(request, 'edit_data.html', context)
+    return render(request, 'set_data.html', context)
 
 @staff_member_required
 def global_report(request, month):
@@ -291,9 +307,8 @@ def structure_data(request, intern_id):
 
 @staff_member_required
 def admin_events_json(request):
-    events = Event.objects.select_related('intern').all()
     event_list = []
-    for event in events:
+    for event in Event.objects.all():
         if event.approbation == 0:
             background_color = 'blue'
         elif event.approbation == 1:

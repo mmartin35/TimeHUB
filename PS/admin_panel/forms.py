@@ -4,13 +4,14 @@ from django.contrib.auth.forms import UserCreationForm
 
 # Interns
 class CreateInternForm(UserCreationForm):
+    intern = forms.IntegerField(required=False)
     arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
     departure = forms.DateField(required=True, widget=forms.SelectDateWidget)
     regime = forms.IntegerField(required=True)
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+        fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
 
 class UpdateInternForm(forms.Form):
     intern_id = forms.IntegerField(widget=forms.HiddenInput)

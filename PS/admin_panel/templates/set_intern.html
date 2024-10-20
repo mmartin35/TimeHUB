@@ -20,34 +20,46 @@
 
 {% block content %}
 <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
-    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Create intern</h3>
+    <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Update or create an intern</h3>
+    <p>
+        <strong>To update an intern: </strong>Select the intern you want to change and fully fill the fields.<br>
+        <strong>To create an intern: </strong>same procedure but dont select any intern.<br>
+        <strong>WARNING: ALL CHANGES ARE DESTRUCTIVE.</strong>
+    </p>
     <hr>
     <form method="post">
         {% csrf_token %}
         <div class="row">
+            <label for="intern" class="form-label">Intern:</label><br>
+            <select class="form-select" id="intern" name="intern">
+                <option value="" disabled selected>Intern to update:</option>
+                {% for intern in intern_list %}
+                <option value="{{ intern.id }}">{{ intern.user.get_full_name }}</option>
+                {% endfor %}
+            </select><br>
+        </div>
+        <div class="row">
             <div class="col">
-                <label for="username">Username:</label>
-                <input type="text" class="form-control" id="username" name="username" required>
                 <label for="email">Email:</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <label for="arrival">First day:</label>
-                <input type="date" class="form-control" id="arrival" name="arrival" required>
-            </div>
-            <div class="col">
                 <label for="first_name">First name:</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" required>
-                <label for="password1">Password:</label>
-                <input type="password" class="form-control" id="password1" name="password1" required>
-                <label for="departure">Last day:</label>
-                <input type="date" class="form-control" id="departure" name="departure" required>
-            </div>
-            <div class="col">
                 <label for="last_name">Last name:</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" required>
+            </div>
+            <div class="col">
+                <label for="password1">Password:</label>
+                <input type="password" class="form-control" id="password1" name="password1" required>
                 <label for="password2">Confirm password:</label>
                 <input type="password" class="form-control" id="password2" name="password2" required>
                 <label for="regime">Regime (in %):</label>
                 <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
+            </div>
+            <div class="col">
+                <label for="arrival">First day:</label>
+                <input type="date" class="form-control" id="arrival" name="arrival" required>
+                <label for="departure">Last day:</label>
+                <input type="date" class="form-control" id="departure" name="departure" required>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Add Intern</button>
