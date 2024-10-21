@@ -14,16 +14,55 @@
     }
 </style>
 {% endblock %}
-
 {% block scripts %}
+<script>
+    var internsData = {
+        {% for intern in intern_list %}
+            "{{ intern.id }}": {
+                first_name: "{{ intern.user.first_name }}",
+                last_name: "{{ intern.user.last_name }}",
+                email: "{{ intern.user.email }}",
+                regime: "{{ intern.regime }}",
+                arrival: "{{ intern.arrival }}",
+                departure: "{{ intern.departure }}"
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    };
+    document.addEventListener('DOMContentLoaded', function() {
+        var internSelect = document.getElementById('intern');
+
+        var emailField = document.getElementById('email');
+        var firstField = document.getElementById('first_name');
+        var lastField = document.getElementById('last_name');
+        var passField = document.getElementById('password1');
+        var pass2Field = document.getElementById('password2');
+        var regimeField = document.getElementById('regime');
+        var arrivalField = document.getElementById('arrival');
+        var departureField = document.getElementById('departure');
+        internSelect.addEventListener('change', function() {
+            if (this.value != "none") {
+                const intern = internsData[this.value];
+                emailField.value = intern.email;
+                firstField.value = intern.first_name;
+                lastField.value = intern.last_name;
+                passField.value = "******";
+                pass2Field.value = "******";
+                regimeField.value = intern.regime;
+                const new_arrival = new Date(intern.arrival)
+                arrivalField.value = new_arrival.toISOString().split('T')[0];
+                const new_departure = new Date(intern.departure)
+                departureField.value = new_departure.toISOString().split('T')[0];
+            }
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
 <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
     <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Update or create an intern</h3>
     <p>
-        <strong>To update an intern: </strong>Select the intern you want to change and fully fill the fields.<br>
-        <strong>To create an intern: </strong>same procedure but dont select any intern.<br>
+        <strong>To update an intern: </strong>Select the intern you want to change.<br>
         <strong>WARNING: ALL CHANGES ARE DESTRUCTIVE.</strong>
     </p>
     <hr>
@@ -32,7 +71,7 @@
         <div class="row">
             <label for="intern" class="form-label">Intern:</label><br>
             <select class="form-select" id="intern" name="intern">
-                <option value="" disabled selected>Intern to update:</option>
+                <option value="none" selected>None selected</option>
                 {% for intern in intern_list %}
                 <option value="{{ intern.id }}">{{ intern.user.get_full_name }}</option>
                 {% endfor %}
