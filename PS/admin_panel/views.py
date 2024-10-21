@@ -135,7 +135,7 @@ def set_intern(request):
             else:
                 user = createInternForm.save(commit=False)
                 user.is_staff = False
-                user.username = user.email
+                user.username = user.first_name + '.' + user.last_name
                 user.save()
                 arrival = createInternForm.cleaned_data['arrival']
                 departure = createInternForm.cleaned_data['departure']
