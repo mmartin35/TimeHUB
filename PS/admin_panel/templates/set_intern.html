@@ -52,6 +52,15 @@
                 arrivalField.value = new_arrival.toISOString().split('T')[0];
                 const new_departure = new Date(intern.departure)
                 departureField.value = new_departure.toISOString().split('T')[0];
+            } else {
+                emailField.value = "";
+                firstField.value = "";
+                lastField.value = "";
+                passField.value = "";
+                pass2Field.value = "";
+                regimeField.value = "";
+                arrivalField.value = "";
+                departureField.value = "";
             }
         });
     });
