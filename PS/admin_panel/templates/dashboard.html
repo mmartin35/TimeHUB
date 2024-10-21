@@ -199,6 +199,7 @@
     <div class="row">
         <div class="col">
             {% for event in event_list %}
+            {% if event.approbation == 0 %}
             <div class="card">
                 <div class="card-header">
                     <h5>Requested on {{ event.request_date }}</h5>
@@ -231,6 +232,7 @@
                     </form>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -239,6 +241,7 @@
     <div class="row">
         <div class="col">
             {% for requested in request_list %}
+            {% if requested.approbation == 0 %}
             <div class="card">
                 <div class="card-header">
                     <h5>Correction for the {{ requested.date }}</h5>
@@ -281,6 +284,7 @@
                     </form>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>
@@ -310,13 +314,19 @@
                 <th>Approbation</th>
             </tr>
             {% for event in event_list %}
+            {% if event.approbation != 0 %}
             <tr>
                 <td>{{ event.intern.user.get_full_name }}</td>
                 <td>{{ event.request_date }}</td>
                 <td>{{ event.start_date }}</td>
                 <td>{{ event.end_date }}</td>
-                <td>{{ event.approbation }}</td>
+                {% if event.approbation == 1 %}
+                <td>Approved</td>
+                {% elif event.approbation >= 2 %}
+                <td>Rejected</td>
+                {% endif %}
             </tr>
+            {% endif %}
             {% endfor %}
         </table>
     </div>
@@ -330,8 +340,10 @@
                 <th>T2</th>
                 <th>T3</th>
                 <th>T4</th>
+                <th>Approbation</th>
             </tr>
             {% for requested in request_list %}
+            {% if requested.approbation != 0 %}
             <tr>
                 <td>{{ requested.intern.user.get_full_name }}</td>
                 <td>{{ requested.date }}</td>
@@ -339,7 +351,13 @@
                 <td>{{ requested.original_t2 }} -> {{ requested.altered_t2 }}</td>
                 <td>{{ requested.original_t3 }} -> {{ requested.altered_t3 }}</td>
                 <td>{{ requested.original_t4 }} -> {{ requested.altered_t4 }}</td>
+                {% if requested.approbation == 1 %}
+                <td>Approved</td>
+                {% elif requested.approbation >= 2 %}
+                <td>Rejected</td>
+                {% endif %}
             </tr>
+            {% endif %}
             {% endfor %}
         </table>
     </div>

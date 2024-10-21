@@ -45,7 +45,7 @@ def pointer(request):
         if action == 'pointer':
             if timer.t1 is None:
                 timer.t1 = current_time
-            elif timer.t2 is None and current_time - timer.t1 < 5:
+            elif timer.t2 is None: # 5 min delay
                 timer.t2 = current_time
                 timer.worktime += convert_time_to_hours_from_midnight(timer.t2) - convert_time_to_hours_from_midnight(timer.t1)
             elif timer.t3 is None:

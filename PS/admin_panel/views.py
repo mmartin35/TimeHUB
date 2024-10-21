@@ -78,8 +78,8 @@ def dashboard(request):
         'intern_weeks_data': structure_data(request, requested_user).weeks,
         # Lists
         'intern_list': Intern.objects.filter(is_ongoing=True),
-        'event_list': Event.objects.filter(approbation=0),
-        'request_list': RequestTimer.objects.filter(approbation=0),
+        'event_list': Event.objects.all(),
+        'request_list': RequestTimer.objects.all(),
         'timer_list': DailyTimer.objects.all(),
         'service_list': ServiceTimer.objects.all(),
     }

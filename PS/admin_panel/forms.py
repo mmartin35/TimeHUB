@@ -28,6 +28,7 @@ class ApproveEventForm(forms.Form):
     event_id = forms.IntegerField(widget=forms.HiddenInput)
     event_approve = forms.BooleanField(required=False)
     event_reject = forms.BooleanField(required=False)
+    event_comment = forms.CharField(required=True)
 
 # Corrections
 class ApproveRequestForm(forms.Form):
