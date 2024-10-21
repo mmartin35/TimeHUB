@@ -45,6 +45,7 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                         <button type="submit" class="btn btn-primary">Login</button>
+                        <a href="{% url 'login_allauth' %}" class="btn btn-outline-secondary" style="margin-top: 10px">Login with Microsoft</a>
                     </form>
                     <p style="margin-top: 20px">If you have issues with your credentials, please contact the IT support.</p>
                 </div>
