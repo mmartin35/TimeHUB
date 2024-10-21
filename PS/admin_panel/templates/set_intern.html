@@ -30,7 +30,6 @@
     };
     document.addEventListener('DOMContentLoaded', function() {
         var internSelect = document.getElementById('intern');
-
         var emailField = document.getElementById('email');
         var firstField = document.getElementById('first_name');
         var lastField = document.getElementById('last_name');
@@ -42,25 +41,20 @@
         internSelect.addEventListener('change', function() {
             if (this.value != "none") {
                 const intern = internsData[this.value];
+                const new_arrival = new Date(intern.arrival)
+                const new_departure = new Date(intern.departure)
                 emailField.value = intern.email;
                 firstField.value = intern.first_name;
                 lastField.value = intern.last_name;
-                passField.value = "******";
-                pass2Field.value = "******";
+                passField.value = pass2Field.value = "******";
                 regimeField.value = intern.regime;
-                const new_arrival = new Date(intern.arrival)
                 arrivalField.value = new_arrival.toISOString().split('T')[0];
-                const new_departure = new Date(intern.departure)
                 departureField.value = new_departure.toISOString().split('T')[0];
             } else {
-                emailField.value = "";
-                firstField.value = "";
-                lastField.value = "";
-                passField.value = "";
-                pass2Field.value = "";
-                regimeField.value = "";
-                arrivalField.value = "";
-                departureField.value = "";
+                const fields = [emailField, firstField, lastField, passField, pass2Field, regimeField, arrivalField, departureField];
+                for (const field of fields) {
+                    field.value = "";
+                }
             }
         });
     });
@@ -70,14 +64,14 @@
 {% block content %}
 <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
     <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Update or create an intern</h3>
-    <p>
+    <p style="text-align: center">
         <strong>To update an intern: </strong>Select the intern you want to change.<br>
         <strong>WARNING: ALL CHANGES ARE DESTRUCTIVE.</strong>
     </p>
     <hr>
     <form method="post">
         {% csrf_token %}
-        <div class="row">
+        <div class="d-flex justify-content-center align-items-center">
             <label for="intern" class="form-label">Intern:</label><br>
             <select class="form-select" id="intern" name="intern">
                 <option value="none" selected>None selected</option>

@@ -129,3 +129,8 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CLIENT_ID = '8daf41b5-4a5a-44cb-880f-1733b9865ab2'
+CLIENT_SECRET = '-AD8Q~qzVCDnrgLbJpm.qNTtQLXQmdlWfDAska.8'
+REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A8000%2Faccount%2F'
+ABSOLUTE_URI = 'http://localhost:8000/account/'

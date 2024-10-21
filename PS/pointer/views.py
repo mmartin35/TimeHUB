@@ -4,13 +4,14 @@ from .models import DailyTimer, ServiceTimer, RequestTimer
 from planning.models import Event
 
 # Imports
+import requests
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
 from datetime import datetime
-
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -25,6 +26,32 @@ def login_view(request):
         else:
             return HttpResponse('Invalid login', status=401)
     return render(request, 'login.html')
+
+def login_allauth(request):
+    url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=' + settings.CLIENT_ID + '&response_type=code&redirect_uri=' + settings.REDIRECT_URI + '&response_mode=query&scope=openid+profile+User.Read&state=random_string_for_csrf'
+    print(url)
+    return redirect(url)
+
+def callback(request):
+    code =  request.GET.get('code')
+    if not code:
+        return HttpResponse('Authorization failed', status=400)
+    url = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
+    data = {
+        'client_id': settings.CLIENT_ID,
+        'client_secret': settings.CLIENT_SECRET,
+        'code': code,
+        'redirect_uri': settings.ABSOLUTE_URI,
+        'grant_type': 'authorization_code',
+    }
+    response = requests.post(url, data=data)
+    if response.status_code == 200:
+        token_info = response.json()
+        access_token = token_info.get('access_token')
+        return HttpResponse(access_token)
+    else:
+        print(response.json())
+        return HttpResponse('Token error', status=400)
 
 def logout_view(request):
     logout(request)
@@ -45,7 +72,7 @@ def pointer(request):
         if action == 'pointer':
             if timer.t1 is None:
                 timer.t1 = current_time
-            elif timer.t2 is None: # 5 min delay
+            elif timer.t2 is None:
                 timer.t2 = current_time
                 timer.worktime += convert_time_to_hours_from_midnight(timer.t2) - convert_time_to_hours_from_midnight(timer.t1)
             elif timer.t3 is None:
