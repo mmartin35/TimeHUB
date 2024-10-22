@@ -75,6 +75,9 @@ TEMPLATES = [
     },
 ]
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
+
 WSGI_APPLICATION = 'PS.wsgi.application'
 
 
@@ -132,5 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CLIENT_ID = '8daf41b5-4a5a-44cb-880f-1733b9865ab2'
 CLIENT_SECRET = '-AD8Q~qzVCDnrgLbJpm.qNTtQLXQmdlWfDAska.8'
-REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A8000%2Faccount%2F'
-ABSOLUTE_URI = 'http://localhost:8000/account/'
+# REDIRECT_URI = 'http%3A%2F%2Flocalhost%3A8000%2Faccount%2F'
+REDIRECT_URI = 'https%3A%2F%2F10.253.48.21%2Faccount%2F'
+ABSOLUTE_URI = 'https://10.253.48.21/account/'
