@@ -16,10 +16,7 @@ from datetime import datetime
 
 def login_view(request):
     if request.user.is_authenticated:
-        if request.user.is_staff:
-            return redirect('dashboard')
-        else:
-            return redirect('pointer')
+        redirect('pointer')
     return render(request, 'login.html')
 
 def login_allauth(request):
