@@ -37,19 +37,12 @@
                 <img src="/static/favicon.ico" alt="" width="30" height="24">
             </a>
         </ul>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6 offset-md-3">
-                    <h1>Login</h1>
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Login</button>
-                        <a href="{% url 'login_allauth' %}" class="btn btn-outline-secondary" style="margin-top: 10px">Login with Microsoft</a>
-                    </form>
-                    <p style="margin-top: 20px">If you have issues with your credentials, please contact the IT support.</p>
-                </div>
-            </div>
+        <div class="alert alert-primary text-center" style="background-color: transparent; margin-top: 15%">
+            <a href="{% url 'login_allauth' %}" class="btn btn-primary" style="display: flex; align-items: center; justify-content: center; margin: 0 auto; width: 50%;">
+                <img src="{% static 'microsoft_logo.png' %}" style="width: 30px; height: 30px;" alt="Microsoft Logo">
+                <div style="margin-left: 10px">Login with Microsoft</div>
+            </a>
+            <p style="margin-top: 20px; color: white">If you have issues with your credentials, please contact the IT support.</p>
         </div>
     </body>
 </html>

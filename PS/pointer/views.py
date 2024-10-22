@@ -7,7 +7,8 @@ from planning.models import Event
 import requests
 from django.conf import settings
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils import timezone
@@ -16,20 +17,10 @@ from datetime import datetime
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('pointer')
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('pointer')
-        else:
-            return HttpResponse('Invalid login', status=401)
     return render(request, 'login.html')
 
 def login_allauth(request):
     url = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=' + settings.CLIENT_ID + '&response_type=code&redirect_uri=' + settings.REDIRECT_URI + '&response_mode=query&scope=openid+profile+User.Read&state=random_string_for_csrf'
-    print(url)
     return redirect(url)
 
 def callback(request):
@@ -44,14 +35,24 @@ def callback(request):
         'redirect_uri': settings.ABSOLUTE_URI,
         'grant_type': 'authorization_code',
     }
-    response = requests.post(url, data=data)
+    response = requests.get(url, data=data)
     if response.status_code == 200:
+        user_info_url = 'https://graph.microsoft.com/v1.0/me'
         token_info = response.json()
         access_token = token_info.get('access_token')
-        return HttpResponse(access_token)
-    else:
-        print(response.json())
-        return HttpResponse('Token error', status=400)
+        headers = {'Authorization': f'Bearer {access_token}'}
+        user_info_response = requests.get(user_info_url, headers=headers)
+        user_info = user_info_response.json()
+        for key, value in user_info.items():
+            if key == 'mail':
+                mail = value
+        user = User.objects.get(username=mail)
+        if user is not None:
+            login(request, user)
+            return redirect('pointer')
+        else:
+            return  HttpResponse('Your credentials has not been found', status=400)
+    return render(request, 'login.html')
 
 def logout_view(request):
     logout(request)
