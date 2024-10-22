@@ -33,8 +33,6 @@
         var emailField = document.getElementById('email');
         var firstField = document.getElementById('first_name');
         var lastField = document.getElementById('last_name');
-        var passField = document.getElementById('password1');
-        var pass2Field = document.getElementById('password2');
         var regimeField = document.getElementById('regime');
         var arrivalField = document.getElementById('arrival');
         var departureField = document.getElementById('departure');
@@ -46,12 +44,11 @@
                 emailField.value = intern.email;
                 firstField.value = intern.first_name;
                 lastField.value = intern.last_name;
-                passField.value = pass2Field.value = "******";
                 regimeField.value = intern.regime;
                 arrivalField.value = new_arrival.toISOString().split('T')[0];
                 departureField.value = new_departure.toISOString().split('T')[0];
             } else {
-                const fields = [emailField, firstField, lastField, passField, pass2Field, regimeField, arrivalField, departureField];
+                const fields = [emailField, firstField, lastField, regimeField, arrivalField, departureField];
                 for (const field of fields) {
                     field.value = "";
                 }
@@ -74,7 +71,7 @@
         <div class="d-flex justify-content-center align-items-center">
             <label for="intern" class="form-label">Intern:</label><br>
             <select class="form-select" id="intern" name="intern">
-                <option value="none" selected>None selected</option>
+                <option value="0" selected>None selected</option>
                 {% for intern in intern_list %}
                 <option value="{{ intern.id }}">{{ intern.user.get_full_name }}</option>
                 {% endfor %}
@@ -82,18 +79,14 @@
         </div>
         <div class="row">
             <div class="col">
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
                 <label for="first_name">First name:</label>
                 <input type="text" class="form-control" id="first_name" name="first_name" required>
                 <label for="last_name">Last name:</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" required>
             </div>
             <div class="col">
-                <label for="password1">Password:</label>
-                <input type="password" class="form-control" id="password1" name="password1" required>
-                <label for="password2">Confirm password:</label>
-                <input type="password" class="form-control" id="password2" name="password2" required>
+                <label for="email">External Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
                 <label for="regime">Regime (in %):</label>
                 <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
             </div>
@@ -111,7 +104,7 @@
             <tr>
                 <th scope="col">Username</th>
                 <th scope="col">Full name</th>
-                <th scope="col">Email</th>
+                <th scope="col">External Email</th>
                 <th scope="col">Regime</th>
                 <th scope="col">First day</th>
                 <th scope="col">Last day</th>

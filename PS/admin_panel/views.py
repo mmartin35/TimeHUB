@@ -6,6 +6,7 @@ from planning.models import Event, PublicHolidays
 from pointer.views import convert_time_to_hours_from_midnight
 
 # Imports
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import JsonResponse, HttpResponse
@@ -118,38 +119,42 @@ def set_intern(request):
     # Handle POST requests
     if request.method == 'POST':
         createInternForm = CreateInternForm(request.POST)
+        print(createInternForm.errors)
         if createInternForm.is_valid():
-            if createInternForm.cleaned_data['intern']:
-                arrival = createInternForm.cleaned_data['arrival']
-                departure = createInternForm.cleaned_data['departure']
-                regime = createInternForm.cleaned_data['regime']
-                day_gap = (departure - arrival).days
-                Intern.objects.filter(pk=createInternForm.cleaned_data['intern']).update(
-                    arrival=arrival,
-                    departure=departure,
-                    regime=regime,
-                    daysoff_total=round(day_gap * (26 / 365), 2) * regime / 100,
-                    daysoff_left=round(day_gap * (26 / 365), 2) * regime / 100,
-                    mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
-                )
-            else:
-                user = createInternForm.save(commit=False)
-                user.is_staff = False
-                user.username = user.first_name + '.' + user.last_name
+            if createInternForm.cleaned_data['intern'] != 0:
+                intern = Intern.objects.get(pk=createInternForm.cleaned_data['intern'])
+                user = User.objects.get(id=intern.user.id)
+                user.email=createInternForm.cleaned_data['email']
                 user.save()
-                arrival = createInternForm.cleaned_data['arrival']
-                departure = createInternForm.cleaned_data['departure']
-                regime = createInternForm.cleaned_data['regime']
-                day_gap = (departure - arrival).days
-                Intern.objects.create(
-                    user=user,
-                    arrival=arrival,
-                    departure=departure,
-                    regime=regime,
-                    daysoff_total=round(day_gap * (26 / 365), 2) * regime / 100,
-                    daysoff_left=round(day_gap * (26 / 365), 2) * regime / 100,
-                    mandatory_hours=round(day_gap * (40 / 7), 2) * regime / 100,
+                
+                day_gap = (createInternForm.cleaned_data['departure'] - createInternForm.cleaned_data['arrival']).days
+                intern.arrival=createInternForm.cleaned_data['arrival']
+                intern.departure=createInternForm.cleaned_data['departure']
+                intern.regime=createInternForm.cleaned_data['regime']
+                intern.daysoff_total=round(day_gap * (26 / 365), 2) * createInternForm.cleaned_data['regime'] / 100
+                intern.daysoff_left=round(day_gap * (26 / 365), 2) * createInternForm.cleaned_data['regime'] / 100
+                intern.mandatory_hours=round(day_gap * (40 / 7), 2) * createInternForm.cleaned_data['regime'] / 100
+                intern.save()
+            else:
+                user = User.objects.create_user(
+                    username = createInternForm.cleaned_data['first_name'] + '.' + createInternForm.cleaned_data['last_name'] + '@dlh.lu',
+                    first_name = createInternForm.cleaned_data['first_name'],
+                    last_name = createInternForm.cleaned_data['last_name'],
+                    email = createInternForm.cleaned_data['email'],
+                    is_staff = False,
                 )
+                user.save()
+                day_gap = (createInternForm.cleaned_data['departure'] - createInternForm.cleaned_data['arrival']).days
+                intern = Intern.objects.create(
+                    user=user,
+                    arrival=createInternForm.cleaned_data['arrival'],
+                    departure=createInternForm.cleaned_data['departure'],
+                    regime=createInternForm.cleaned_data['regime'],
+                    daysoff_total=round(day_gap * (26 / 365), 2) * createInternForm.cleaned_data['regime'] / 100,
+                    daysoff_left=round(day_gap * (26 / 365), 2) * createInternForm.cleaned_data['regime'] / 100,
+                    mandatory_hours=round(day_gap * (40 / 7), 2) * createInternForm.cleaned_data['regime'] / 100,
+                )
+                intern.save()
             return redirect('set_intern')
 
     context = {

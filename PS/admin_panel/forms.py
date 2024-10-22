@@ -1,17 +1,14 @@
 from django import forms
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 
 # Interns
-class CreateInternForm(UserCreationForm):
+class CreateInternForm(forms.Form):
     intern = forms.IntegerField(required=False)
+    first_name = forms.CharField(required=True, widget=forms.Textarea)
+    last_name = forms.CharField(required=True, widget=forms.Textarea)
+    email = forms.EmailField(required=True)
     arrival = forms.DateField(required=True, widget=forms.SelectDateWidget)
     departure = forms.DateField(required=True, widget=forms.SelectDateWidget)
     regime = forms.IntegerField(required=True)
-
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'email', 'password1', 'password2')
 
 class UpdateInternForm(forms.Form):
     intern_id = forms.IntegerField(widget=forms.HiddenInput)
