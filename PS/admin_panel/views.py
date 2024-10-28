@@ -136,8 +136,9 @@ def set_intern(request):
                 intern.mandatory_hours=round(day_gap * (40 / 7), 2) * createInternForm.cleaned_data['regime'] / 100
                 intern.save()
             else:
+                dlh_email = createInternForm.cleaned_data['first_name'] + '.' + createInternForm.cleaned_data['last_name'] + '@dlh.lu'
                 user = User.objects.create_user(
-                    username = createInternForm.cleaned_data['first_name'] + '.' + createInternForm.cleaned_data['last_name'] + '@dlh.lu',
+                    username = dlh_email.lower(),
                     first_name = createInternForm.cleaned_data['first_name'],
                     last_name = createInternForm.cleaned_data['last_name'],
                     email = createInternForm.cleaned_data['email'],
