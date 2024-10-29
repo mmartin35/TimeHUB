@@ -31,9 +31,9 @@
 }
 
 .nav-pills a img {
-    width: 40px;
+    width: 60px;
     height: 40px;
-    margin: 2px 2px 2px 5px;
+    padding: 3px;
 }
 
 #tools {

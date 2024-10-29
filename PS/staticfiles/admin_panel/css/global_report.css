@@ -1,0 +1,19 @@
+body {
+    position: absolute;
+}
+
+h3 {
+    margin-left: 20px;
+    margin-bottom: 30px;
+    text-decoration: underline;
+}
+
+.header {
+    text-align: center;
+    border: 1px solid black;
+    background-color: #f2f2f2;
+}
+
+.content {
+    margin: 20px;
+}
