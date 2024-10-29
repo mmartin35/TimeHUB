@@ -47,8 +47,8 @@
                 <div class="summary" style="margin-top: 80px">
                     <h3>Summary:</h3>
                     <p>
-                    <strong>Hours this month: </strong>{{ monthly_hours|floatformat:1 }}<br>
-                    <strong>Days-off: </strong>{{ intern.daysoff_left }}/{{ intern.daysoff_total }}<br>
+                    <strong>Hours this month: </strong>{{ monthly_hours|floatformat:2 }}<br>
+                    <strong>Days-off: </strong>{{ intern.daysoff_left|floatformat:2 }}/{{ intern.daysoff_total|floatformat:2 }}<br>
                     <strong>Total non attendance: </strong>{{ intern.non_attendance }}<br>
                     </p>
                 </div>
@@ -66,7 +66,7 @@
                         <tbody>
                             <tr>
                                 {% for week in weeks_data %}
-                                <td>{{ week.weekly_hours|floatformat:1 }}</td>
+                                <td>{{ week.weekly_hours|floatformat:2 }}</td>
                                 {% endfor %}
                             </tr>
                         </tbody>

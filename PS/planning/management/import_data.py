@@ -20,6 +20,6 @@ def import_data():
                 t4=row['t4'],
                 worktime=row['worktime'],
             )
-            print(f"Imported row {index} from")
-        except Exception:
-            print("error")
+            print(f"Imported row {index}")
+        except Exception as e:
+            print(f"Error importing row {index}: {e}")

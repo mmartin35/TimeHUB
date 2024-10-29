@@ -57,7 +57,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="row">
+<div class="row" style="margin-top: 20px">
     {% for service in service_list %}
     {% if service.comment == "NA" %}
     {% if service.t2 %}
@@ -78,7 +78,7 @@
     {% endfor %}
 </div>
 
-<div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 30px">
+<div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 20px">
     <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Interns data</h3>
     <hr>
     <div class="row">
@@ -100,11 +100,11 @@
                         </form>
                     </div>
                     <div class="col">
-                        <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.username }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.username }}">Details</a>
+                        <a class="btn btn-link" data-bs-toggle="collapse" href="#collapse{{ intern.user.id }}_infos" role="button" aria-expanded="false" aria-controls="collapse{{ intern.user.id }}">Details</a>
                     </div>
                 </div>
             </p>
-            <div class="collapse" id="collapse{{ intern.user.username }}_infos">
+            <div class="collapse" id="collapse{{ intern.user.id }}_infos">
                 <div class="card card-body">
                     <div class="row">
                         <div class="col">
@@ -120,8 +120,8 @@
                             {{ intern.user.email }}<br>
                             {{ intern.arrival }}<br>
                             {{ intern.departure }}<br>
-                            {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours }}h<br>
-                            {{ intern.daysoff_left }}/{{ intern.daysoff_total }}
+                            {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours|floatformat:2 }}h<br>
+                            {{ intern.daysoff_left|floatformat:2 }}/{{ intern.daysoff_total|floatformat:2 }}
                         </div>
                     </div>
                     <a href="{% url 'individual_report' intern.user.username requested_month %}" target="_blank">Print report</a>
@@ -139,10 +139,10 @@
                             <thead>
                                 <tr>
                                     <th>Week {{ week }}</th>
-                                    <th>T1</th>
-                                    <th>T2</th>
-                                    <th>T3</th>
-                                    <th>T4</th>
+                                    <th>P1</th>
+                                    <th>P2</th>
+                                    <th>P3</th>
+                                    <th>P4</th>
                                     <th>Worktime</th>
                                 </tr>
                             </thead>
@@ -174,10 +174,10 @@
                     </div>
                     {% endfor %}
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity:10%; height:100%; width: 1.5%">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="prev" style="opacity:10%; height:100%; width: 7.5%">
                     <!-- Control content -->
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity:10%; height:100%; width: 1.5%">
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel{{ intern.user.username }}" data-bs-slide="next" style="opacity:10%; height:100%; width: 7.5%">
                     <!-- Control content -->
                 </button>
             </div>
@@ -185,7 +185,7 @@
     </div>
 </div>
 
-<div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 30px">
+<div class="alert alert-success" style="background-color: transparent; color: white; margin-top: 20px">
     <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Event overview</h3>
     <hr>
     <div class="row">
@@ -193,7 +193,7 @@
     </div>
 </div>
 
-<div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 30px">
+<div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 20px">
     <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Tickets for days-off</h3>
     <hr>
     <div class="row">
@@ -255,10 +255,10 @@
                             <strong>Comment: </strong>{{ requested.comment }}
                         </div>
                         <div class="col">
-                            <p>T1:</p>
-                            <p>T2:</p>
-                            <p>T3:</p>
-                            <p>T4:</p>
+                            <p>P1:</p>
+                            <p>P2:</p>
+                            <p>P3:</p>
+                            <p>P4:</p>
                         </div>
                         <div class="col">
                             <p>{{ requested.original_t1 }}</p>
@@ -289,7 +289,7 @@
         </div>
     </div>
 </div>
-<div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 30px">
+<div class="alert alert-primary" style="background-color: transparent; color: white; margin-top: 20px">
     <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">History</h3>
     <hr>
     <p>
@@ -336,10 +336,10 @@
             <tr>
                 <th>Intern</th>
                 <th>Date</th>
-                <th>T1</th>
-                <th>T2</th>
-                <th>T3</th>
-                <th>T4</th>
+                <th>P1</th>
+                <th>P2</th>
+                <th>P3</th>
+                <th>P4</th>
                 <th>Approbation</th>
             </tr>
             {% for requested in request_list %}

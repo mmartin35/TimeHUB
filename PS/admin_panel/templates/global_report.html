@@ -52,8 +52,8 @@
                             <td>{{ intern_data.intern.user.get_full_name }}</td>
                             <td>{{ intern_data.intern.arrival }}</td>
                             <td>{{ intern_data.intern.departure }}</td>
-                            <td>{{ intern_data.monthly_hours|floatformat:1 }}</td>
-                            <td>{{ intern_data.intern.daysoff_left }} / {{ intern_data.intern.daysoff_total }}</td>
+                            <td>{{ intern_data.monthly_hours|floatformat:2 }}</td>
+                            <td>{{ intern_data.intern.daysoff_left|floatformat:2 }} / {{ intern_data.intern.daysoff_total|floatformat:2 }}</td>
                             <td>{{ intern_data.intern.non_attendance }}</td>
                         </tr>
                         {% endfor %}
