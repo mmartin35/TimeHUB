@@ -46,10 +46,8 @@
                 wrap: false,
                 interval: false
             });
-    
             var current_week = parseInt("{{ current_week }}");
             var items = carousel.querySelectorAll('.carousel-item');
-    
             if (items.length > 0) {
                 items.forEach(function(item) {
                     item.classList.remove('active');
