@@ -33,6 +33,16 @@ def dashboard(request):
             event                       = Event.objects.get(id=eventForm.cleaned_data['event_id'])
             intern                      = event.intern
             if eventForm.cleaned_data['event_approve']:
+                if event.reason == 'Congé':
+                    try:
+                        worktime_done = DailyTimer.objects.filter(intern=event.intern, date=event.start_date).first().worktime
+                    except:
+                        worktime_done = 0
+                    DailyTimer.objects.get_or_create(
+                        intern=event.intern,
+                        date=event.start_date,
+                        worktime=event.duration * 8 + worktime_done,
+                    )
                 event.approbation       = 1
                 intern.daysoff_left     -= event.duration
                 intern.daysoff_onhold   -= event.duration
@@ -76,6 +86,7 @@ def dashboard(request):
         'requested_user'                : requested_user,
         'requested_month'               : datetime.now().month,
         'intern_weeks_data'             : structure_data(request, requested_user).weeks,
+        'current_week': datetime.now().isocalendar()[1] - 1,
         # Lists
         'intern_list'                   : Intern.objects.filter(is_ongoing=True),
         'event_list'                    : Event.objects.all(),
@@ -304,8 +315,8 @@ def update_data(request):
 def structure_data(request, intern_id):
     class Intern_item:
         def __init__(self):
-            self.months                 = {month: [] for month in range(1, datetime.now().month + 1)}
-            self.weeks                  = {week: [] for week in range(1, datetime.now().isocalendar()[1] + 1)}
+            self.months                 = {month: [] for month in range(1, 13)}
+            self.weeks                  = {week: [] for week in range(1, 52)}
     intern_data                         = Intern_item()    
     for timer in DailyTimer.objects.filter(intern=intern_id):
         if datetime.now().year != timer.date.year:
