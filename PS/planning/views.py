@@ -29,23 +29,20 @@ def planning(request):
                 return HttpResponse('Start date cannot be after end date', status=401)
             if duration > intern.daysoff_left:
                 return HttpResponse('Requested time off exceeds the remaining days off', status=401)
-            if start_date < start_date.today():
-                return HttpResponse('Start date cannot be in the past', status=401)
             if Event.objects.filter(intern=intern, start_date__lte=end_date, end_date__gte=start_date, approbation=1).exists():
                 return HttpResponse('An event already exists within the selected date range', status=401)
             if PublicHolidays.objects.filter(date__range=[start_date, end_date]).exists():
-                duration                -= PublicHolidays.objects.filter(date__range=[start_date, end_date]).count()
-            if duration < 0:
+                duration -= PublicHolidays.objects.filter(date__range=[start_date, end_date]).count()
+            if duration <= 0:
                 return HttpResponse('The selected date range is during public holidays', status=401)
 
            # Create event
-            intern.daysoff_onhold       += duration
             if request.user.is_staff:
                 approbation             = 1
+                intern.daysoff_left     -= duration
             else:
+                intern.daysoff_onhold       += duration
                 approbation             = 0
-            intern.daysoff_left         -= duration
-            intern.daysoff_onhold       -= duration
             intern.save()
             Event.objects.create(
                 intern                  = intern,

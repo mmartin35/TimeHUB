@@ -6,7 +6,8 @@
 {% block styles %}
 <link rel="stylesheet" href="{% static 'pointer/css/pointer.css' %}">
 {% endblock %}
-{% block script %}{% endblock %}
+{% block script %}
+{% endblock %}
 
 {% block content %}
 <div class="alert alert-secondary" id="table-container" style="background-color: transparent">
@@ -102,6 +103,49 @@
                 Afficher demandes de correction
             </button>
         </div>
+    </div>
+</div>
+<div class="alert alert-primary" style="background-color: transparent">
+    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#timers" aria-expanded="false" aria-controls="collapseExample">
+        Pointages de la semaine
+    </button>
+    <div class="collapse" id="timers">
+        <table class="table table" style="color: white">
+            <thead>
+                <tr>
+                    <th>Week {{ week }}</th>
+                    <th>P1</th>
+                    <th>P2</th>
+                    <th>P3</th>
+                    <th>P4</th>
+                    <th>Worktime</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for day in intern_last_week_data %}
+                <tr>
+                    {% if day.date.weekday == 0 %}
+                    <td>Monday {{ day.date }}</td>
+                    {% elif day.date.weekday == 1 %}
+                    <td>Tuesday {{ day.date }}</td>
+                    {% elif day.date.weekday == 2 %}
+                    <td>Wednesday {{ day.date }}</td>
+                    {% elif day.date.weekday == 3 %}
+                    <td>Thursday {{ day.date }}</td>
+                    {% elif day.date.weekday == 4 %}
+                    <td>Friday {{ day.date }}</td>
+                    {% else %}
+                    <td>Weekend {{ day.date }}</td>
+                    {% endif %}
+                    <td>{{ day.t1 }}</td>
+                    <td>{{ day.t2 }}</td>
+                    <td>{{ day.t3 }}</td>
+                    <td>{{ day.t4 }}</td>
+                    <td>{{ day.worktime|floatformat:2 }}h
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 <div class="collapse" id="RequestSubmit">

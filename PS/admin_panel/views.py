@@ -3,7 +3,6 @@ from .forms import ApproveRequestForm, CreateInternForm, UpdateInternForm, Appro
 from intern.models import Intern
 from pointer.models import DailyTimer, RequestTimer, ServiceTimer, ChangingLog
 from planning.models import Event, PublicHolidays
-from pointer.views import convert_time_to_hours_from_midnight
 
 # Imports
 from django.contrib.auth.models import User
@@ -302,7 +301,6 @@ def update_data(request):
             intern.is_ongoing           = False
         intern.save()
 
-@staff_member_required
 def structure_data(request, intern_id):
     class Intern_item:
         def __init__(self):
@@ -315,6 +313,10 @@ def structure_data(request, intern_id):
         intern_data.months[timer.date.month].append(timer)
         intern_data.weeks[timer.date.isocalendar()[1]].append(timer)
     return intern_data
+
+def convert_time_to_hours_from_midnight(time_field):
+    time_obj                            = datetime.combine(datetime.today(), time_field)
+    return (time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second) / 3600
 
 @staff_member_required
 def admin_events_json(request):

@@ -2,6 +2,7 @@
 from .forms import RequestDailyTimerForm
 from .models import DailyTimer, ServiceTimer, RequestTimer
 from planning.models import Event
+from admin_panel.views import structure_data, convert_time_to_hours_from_midnight
 
 # Imports
 import requests
@@ -96,7 +97,7 @@ def pointer(request):
             date_edit                   = requestDailyTimerForm.cleaned_data['date']
             current_time                = datetime.now()
             if date_edit >= current_time.date():
-                return HttpResponse('You cannot request a change on a future or current day.', status=400)
+                return HttpResponse('You can only request for a correction at most the day after.', status=400)
             try:
                 DailyTimer.objects.get(intern=intern, date=date_edit)
             except:
@@ -123,7 +124,7 @@ def pointer(request):
                 altered_t1              = requestDailyTimerForm.cleaned_data['t1'],
                 altered_t2              = requestDailyTimerForm.cleaned_data['t2'],
                 altered_t3              = requestDailyTimerForm.cleaned_data['t3'],
-                altered_t4              = requestDailyTimerForm.cleaned_data['t4']
+                altered_t4              = requestDailyTimerForm.cleaned_data['t4'],
             )
 
     # STATUS CHECK
@@ -133,6 +134,8 @@ def pointer(request):
         intern.is_active                = False
     intern.save()
     alert_list                          = []
+    intern_weeks_data = structure_data(request, intern.id).weeks
+    week_number = datetime.now().isocalendar()[1]
     context = {
         # General variables
         'name'                          : request.user.username,
@@ -142,12 +145,10 @@ def pointer(request):
         'is_half_day'                   : Event.objects.filter(start_date__lte=datetime.today(), end_date__gte=datetime.today(), intern=intern, approbation=1).exists(),
         'service_state'                 : ServiceTimer.objects.filter(intern=intern, date=datetime.today(), t2=None).exists(),
         # Lists
+        'intern_last_week_data'         : intern_weeks_data[week_number],
+        'week'                          : week_number,
         'service_list'                  : ServiceTimer.objects.filter(intern=intern),
         'request_list'                  : RequestTimer.objects.filter(intern=intern, approbation=0),
         'alert_list'                    : alert_list,
     }
     return render(request, 'pointer.html', context)
-
-def convert_time_to_hours_from_midnight(time_field):
-    time_obj                            = datetime.combine(datetime.today(), time_field)
-    return (time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second) / 3600
