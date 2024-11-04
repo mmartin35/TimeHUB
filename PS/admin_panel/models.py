@@ -10,5 +10,5 @@ def create_user_profile(sender, instance, created, **kwargs):
         Member.objects.create(user=instance)
 
 class Member(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField()
+    user    = models.OneToOneField(User, on_delete=models.CASCADE)
+    email   = models.EmailField()

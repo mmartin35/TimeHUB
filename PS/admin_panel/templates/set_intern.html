@@ -11,36 +11,55 @@
     var internsData = {
         {% for intern in intern_list %}
             "{{ intern.id }}": {
-                first_name: "{{ intern.user.first_name }}",
-                last_name: "{{ intern.user.last_name }}",
-                email: "{{ intern.user.email }}",
-                regime: "{{ intern.regime }}",
-                arrival: "{{ intern.arrival }}",
-                departure: "{{ intern.departure }}"
+                first_name      : "{{ intern.user.first_name }}",
+                last_name       : "{{ intern.user.last_name }}",
+                email           : "{{ intern.user.email }}",
+                cns             : "{{ intern.cns }}",
+                internship_type : "{{ intern.internship_type }}",
+                department      : "{{ intern.department }}",
+                tutor           : "{{ intern.tutor }}",
+                regime          : "{{ intern.regime }}",
+                arrival         : "{{ intern.arrival }}",
+                departure       : "{{ intern.departure }}",
+                mission         : "{{ intern.mission }}",
             }{% if not forloop.last %},{% endif %}
         {% endfor %}
     };
     document.addEventListener('DOMContentLoaded', function() {
-        var internSelect = document.getElementById('intern');
-        var emailField = document.getElementById('email');
-        var firstField = document.getElementById('first_name');
-        var lastField = document.getElementById('last_name');
-        var regimeField = document.getElementById('regime');
-        var arrivalField = document.getElementById('arrival');
-        var departureField = document.getElementById('departure');
+        var internSelect            = document.getElementById('intern');
+        var emailField              = document.getElementById('email');
+        var firstField              = document.getElementById('first_name');
+        var lastField               = document.getElementById('last_name');
+        var cnsField                = document.getElementById('cns');
+        var internship_typeField    = document.getElementById('internship_type');
+        var departmentField         = document.getElementById('department');
+        var tutorField              = document.getElementById('tutor');
+        var regimeField             = document.getElementById('regime');
+        var arrivalField            = document.getElementById('arrival');
+        var departureField          = document.getElementById('departure');
+        var missionField            = document.getElementById('mission');
+
         internSelect.addEventListener('change', function() {
             if (this.value != "none") {
-                const intern = internsData[this.value];
-                const new_arrival = new Date(intern.arrival)
-                const new_departure = new Date(intern.departure)
-                emailField.value = intern.email;
-                firstField.value = intern.first_name;
-                lastField.value = intern.last_name;
-                regimeField.value = intern.regime;
-                arrivalField.value = new_arrival.toISOString().split('T')[0];
-                departureField.value = new_departure.toISOString().split('T')[0];
+                const intern                = internsData[this.value];
+                const new_arrival           = new Date(intern.arrival)
+                const new_departure         = new Date(intern.departure)
+
+                emailField.value            = intern.email;
+                firstField.value            = intern.first_name;
+                lastField.value             = intern.last_name;
+                cnsField.value              = intern.cns;
+
+                internship_typeField.value  = intern.internship_type;
+                departmentField.value       = intern.department;
+                tutorField.value            = intern.tutor;
+                regimeField.value           = intern.regime;
+
+                arrivalField.value          = new_arrival.toISOString().split('T')[0];
+                departureField.value        = new_departure.toISOString().split('T')[0];
+                missionField.value          = intern.mission;
             } else {
-                const fields = [emailField, firstField, lastField, regimeField, arrivalField, departureField];
+                const fields = [emailField, firstField, lastField, cnsField, internship_typeField, departmentField, tutorField, regimeField, arrivalField, departureField, missionField];
                 for (const field of fields) {
                     field.value = "";
                 }
@@ -75,18 +94,41 @@
                 <input type="text" class="form-control" id="first_name" name="first_name" required>
                 <label for="last_name">Last name:</label>
                 <input type="text" class="form-control" id="last_name" name="last_name" required>
-            </div>
-            <div class="col">
                 <label for="email">External Email:</label>
                 <input type="email" class="form-control" id="email" name="email" required>
-                <label for="regime">Regime (in %):</label>
-                <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
             </div>
             <div class="col">
+                <label for="cns">CNS id:</label>
+                <input type="text" class="form-control" id="cns" name="cns" required>
+                <label for="department">Department:</label>
+                <input type="text" class="form-control" id="department" name="department" required>
+                <label for="tutor">Tutor:</label>
+                <input type="text" class="form-control" id="tutor" name="tutor" required>
+            </div>
+            <div class="col">
+                <label for="regime">Regime (in %):</label>
+                <input type="number" min="0" max="100" class="form-control" id="regime" name="regime" required>
                 <label for="arrival">First day:</label>
                 <input type="date" class="form-control" id="arrival" name="arrival" required>
                 <label for="departure">Last day:</label>
                 <input type="date" class="form-control" id="departure" name="departure" required>
+            </div>
+            <div class="col">
+                <label for="internship_type" class="form-label">Internship type:</label><br>
+                <select class="form-select form-select" id="internship_type" name="internship_type" required>
+                    <option value="0" disabled selected>None selected</option>
+                    <option value="Stage Conventionné">Stage Conventionné</option>
+                    <option value="Stage Pratique">Stage Pratique</option>
+                    <option value="Job Etudiant">Job Etudiant</option>
+                    <option value="Stage SNJ">Stage SNJ</option>
+                    <option value="Autre">Autre</option>
+                </select><br>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label for="mission">Mission:</label>
+                <input type="text" class="form-control" id="mission" name="mission" required>
             </div>
         </div>
         <button type="submit" class="btn btn-primary">Add Intern</button>
@@ -96,10 +138,14 @@
             <tr>
                 <th scope="col">Username</th>
                 <th scope="col">Full name</th>
-                <th scope="col">External Email</th>
+                <th scope="col">Ext Email</th>
+
+                <th scope="col">CNS</th>
+                <th scope="col">Type</th>
+                <th scope="col">Dpt.</th>
+                <th scope="col">Tutor</th>
+
                 <th scope="col">Regime</th>
-                <th scope="col">First day</th>
-                <th scope="col">Last day</th>
             </tr>
         </thead>
         <tbody>
@@ -108,9 +154,11 @@
                 <td>{{ intern.user.username }}</td>
                 <td>{{ intern.user.get_full_name }}</td>
                 <td>{{ intern.user.email }}</td>
+                <td>{{ intern.cns }}</td>
+                <td>{{ intern.internship_type }}</td>
+                <td>{{ intern.department }}</td>
+                <td>{{ intern.tutor }}</td>
                 <td>{{ intern.regime }}</td>
-                <td>{{ intern.arrival }}</td>
-                <td>{{ intern.departure }}</td>
             </tr>
             {% endfor %}
         </tbody>

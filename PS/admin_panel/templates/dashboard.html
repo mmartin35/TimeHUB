@@ -89,7 +89,7 @@
             {% for intern in intern_list %}
             <p>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-md-8">
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="user_id" value="{{ intern.id }}">
@@ -109,10 +109,13 @@
             </p>
             <div class="collapse" id="collapse{{ intern.user.id }}_infos">
                 <div class="card card-body">
-                    <div class="row">
-                        <div class="col">
+                    <div class="row" style="font-size: 11px;">
+                        <div class="col-md-4">
                             <strong>Full name</strong><br>
                             <strong>Email</strong><br>
+                            <strong>CNS</strong><br>
+                            <strong>Dpt.</strong><br>
+                            <strong>Tutor</strong><br>
                             <strong>Arrival</strong><br>
                             <strong>Departure</strong><br>
                             <strong>Total hours</strong><br>
@@ -121,13 +124,16 @@
                         <div class="col">
                             {{ intern.user.get_full_name }}<br>
                             {{ intern.user.email }}<br>
+                            {{ intern.cns }}<br>
+                            {{ intern.department }}<br>
+                            {{ intern.tutor }}<br>
                             {{ intern.arrival }}<br>
                             {{ intern.departure }}<br>
                             {{ intern.total_hours|floatformat:2 }}/{{ intern.mandatory_hours|floatformat:2 }}h<br>
                             {{ intern.daysoff_left|floatformat:2 }}/{{ intern.daysoff_total|floatformat:2 }}
                         </div>
                     </div>
-                    <a href="{% url 'individual_report' intern.user.username requested_month %}" target="_blank">Print report</a>
+                    <a class='btn btn-outline-secondary' href="{% url 'individual_report' intern.user.username requested_month %}" target="_blank" style="margin-top: 10px; font-size: 11px;">Print report</a>
                 </div>
             </div>
             {% endfor %}
@@ -312,6 +318,7 @@
             <tr>
                 <th>Intern</th>
                 <th>Request Date</th>
+                <th>Reason</th>
                 <th>From</th>
                 <th>To</th>
                 <th>Approbation</th>
@@ -321,6 +328,7 @@
             <tr>
                 <td>{{ event.intern.user.get_full_name }}</td>
                 <td>{{ event.request_date }}</td>
+                <td>{{ event.reason }}</td>
                 <td>{{ event.start_date }}</td>
                 <td>{{ event.end_date }}</td>
                 {% if event.approbation == 1 %}

@@ -1,3 +1,4 @@
+{% load static %}
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -18,9 +19,14 @@
                 <div class="informations">
                     <h3>Informations:</h3>
                     <p>
-                    <strong>Internship duration: </strong>{{ intern.arrival }} to {{ intern.departure }}<br>
-                    <strong>Regime: </strong>{{ intern.regime }}%<br>
-                    <strong>Days left in the company: </strong>{{ days_left }} days<br>
+                        <strong>CNS number: </strong>{{ intern.cns }}<br>
+                        <strong>Internship type: </strong>{{ intern.internship_type }}<br>
+                        <strong>Department: </strong>{{ intern.department }}<br>
+                        <strong>Tutor: </strong>{{ intern.tutor }}<br>
+                        <strong>Mission: </strong>{{ intern.mission }}<br>
+                        <strong>Internship duration: </strong>{{ intern.arrival }} to {{ intern.departure }}<br>
+                        <strong>Regime: </strong>{{ intern.regime }}%<br>
+                        <strong>Days left in the company: </strong>{{ days_left }} days<br>
                     </p>
                 </div>
 

@@ -105,7 +105,7 @@
                 {% endif %}
 
                 <label for="reason" class="form-label">Motif:</label><br>
-                <select class="form-select" id="reason" name="reason">
+                <select class="form-select" id="reason" name="reason" required>
                     <option value="" disabled selected>Selectionner une option</option>
                     {% for reason in reasons %}
                     <option value="{{ reason }}">{{ reason }}</option>
@@ -115,7 +115,7 @@
                 <p>Pour une demi-journée</p>
                 <input type="checkbox" id="is_half_day" name="is_half_day" value="1"><br>
 
-                <label for="start_date" class="form-label">Date de début:</label>
+                <label for="start_date" class="form-label">Date de départ:</label>
                 <input type="date" class="form-control" id="start_date" name="start_date" required>
 
                 <div>
@@ -150,7 +150,7 @@
                     <th colspan="6">Nom</th>
                     {% endif %}
                     <th>Date de la demande</th>
-                    <th>Date de début</th>
+                    <th>Date de départ</th>
                     <th>Date de fin</th>
                     <th>Motif</th>
                     <th>Durée</th>
@@ -183,7 +183,7 @@
                     <td>Annulé</td>
                     {% endif %}
                     {% if request.user.is_staff %}
-                    {% if event.approbation != 3 %}
+                    {% if event.approbation == 1 %}
                     <td style="text-align: right">
                         <form method="post">
                             {% csrf_token %}

@@ -21,32 +21,32 @@ def login_view(request):
     return render(request, 'login.html')
 
 def login_allauth(request):
-    url                                 = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=' + settings.CLIENT_ID + '&response_type=code&redirect_uri=' + settings.REDIRECT_URI + '&response_mode=query&scope=openid+profile+User.Read&state=random_string_for_csrf'
+    url = f"https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id={settings.CLIENT_ID}&response_type=code&redirect_uri={settings.REDIRECT_URI}&response_mode=query&scope=openid+profile+User.Read&state=random_string_for_csrf"
     return redirect(url)
 
 def callback(request):
-    code                                =  request.GET.get('code')
+    code = request.GET.get('code')
     if not code:
         return HttpResponse('Authorization failed', status=400)
-    url                                 = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
+    url  = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
     data = {
-        'client_id'                     : settings.CLIENT_ID,
-        'client_secret'                 : settings.CLIENT_SECRET,
-        'code'                          : code,
-        'redirect_uri'                  : settings.ABSOLUTE_URI,
-        'grant_type'                    : 'authorization_code',
+        'client_id'     : settings.CLIENT_ID,
+        'client_secret' : settings.CLIENT_SECRET,
+        'code'          : code,
+        'redirect_uri'  : settings.ABSOLUTE_URI,
+        'grant_type'    : 'authorization_code',
     }
-    response                            = requests.get(url, data=data)
+    response = requests.get(url, data=data)
     if response.status_code == 200:
-        user_info_url                   = 'https://graph.microsoft.com/v1.0/me'
-        token_info                      = response.json()
-        access_token                    = token_info.get('access_token')
-        headers                         = {'Authorization': f'Bearer {access_token}'}
-        user_info_response              = requests.get(user_info_url, headers=headers)
-        user_info                       = user_info_response.json()
-        mail                            = user_info.get('mail')
-        cleaned_mail                    = mail.lower()
-        user                            = User.objects.get(username=cleaned_mail)
+        user_info_url       = 'https://graph.microsoft.com/v1.0/me'
+        token_info          = response.json()
+        access_token        = token_info.get('access_token')
+        headers             = {'Authorization': f'Bearer {access_token}'}
+        user_info_response  = requests.get(user_info_url, headers=headers)
+        user_info           = user_info_response.json()
+        mail                = user_info.get('mail')
+        cleaned_mail        = mail.lower()
+        user                = User.objects.get(username=cleaned_mail)
         if user is not None:
             login(request, user)
             return redirect('pointer')
@@ -102,40 +102,40 @@ def pointer(request):
                 DailyTimer.objects.get(intern=intern, date=date_edit)
             except:
                 DailyTimer.objects.create(
-                    intern              = intern,
-                    date                = date_edit,
+                    intern  = intern,
+                    date    = date_edit,
 
-                    t1                  = None,
-                    t2                  = None,
-                    t3                  = None,
-                    t4                  = None
+                    t1      = None,
+                    t2      = None,
+                    t3      = None,
+                    t4      = None,
                 )
-            timer_edit                  = DailyTimer.objects.get(intern=intern, date=date_edit)
+            timer_edit      = DailyTimer.objects.get(intern=intern, date=date_edit)
             RequestTimer.objects.create(
-                intern                  = intern,
-                date                    = date_edit,
-                comment                 = requestDailyTimerForm.cleaned_data['comment'],
+                intern      = intern,
+                date        = date_edit,
+                comment     = requestDailyTimerForm.cleaned_data['comment'],
 
-                original_t1             = timer_edit.t1,
-                original_t2             = timer_edit.t2,
-                original_t3             = timer_edit.t3,
-                original_t4             = timer_edit.t4,
+                original_t1 = timer_edit.t1,
+                original_t2 = timer_edit.t2,
+                original_t3 = timer_edit.t3,
+                original_t4 = timer_edit.t4,
 
-                altered_t1              = requestDailyTimerForm.cleaned_data['t1'],
-                altered_t2              = requestDailyTimerForm.cleaned_data['t2'],
-                altered_t3              = requestDailyTimerForm.cleaned_data['t3'],
-                altered_t4              = requestDailyTimerForm.cleaned_data['t4'],
+                altered_t1  = requestDailyTimerForm.cleaned_data['t1'],
+                altered_t2  = requestDailyTimerForm.cleaned_data['t2'],
+                altered_t3  = requestDailyTimerForm.cleaned_data['t3'],
+                altered_t4  = requestDailyTimerForm.cleaned_data['t4'],
             )
 
     # STATUS CHECK
     if (timer.t1 is not None and timer.t2 is None) or (timer.t3 is not None and timer.t4 is None):
-        intern.is_active                = True
+        intern.is_active    = True
     else:
-        intern.is_active                = False
+        intern.is_active    = False
     intern.save()
-    alert_list                          = []
-    intern_weeks_data = structure_data(request, intern.id).weeks
-    week_number = datetime.now().isocalendar()[1]
+    alert_list              = []
+    intern_weeks_data       = structure_data(intern.id).weeks
+    week_number             = datetime.now().isocalendar()[1]
     context = {
         # General variables
         'name'                          : request.user.username,
