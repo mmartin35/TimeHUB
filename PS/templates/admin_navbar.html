@@ -25,7 +25,7 @@
     <li class="nav-item" id="tools">
         <form class="nav-item" method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <a href="javascript:;" onclick="parentNode.submit()">Logout from {{ name }}</a>
+            <a href="javascript:;" onclick="parentNode.submit()">Logout from {{ request.user.username }}</a>
         </form>
     </li>
 </ul>

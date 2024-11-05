@@ -1,7 +1,8 @@
 # Imports
 from datetime import datetime, timedelta
-from planning.handle_calc import *
-from admin_panel.data_management import update_data, structure_data, convert_time_to_hours_from_midnight
+from PS.calc import *
+from pointer.handler import *
+from PS.data import *
 
 from .forms import ApproveRequestForm, CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm, PreviewForm
 from intern.models import Intern
@@ -36,8 +37,9 @@ def dashboard(request):
             intern = event.intern
             if eventForm.cleaned_data['event_approve']:
                 if event.reason == 'Congé':
-                    validate_event(intern, event.is_half_day, event.start_date, event.duration)
-                intern.daysoff_onhold   -= event.duration
+                    update_or_create_timer(0, intern, event.is_half_day, event.start_date, event.duration)
+                    intern.daysoff_onhold   -= event.duration
+                    intern.daysoff_left     -= event.duration
                 event.approbation       = 1
 
             elif eventForm.cleaned_data['event_reject']:
@@ -139,9 +141,9 @@ def set_intern(request):
                 intern.arrival          = createInternForm.cleaned_data['arrival']
                 intern.departure        = createInternForm.cleaned_data['departure']
                 intern.regime           = createInternForm.cleaned_data['regime']
-                intern.daysoff_total    = round(fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime']))
-                intern.daysoff_left     = round(fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime']))
-                intern.mandatory_hours  = round(fetch_daysoff(day_gap, 40, 7, 2, createInternForm.cleaned_data['regime']))
+                intern.daysoff_total    = fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime'])
+                intern.daysoff_left     = fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime'])
+                intern.mandatory_hours  = fetch_daysoff(day_gap, 40, 7, 2, createInternForm.cleaned_data['regime'])
                 intern.save()
             else:
                 dlh_email               = createInternForm.cleaned_data['first_name'] + '.' + createInternForm.cleaned_data['last_name'] + '@dlh.lu'
