@@ -20,28 +20,29 @@ def planning(request):
             reason          = requestEventForm.cleaned_data['reason']
             is_half_day     = requestEventForm.cleaned_data['is_half_day']
             if request.user.is_staff:
-                intern  = requestEventForm.cleaned_data['intern_id']
-                event   = update_or_create_event(0, intern,  reason, is_half_day, start_date, end_date, 1, 'NA')
+                intern      = Intern.objects.get(id=requestEventForm.cleaned_data['intern_id'])
+                event       = update_or_create_event(0, intern, reason, is_half_day, start_date, end_date, 1, f"Added by {request.user.username}")
                 if event.reason == 'Congé':
                     intern.daysoff_left -= event.duration
+                    intern.save()
             else:
-                intern  = request.user.id
-                event   = update_or_create_event(0, intern, reason, is_half_day, start_date, end_date, 0, f"Added by {request.user.username}")
+                intern  = Intern.objects.get(user=request.user.id)
+                event   = update_or_create_event(0, intern, reason, is_half_day, start_date, end_date, 0, 'NA')
                 if event.reason == 'Congé':
                     intern.daysoff_onhold += event.duration
+                    intern.save()
 
         cancelEventForm = CancelEventForm(request.POST)
         if cancelEventForm.is_valid():
-            event_id    = cancelEventForm.cleaned_data['event_id']
-            event       = update_or_create_event(event_id, event.intern, event.reason, event.is_half_day, event.start_date, event.end_date, 3, event.comment)
+            event_buf   = Event.objects.get(id=cancelEventForm.cleaned_data['event_id'])
+            event       = update_or_create_event(event_buf.id, 0, event_buf.reason, 0, event_buf.start_date, event_buf.end_date, 3, event_buf.comment)
             if event.reason == 'Congé':
+                intern  = event.intern
                 intern.daysoff_left += event.duration
-        return redirect('planning')
-    else:
-        eventForm = RequestEventForm()
+                intern.save()
+            return redirect('planning')
 
     context = {
-        'form'          : eventForm,
         'daysoff_left'  : 0 if request.user.is_staff else request.user.intern.daysoff_left,
         'daysoff_onhold': 0 if request.user.is_staff else request.user.intern.daysoff_onhold,
         'intern_list'   : Intern.objects.all() if request.user.is_staff else request.user.intern,

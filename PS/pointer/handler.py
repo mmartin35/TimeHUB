@@ -21,8 +21,9 @@ def update_or_create_timer(timer_id, intern, date, is_half_day, duration):
     else:
         try:
             timer = DailyTimer.objects.get(pk=timer_id)
+            created = False
         except:
-            print(f"[ERROR]: Couldnt fetch timer data. intern={intern.user.username}, date={date}")
+            print(f"[ERROR]: Couldnt fetch timer data.")
             return None
 
     if duration == 0:

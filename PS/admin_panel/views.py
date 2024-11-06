@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from PS.calc import *
 from pointer.handler import *
+from planning.handler import *
 from PS.data import *
 
 from .forms import ApproveRequestForm, CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm, PreviewForm
@@ -27,28 +28,26 @@ def dashboard(request):
 
     # Handle POST requests
     if request.method == 'POST':
-        carouselForm = CarouselForm(request.POST)
-        eventForm = ApproveEventForm(request.POST)
-        requestForm = ApproveRequestForm(request.POST)
-        serviceForm = ApproveServiceTimerForm(request.POST)
+        carouselForm    = CarouselForm(request.POST)
+        eventForm       = ApproveEventForm(request.POST)
+        requestForm     = ApproveRequestForm(request.POST)
+        serviceForm     = ApproveServiceTimerForm(request.POST)
         if carouselForm.is_valid():
             requested_user = carouselForm.cleaned_data['user_id']
         else:
             if eventForm.is_valid():
-                event   = Event.objects.get(id=eventForm.cleaned_data['event_id'])
-                intern  = event.intern
+                event_buf   = Event.objects.get(id=eventForm.cleaned_data['event_id'])
+                intern      = event_buf.intern
+                comment     = eventForm.cleaned_data['event_comment']
                 if eventForm.cleaned_data['event_approve']:
-                    event = update_or_create_timer(0, intern, event.is_half_day, event.start_date, event.duration)
+                    event = update_or_create_event(event_buf.id, 0, event_buf.reason, 0, event_buf.start_date, event_buf.end_date, 1, comment)
                     if event.reason == 'Congé':
                         intern.daysoff_onhold   -= event.duration
                         intern.daysoff_left     -= event.duration
-                        intern.save()
                 elif eventForm.cleaned_data['event_reject']:
-                    event = update_or_create_timer(0, intern, event.is_half_day, event.start_date, event.duration)
-                    intern.daysoff_onhold   -= event.duration
-                    event.approbation       = 2
-                event.comment = eventForm.cleaned_data['event_comment']
-                event.save()
+                    event = update_or_create_event(event_buf.id, 0, event_buf.reason, 0, event_buf.start_date, event_buf.end_date, 2, comment)
+                    if event.reason == 'Congé':
+                        intern.daysoff_onhold   -= event.duration
                 intern.save()
             elif requestForm.is_valid():
                 request_id = requestForm.cleaned_data['request_id']
@@ -146,6 +145,11 @@ def set_intern(request):
                 user.save()
                 Intern.objects.create(
                     user                = user,
+                    cns                 = createInternForm.cleaned_data['cns'],
+                    internship_type     = createInternForm.cleaned_data['internship_type'],
+                    department          = createInternForm.cleaned_data['department'],
+                    tutor               = createInternForm.cleaned_data['tutor'],
+                    mission             = createInternForm.cleaned_data['mission'],
                     arrival             = createInternForm.cleaned_data['arrival'],
                     departure           = createInternForm.cleaned_data['departure'],
                     regime              = createInternForm.cleaned_data['regime'],
