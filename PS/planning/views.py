@@ -20,14 +20,22 @@ def planning(request):
             reason          = requestEventForm.cleaned_data['reason']
             is_half_day     = requestEventForm.cleaned_data['is_half_day']
             if request.user.is_staff:
-                update_or_create_event(0, Intern.objects.get(id=requestEventForm.cleaned_data['intern_id']), reason, is_half_day, start_date, end_date, 1, 'NA')
+                intern  = requestEventForm.cleaned_data['intern_id']
+                event   = update_or_create_event(0, intern,  reason, is_half_day, start_date, end_date, 1, 'NA')
+                if event.reason == 'Congé':
+                    intern.daysoff_left -= event.duration
             else:
-                update_or_create_event(0, Intern.objects.get(user=request.user.id), reason, is_half_day, start_date, end_date, 0, 'NA')
+                intern  = request.user.id
+                event   = update_or_create_event(0, intern, reason, is_half_day, start_date, end_date, 0, f"Added by {request.user.username}")
+                if event.reason == 'Congé':
+                    intern.daysoff_onhold += event.duration
+
         cancelEventForm = CancelEventForm(request.POST)
         if cancelEventForm.is_valid():
             event_id    = cancelEventForm.cleaned_data['event_id']
-            event       = Event.objects.get(pk=event_id)
-            update_or_create_event(event_id, event.intern, event.reason, event.is_half_day, event.start_date, event.end_date, 3, event.comment)
+            event       = update_or_create_event(event_id, event.intern, event.reason, event.is_half_day, event.start_date, event.end_date, 3, event.comment)
+            if event.reason == 'Congé':
+                intern.daysoff_left += event.duration
         return redirect('planning')
     else:
         eventForm = RequestEventForm()

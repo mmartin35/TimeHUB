@@ -28,51 +28,40 @@ def dashboard(request):
     # Handle POST requests
     if request.method == 'POST':
         carouselForm = CarouselForm(request.POST)
+        eventForm = ApproveEventForm(request.POST)
+        requestForm = ApproveRequestForm(request.POST)
+        serviceForm = ApproveServiceTimerForm(request.POST)
         if carouselForm.is_valid():
             requested_user = carouselForm.cleaned_data['user_id']
-
-        eventForm = ApproveEventForm(request.POST)
-        if eventForm.is_valid():
-            event = Event.objects.get(id=eventForm.cleaned_data['event_id'])
-            intern = event.intern
-            if eventForm.cleaned_data['event_approve']:
-                if event.reason == 'Congé':
-                    update_or_create_timer(0, intern, event.is_half_day, event.start_date, event.duration)
+        else:
+            if eventForm.is_valid():
+                event   = Event.objects.get(id=eventForm.cleaned_data['event_id'])
+                intern  = event.intern
+                if eventForm.cleaned_data['event_approve']:
+                    event = update_or_create_timer(0, intern, event.is_half_day, event.start_date, event.duration)
+                    if event.reason == 'Congé':
+                        intern.daysoff_onhold   -= event.duration
+                        intern.daysoff_left     -= event.duration
+                        intern.save()
+                elif eventForm.cleaned_data['event_reject']:
+                    event = update_or_create_timer(0, intern, event.is_half_day, event.start_date, event.duration)
                     intern.daysoff_onhold   -= event.duration
-                    intern.daysoff_left     -= event.duration
-                event.approbation       = 1
-
-            elif eventForm.cleaned_data['event_reject']:
-                intern.daysoff_onhold   -= event.duration
-                event.approbation       = 2
-            event.comment = eventForm.cleaned_data['event_comment']
-            event.save()
-            intern.save()
-
-        requestForm = ApproveRequestForm(request.POST)
-        if requestForm.is_valid():
-            requested = RequestTimer.objects.get(id=requestForm.cleaned_data['request_id'])
-            if requestForm.cleaned_data['request_approve']:
-                requested.approbation   = 1
-                worktime                = convert_time_to_hours_from_midnight(requested.altered_t2) - convert_time_to_hours_from_midnight(requested.altered_t1) + convert_time_to_hours_from_midnight(requested.altered_t4) - convert_time_to_hours_from_midnight(requested.altered_t3)
-                DailyTimer.objects.filter(intern=requested.intern, date=requested.date).update(
-                    t1          = requested.altered_t1,
-                    t2          = requested.altered_t2,
-                    t3          = requested.altered_t3,
-                    t4          = requested.altered_t4,
-                    worktime    = worktime,
-                )
-            elif requestForm.cleaned_data['request_reject']:
-                requested.approbation = 2
-            requested.save()
-
-        serviceForm = ApproveServiceTimerForm(request.POST)
-        if serviceForm.is_valid():
-            service = ServiceTimer.objects.get(id=serviceForm.cleaned_data['service_id'])
-            if service.t2 is None:
-                service.t2 = '19:30:00'
-            service.comment = serviceForm.cleaned_data['service_comment']
-            service.save()
+                    event.approbation       = 2
+                event.comment = eventForm.cleaned_data['event_comment']
+                event.save()
+                intern.save()
+            elif requestForm.is_valid():
+                request_id = requestForm.cleaned_data['request_id']
+                requested = RequestTimer.objects.get(id=request_id)
+                if requestForm.cleaned_data['request_approve']:
+                    update_or_create_request(request_id, requested.intern, requested.date, requested.altered_t1, requested.altered_t2, requested.altered_t3, requested.altered_t4, 1, requested.comment)
+                elif requestForm.cleaned_data['request_reject']:
+                    update_or_create_request(request_id, requested.intern, requested.date, requested.altered_t1, requested.altered_t2, requested.altered_t3, requested.altered_t4, 2, requested.comment)
+            elif serviceForm.is_valid():
+                service_id  = serviceForm.cleaned_data['service_id']
+                service     = ServiceTimer.objects.get(id=service_id)
+                comment     = serviceForm.cleaned_data['service_comment']
+                update_or_create_service(service_id, service.intern, service.date, comment)
             return redirect('dashboard')
 
     context = {

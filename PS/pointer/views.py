@@ -72,7 +72,7 @@ def pointer(request):
         if action == 'pointer':
             update_or_create_timer(0, intern, datetime.now().date(), Event.objects.filter(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date(), intern=intern, approbation=1).exists(), 0)
         if action == 'service':
-            update_or_create_service(intern, datetime.now().date(), 'NA')
+            update_or_create_service(0, intern, datetime.now().date(), 'NA')
 
         requestDailyTimerForm = RequestDailyTimerForm(request.POST)
         if requestDailyTimerForm.is_valid():

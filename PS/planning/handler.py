@@ -11,8 +11,8 @@ Note:
     approbation = 2     -> rejected
     approbation = 3     -> cancelled
 Return:
-    True    = Success
-    False   = Error
+    event   = Success
+    None    = Error
 '''
 def update_or_create_event(event_id, intern, reason, is_half_day, start, end, approbation, comment):
     if event_id == 0:
@@ -22,7 +22,7 @@ def update_or_create_event(event_id, intern, reason, is_half_day, start, end, ap
             event = Event.objects.get(pk=event_id)
         except:
             print(f"[ERROR]: Couldnt fetch event data. intern={intern.user.username}, start={start}, end={end}")
-            return False
+            return None
 
     if created:
         if is_half_day:
@@ -38,13 +38,13 @@ def update_or_create_event(event_id, intern, reason, is_half_day, start, end, ap
                 index += timedelta(days=1)
             duration -= PublicHolidays.objects.filter(date__range=[start, end])
         if duration > intern.daysoff_left and reason == 'Congé':
-            return False
+            return None
         elif duration <= 0:
-            return False
+            return None
         elif start > end:
-            return False
+            return None
         elif Event.objects.filter(intern=intern, start_date__lte=end, end_date__gte=start, approbation=1).exists():
-            return False
+            return None
         event.request_date = datetime.now().date()
     event.reason        = reason
     event.is_half_day   = is_half_day
@@ -53,4 +53,4 @@ def update_or_create_event(event_id, intern, reason, is_half_day, start, end, ap
     event.approbation   = approbation
     event.comment       = comment
     event.save()
-    return True
+    return event
