@@ -5,4 +5,3 @@ PS/__init__.py
 PS/*/__pycache__
 PS/*/migrations/00*
 PS/*/migrations/__pycache__/*
-PS/PS
