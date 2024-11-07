@@ -4,6 +4,7 @@ from .models import DailyTimer, ServiceTimer, RequestTimer
 from datetime import datetime, timedelta
 # External
 from PS.data import convert_time_to_hours_from_midnight
+from PS.calc import  calculate_worktime
 
 '''
 Handles update and creation: timer
@@ -96,19 +97,20 @@ def update_or_create_request(request_id, intern, date, t1, t2, t3, t4, approbati
     else:
         try:
             request = RequestTimer.objects.get(pk=request_id)
+            created = False
         except:
             print(f"[ERROR]: Couldnt fetch request data. intern={intern.user.username}, date={date}")
             return None
 
-    if date >= datetime.now().date():
+    if date > datetime.now().date():
+        print(f"[ERROR]: Couldnt create request object. date={date}")
         return None
     try:
         timer = DailyTimer.objects.get(intern=intern, date=date)
     except:
+        print(f"[ERROR]: Couldnt fetch timer data. intern={intern.user.username} date=({date})")
         return None
     if created:
-        request.comment     = comment
-        request.approbation = approbation
         request.original_t1 = timer.t1
         request.original_t2 = timer.t2
         request.original_t3 = timer.t3
@@ -120,14 +122,15 @@ def update_or_create_request(request_id, intern, date, t1, t2, t3, t4, approbati
     else:
         if approbation == 1:
             ''' in order to keep daysoff worktime alteration: '''
-            global_original_worktime    = timer.worktime
-            raw_original_wortime        = convert_time_to_hours_from_midnight(request.original_t2) - convert_time_to_hours_from_midnight(request.original_t1) + convert_time_to_hours_from_midnight(request.original_t4) - convert_time_to_hours_from_midnight(request.original_t3)
-            raw_new_worktime            = convert_time_to_hours_from_midnight(request.altered_t2) - convert_time_to_hours_from_midnight(request.altered_t1) + convert_time_to_hours_from_midnight(request.altered_t4) - convert_time_to_hours_from_midnight(request.altered_t3)
-            timer.worktime              = raw_new_worktime + global_original_worktime - raw_original_wortime
+            original_worktime           = timer.worktime
+            raw_original_worktime       = calculate_worktime(request.original_t1, request.original_t2, request.original_t3, request.original_t4)
+            raw_new_worktime            = calculate_worktime(request.altered_t1, request.altered_t2, request.altered_t3, request.altered_t4)
+            timer.worktime              = raw_new_worktime + original_worktime - raw_original_worktime
             timer.t1                    = request.altered_t1
             timer.t2                    = request.altered_t2
             timer.t3                    = request.altered_t3
             timer.t4                    = request.altered_t4
+            timer.save()
     request.comment     = comment
     request.approbation = approbation
     request.save()

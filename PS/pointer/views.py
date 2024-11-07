@@ -81,7 +81,8 @@ def pointer(request):
             t2      = requestDailyTimerForm.cleaned_data['t2']
             t3      = requestDailyTimerForm.cleaned_data['t3']
             t4      = requestDailyTimerForm.cleaned_data['t4']
-            update_or_create_request(0, intern, date, t1, t2, t3, t4, 0, 'NA')
+            comment = requestDailyTimerForm.cleaned_data['comment']
+            update_or_create_request(0, intern, date, t1, t2, t3, t4, 0, comment)
     try:
         timer = DailyTimer.objects.get(intern=intern, date=datetime.now().date())
     except :
