@@ -117,6 +117,10 @@ def set_intern(request):
             day_gap                 = (createInternForm.cleaned_data['departure'] - createInternForm.cleaned_data['arrival']).days
             if createInternForm.cleaned_data['intern'] != 0:
                 intern                  = Intern.objects.get(pk=createInternForm.cleaned_data['intern'])
+                for event in Event.objects.filter(intern=intern):
+                    if event.approbation == 0:
+                        update_or_create_event(event.id, 0, event.reason, 0, event.start_date, event.end_date, 3, 'Intern data update')
+                    intern.daysoff_ongoing = 0
                 user                    = User.objects.get(id=intern.user.id)
                 user.email              = createInternForm.cleaned_data['email']
                 user.first_name         = createInternForm.cleaned_data['first_name']
@@ -132,8 +136,10 @@ def set_intern(request):
                 intern.arrival          = createInternForm.cleaned_data['arrival']
                 intern.departure        = createInternForm.cleaned_data['departure']
                 intern.regime           = createInternForm.cleaned_data['regime']
+
+                intern.daysoff_left     = fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime']) - intern.daysoff_total + intern.daysoff_left
                 intern.daysoff_total    = fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime'])
-                intern.daysoff_left     = fetch_daysoff(day_gap, 26, 365, 2, createInternForm.cleaned_data['regime'])
+
                 intern.mandatory_hours  = fetch_daysoff(day_gap, 40, 7, 2, createInternForm.cleaned_data['regime'])
                 intern.save()
             else:

@@ -1,19 +1,22 @@
-# Files
+# Django
 from .forms import RequestDailyTimerForm
 from .models import DailyTimer, ServiceTimer, RequestTimer
 from planning.models import Event
-from admin_panel.views import structure_data
-from pointer.handler import *
 
-# Imports
-import requests
+from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+
+# Python
+import requests
 from datetime import datetime
+
+# External
+from admin_panel.views import structure_data
+from pointer.handler import *
 
 def login_view(request):
     if request.user.is_authenticated:

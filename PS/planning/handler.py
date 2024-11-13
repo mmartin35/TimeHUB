@@ -18,7 +18,7 @@ Return:
 '''
 def update_or_create_event(event_id: int, intern: Intern, reason: str, is_half_day: bool, start: date, end: date, approbation: int, comment: str) -> Optional[Event]:
     if event_id == 0:
-        event, created = Event.objects.get_or_create(intern=intern, start_date=start, end_date=end, comment=comment)
+        event, created = Event.objects.get_or_create(intern=intern, request_date=datetime.now(), start_date=start, end_date=end, comment=comment)
     else:
         try:
             event   = Event.objects.get(pk=event_id)
@@ -42,17 +42,20 @@ def update_or_create_event(event_id: int, intern: Intern, reason: str, is_half_d
         duration -= holidays_count
         if duration > intern.daysoff_left and reason == 'Congé':
             print(f"[ERROR]: Couldnt create event object. duration({duration}) > days left({intern})")
+            event.delete()
             return None
         elif duration < 0.5:
             print(f"[ERROR]: Couldnt create event object. duration({duration}) <= 0")
+            event.delete()
             return None
         elif start > end:
             print(f"[ERROR]: Couldnt create event object. start({start}) > end({end})")
+            event.delete()
             return None
         elif Event.objects.filter(intern=intern, start_date__lte=end, end_date__gte=start, approbation=1).exists():
             print(f"[ERROR]: Couldnt create event object. date({start}-{end}) already exists")
+            event.delete()
             return None
-        event.request_date  = datetime.now().date()
         event.duration      = duration
     event.reason        = reason
     event.start_date    = start

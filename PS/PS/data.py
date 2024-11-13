@@ -43,5 +43,7 @@ def structure_data(intern_id: int):
 Convert: Time to hours
 '''
 def convert_time_to_hours_from_midnight(time_field: time):
+    if time_field is None:
+        return 0
     time_obj = datetime.combine(datetime.today(), time_field)
     return (time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second) / 3600

@@ -1,15 +1,15 @@
 from django.db import models
 from intern.models import Intern
-from django.utils import timezone
+from datetime import datetime
 
 class Event(models.Model):
     intern          = models.ForeignKey(Intern, on_delete=models.CASCADE)
-    request_date    = models.DateField(default=timezone.now)
+    request_date    = models.DateTimeField(default=datetime.now)
 
     reason          = models.CharField(max_length=64, default='NA') 
     is_half_day     = models.BooleanField(default=False)
     start_date      = models.DateField(default=None)
-    end_date        = models.DateField(default=start_date)
+    end_date        = models.DateField(default=None)
     duration        = models.FloatField(default=0)
 
     approbation     = models.IntegerField(default=0)
@@ -17,4 +17,4 @@ class Event(models.Model):
 
 class PublicHolidays(models.Model):
     name = models.CharField(max_length=64, default='NA')
-    date = models.DateField(default=timezone.now)
+    date = models.DateField(default=None)
