@@ -1,7 +1,9 @@
 # Django
 from .models import DailyTimer, ServiceTimer, RequestTimer
+from intern.models import Intern
 # Python
-from datetime import datetime, timedelta
+from typing import Optional
+from datetime import datetime, date, time
 # External
 from PS.data import convert_time_to_hours_from_midnight
 from PS.calc import  calculate_worktime
@@ -16,45 +18,22 @@ Return:
     timer   = Success
     False   = Error
 '''
-def update_or_create_timer(timer_id, intern, date, is_half_day, duration):
-    if timer_id == 0:
-        timer, created = DailyTimer.objects.get_or_create(intern=intern, date=date)
-    else:
-        try:
-            timer = DailyTimer.objects.get(pk=timer_id)
-            created = False
-        except:
-            print(f"[ERROR]: Couldnt fetch timer data.")
-            return None
+def update_or_create_timer(intern: Intern, date: date, is_half_day: bool) -> Optional[DailyTimer]:
+    timer, created = DailyTimer.objects.get_or_create(intern=intern, date=date)
 
-    if duration == 0:
-        if timer.t1 is None:
-            timer.t1        = datetime.now().time()
-        elif timer.t2 is None:
-            timer.t2        = datetime.now().time()
-            timer.worktime  += convert_time_to_hours_from_midnight(timer.t2) - convert_time_to_hours_from_midnight(timer.t1)
-        elif timer.t3 is None and not is_half_day:
-            timer.t3        = datetime.now().time()
-        elif timer.t4 is None and not is_half_day:
-            timer.t4        = datetime.now().time()
-            timer.worktime  += convert_time_to_hours_from_midnight(timer.t4) - convert_time_to_hours_from_midnight(timer.t3)
-        else:
-            return None
-        timer.save()
-    elif duration == 1:
-        if is_half_day:
-            timer.worktime += 4
-        else:
-            timer.worktime = 8
-        timer.save()
+    if timer.t1 is None:
+        timer.t1        = datetime.now().time()
+    elif timer.t2 is None:
+        timer.t2        = datetime.now().time()
+        timer.worktime  += convert_time_to_hours_from_midnight(timer.t2) - convert_time_to_hours_from_midnight(timer.t1)
+    elif timer.t3 is None and not is_half_day:
+        timer.t3        = datetime.now().time()
+    elif timer.t4 is None and not is_half_day:
+        timer.t4        = datetime.now().time()
+        timer.worktime  += convert_time_to_hours_from_midnight(timer.t4) - convert_time_to_hours_from_midnight(timer.t3)
     else:
-        index = date
-        for i in range (int(duration)):
-            if index.weekday() >= 5:
-                index += timedelta(days=1)
-                i -= 1
-                continue
-            update_or_create_timer(0, intern, index, False, 1)
+        return None
+    timer.save()
     return timer
 
 '''
@@ -63,7 +42,7 @@ Return:
     service = Success
     None    = Error
 '''
-def update_or_create_service(service_id, intern, date, comment):
+def update_or_create_service(service_id: ServiceTimer, intern: Intern, date: date, comment: str) -> Optional[ServiceTimer]:
     if service_id == 0:
         service = ServiceTimer.objects.get_or_create(intern=intern, date=date, t2=None).first()
     else:
@@ -91,7 +70,7 @@ Return:
     request = Success
     None    = Error
 '''
-def update_or_create_request(request_id, intern, date, t1, t2, t3, t4, approbation, comment):
+def update_or_create_request(request_id: int, intern: Intern, date: date, t1: time, t2: time, t3: time, t4: time, approbation: int, comment: str) -> Optional[RequestTimer]:
     if request_id == 0:
         request, created = RequestTimer.objects.get_or_create(intern=intern, date=date)
     else:

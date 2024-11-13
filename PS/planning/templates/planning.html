@@ -134,14 +134,14 @@
                 <button class="btn btn-outline-secondary" type="submit">Soumettre la demande</button>
             </form>
             <h3>Infos:</h3>
-            <p>Jours de congé restants: {{ daysoff_left }}</p>
-            <p>Jours de congé en attente: {{ daysoff_onhold }}</p>
+            <p>Congés restants: {{ daysoff_left }} jours</p>
+            <p>Congés en attente: {{ daysoff_onhold }} jours</p>
         </div>
     </div>
 </div>
 <div class="row">
     <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
-        <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Event list</h3>
+        <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Liste des demandes</h3>
         <hr>
         <table class="table">
             <thead>
@@ -149,7 +149,7 @@
                     {% if request.user.is_staff %}
                     <th colspan="6">Nom</th>
                     {% endif %}
-                    <th>Date de la demande</th>
+                    <th>Demande</th>
                     <th>Date de départ</th>
                     <th>Date de fin</th>
                     <th>Motif</th>

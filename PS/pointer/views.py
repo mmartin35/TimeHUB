@@ -13,7 +13,6 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.utils import timezone
 from datetime import datetime
 
 def login_view(request):
@@ -70,7 +69,7 @@ def pointer(request):
     if request.method == 'POST':
         action = request.POST.get('action')
         if action == 'pointer':
-            update_or_create_timer(0, intern, datetime.now().date(), Event.objects.filter(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date(), intern=intern, approbation=1).exists(), 0)
+            update_or_create_timer(intern, datetime.now().date(), Event.objects.filter(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date(), intern=intern, approbation=1).exists())
         if action == 'service':
             update_or_create_service(0, intern, datetime.now().date(), 'NA')
 
@@ -93,14 +92,17 @@ def pointer(request):
         intern.is_active = False
     intern.save()
 
+    intern_data = structure_data(intern.id)
     context = {
         'status'                        : intern.is_active,
         'timer'                         : timer,
         'week'                          : datetime.now().isocalendar()[1],
         'is_half_day'                   : Event.objects.filter(start_date__lte=datetime.today(), end_date__gte=datetime.today(), intern=intern, approbation=1).exists(),
         'service_state'                 : ServiceTimer.objects.filter(intern=intern, date=datetime.today(), t2=None).exists(),
-        'intern_last_week_data'         : structure_data(intern.id).weeks[datetime.now().isocalendar()[1]],
-        
+        'intern_last_week_data'         : intern_data.weeks[datetime.now().isocalendar()[1]],
+        'intern_current_month_worktime' : sum(timer.worktime for timer in intern_data.months[datetime.now().month]),
+        'intern_current_week_worktime'  : sum(timer.worktime for timer in intern_data.weeks[datetime.now().isocalendar()[1]]),
+
         'service_list'                  : ServiceTimer.objects.filter(intern=intern),
         'request_list'                  : RequestTimer.objects.filter(intern=intern, approbation=0),
         'alert_list'                    : [],

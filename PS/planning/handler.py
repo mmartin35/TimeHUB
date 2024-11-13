@@ -1,7 +1,9 @@
 # Django
 from .models import Event, PublicHolidays
+from intern.models import Intern
 # Python
-from datetime import datetime, timedelta
+from typing import Optional
+from datetime import datetime, timedelta, date
 
 '''
 Handles update and creation: event
@@ -14,7 +16,7 @@ Return:
     event   = Success
     None    = Error
 '''
-def update_or_create_event(event_id, intern, reason, is_half_day, start, end, approbation, comment):
+def update_or_create_event(event_id: int, intern: Intern, reason: str, is_half_day: bool, start: date, end: date, approbation: int, comment: str) -> Optional[Event]:
     if event_id == 0:
         event, created = Event.objects.get_or_create(intern=intern, start_date=start, end_date=end, comment=comment)
     else:
@@ -41,7 +43,7 @@ def update_or_create_event(event_id, intern, reason, is_half_day, start, end, ap
         if duration > intern.daysoff_left and reason == 'Congé':
             print(f"[ERROR]: Couldnt create event object. duration({duration}) > days left({intern})")
             return None
-        elif duration <= 0:
+        elif duration < 0.5:
             print(f"[ERROR]: Couldnt create event object. duration({duration}) <= 0")
             return None
         elif start > end:

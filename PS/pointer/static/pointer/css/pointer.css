@@ -1,0 +1,26 @@
+#timers {
+    color: white;
+}
+
+#table-container {
+    margin: auto;
+    justify-content: center;
+    width: 100%;
+}
+
+.table {
+    color: white;
+    margin-top: 50px;
+}
+
+button {
+    width: 100%;
+}
+
+.card-header {
+    background-color: #003566;
+}
+
+.card-body, .card-footer {
+    background-color: #000814;
+}

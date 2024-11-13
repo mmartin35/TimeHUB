@@ -2,7 +2,7 @@
 from intern.models import Intern
 from pointer.models import DailyTimer, ServiceTimer
 # Python
-from datetime import datetime
+from datetime import datetime, time
 
 '''
 Global update: Database content
@@ -26,7 +26,7 @@ def update_data():
 '''
 Structure: Database content
 '''
-def structure_data(intern_id):
+def structure_data(intern_id: int):
     class Intern_item:
         def __init__(self):
             self.months = {month: [] for month in range(1, 13)}
@@ -42,6 +42,6 @@ def structure_data(intern_id):
 '''
 Convert: Time to hours
 '''
-def convert_time_to_hours_from_midnight(time_field):
+def convert_time_to_hours_from_midnight(time_field: time):
     time_obj = datetime.combine(datetime.today(), time_field)
     return (time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second) / 3600

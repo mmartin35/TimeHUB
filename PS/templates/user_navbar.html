@@ -3,7 +3,7 @@
         <img class="img-fluid d-inline-block align-text-top" src="https://dlh.lu/wp-content/uploads/2023/07/dlh_logo_inverted.png" alt="DLH Logo">
     </a>
     <li class="nav-item">
-        <a class="nav-link {% if request.resolver_match.url_name == 'pointer' %}active{% endif %}" href="{% url 'pointer' %}">Home</a>
+        <a class="nav-link {% if request.resolver_match.url_name == 'pointer' %}active{% endif %}" href="{% url 'pointer' %}">Pointage</a>
     </li>
     <li class="nav-item">
         <a class="nav-link {% if request.resolver_match.url_name == 'planning' %}active{% endif %}" href="{% url 'planning' %}">Planning</a>
@@ -11,7 +11,7 @@
     <li class="nav-item" id="tools">
         <form class="nav-item" method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-            <a href="javascript:;" onclick="parentNode.submit()">Logout from {{ request.user.username }}</a>
+            <a href="javascript:;" onclick="parentNode.submit()">Déconnection de {{ request.user.username }}</a>
         </form>
     </li>
   </ul>

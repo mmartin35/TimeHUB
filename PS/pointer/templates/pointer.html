@@ -104,53 +104,63 @@
             </button>
         </div>
     </div>
-</div>
-<div class="alert alert-primary" style="background-color: transparent">
-    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#timers" aria-expanded="false" aria-controls="collapseExample">
-        Pointages de la semaine
+    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#timers" aria-expanded="false" aria-controls="collapseExample" style="margin-top: 10px">
+        Plus d'informations
     </button>
     <div class="collapse" id="timers">
-        <table class="table table" style="color: white">
-            <thead>
-                <tr>
-                    <th>Week {{ week }}</th>
-                    <th>P1</th>
-                    <th>P2</th>
-                    <th>P3</th>
-                    <th>P4</th>
-                    <th>Worktime</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for day in intern_last_week_data %}
-                <tr>
-                    {% if day.date.weekday == 0 %}
-                    <td>Monday {{ day.date }}</td>
-                    {% elif day.date.weekday == 1 %}
-                    <td>Tuesday {{ day.date }}</td>
-                    {% elif day.date.weekday == 2 %}
-                    <td>Wednesday {{ day.date }}</td>
-                    {% elif day.date.weekday == 3 %}
-                    <td>Thursday {{ day.date }}</td>
-                    {% elif day.date.weekday == 4 %}
-                    <td>Friday {{ day.date }}</td>
-                    {% else %}
-                    <td>Weekend {{ day.date }}</td>
-                    {% endif %}
-                    <td>{{ day.t1 }}</td>
-                    <td>{{ day.t2 }}</td>
-                    <td>{{ day.t3 }}</td>
-                    <td>{{ day.t4 }}</td>
-                    <td>{{ day.worktime|floatformat:2 }}h
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="row" style="margin-top: 10px">
+            <div class="col">
+                <b>Heures de ce mois-ci: </b><br>
+                <b>Heures totales de la semaine: </b>
+            </div>
+            <div class="col">
+                {{ intern_current_month_worktime|floatformat:2 }}<br>
+                {{ intern_current_week_worktime|floatformat:2 }}
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table" style="color: white">
+                <thead>
+                    <tr>
+                        <th>Semaine {{ week }}</th>
+                        <th>P1</th>
+                        <th>P2</th>
+                        <th>P3</th>
+                        <th>P4</th>
+                        <th>Temps de travail</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for day in intern_last_week_data %}
+                    <tr>
+                        {% if day.date.weekday == 0 %}
+                        <td>Lundi {{ day.date }}</td>
+                        {% elif day.date.weekday == 1 %}
+                        <td>Mardi {{ day.date }}</td>
+                        {% elif day.date.weekday == 2 %}
+                        <td>Mercredi {{ day.date }}</td>
+                        {% elif day.date.weekday == 3 %}
+                        <td>Jeudi {{ day.date }}</td>
+                        {% elif day.date.weekday == 4 %}
+                        <td>Vendredi {{ day.date }}</td>
+                        {% else %}
+                        <td>Weekend {{ day.date }}</td>
+                        {% endif %}
+                        <td>{{ day.t1 }}</td>
+                        <td>{{ day.t2 }}</td>
+                        <td>{{ day.t3 }}</td>
+                        <td>{{ day.t4 }}</td>
+                        <td>{{ day.worktime|floatformat:2 }}h
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 <div class="collapse" id="RequestSubmit">
     <div class="card card-body">
-        <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Request a timer correction</h3>
+        <h3 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Demande de correction de pointage</h3>
         <hr>
         <form method="POST">
             {% csrf_token %}
@@ -158,28 +168,28 @@
                 <div class="col">
                     <label for="date">Date</label>
                     <input type="date" class="form-control" id="date" name="date" required>
-                    <label for="comment">Comment</label>
+                    <label for="comment">Commentaire</label>
                     <input type="text" class="form-control" id="comment" name="comment" required>
                 </div>
                 <div class="col">
-                    <label for="t1">T1</label>
+                    <label for="t1">P1</label>
                     <input type="time" class="form-control" id="t1" name="t1" required>
-                    <label for="t2">T2</label>
+                    <label for="t2">P2</label>
                     <input type="time" class="form-control" id="t2" name="t2" required>
-                    <label for="t3">T3</label>
+                    <label for="t3">P3</label>
                     <input type="time" class="form-control" id="t3" name="t3" required>
-                    <label for="t4">T4</label>
+                    <label for="t4">P4</label>
                     <input type="time" class="form-control" id="t4" name="t4" required>
                 </div>
             </div>
-            <button type="submit" class="btn btn-outline-secondary" style="margin-top: 20px">Submit correction</button>
+            <button type="submit" class="btn btn-outline-secondary" style="margin-top: 20px">Soumettre la demande</button>
         </form>
     </div>
 </div>
 <div class="collapse" id="RequestDisplay">
     <div class="card card-body">
         <div class="alert alert-secondary" style="background-color: transparent; color: white; margin-top: 30px">
-            <h5 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Correction requests</h5>
+            <h5 style="text-align: center; margin-top: 30px; margin-bottom: 30px">Corrections soumises</h5>
             <hr>
             {% for requested in request_list %}
             <hr>
@@ -191,10 +201,10 @@
             </div>
             <div class="row">
                 <div class="col">
-                    <p>T1:</p>
-                    <p>T2:</p>
-                    <p>T3:</p> 
-                    <p>T4:</p>                    
+                    <p>P1:</p>
+                    <p>P2:</p>
+                    <p>P3:</p>
+                    <p>P4:</p>
                 </div>
                 <div class="col">
                     <p>{{ requested.original_t1 }}</p>

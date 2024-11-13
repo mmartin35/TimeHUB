@@ -1,10 +1,4 @@
-# Imports
-from datetime import datetime, timedelta
-from PS.calc import *
-from pointer.handler import *
-from planning.handler import *
-from PS.data import *
-
+# Django
 from .forms import ApproveRequestForm, CreateInternForm, UpdateInternForm, ApproveServiceTimerForm, ApproveEventForm, AddPublicHolidayForm, RemovePublicHolidayForm, CarouselForm, PreviewForm
 from intern.models import Intern
 from pointer.models import DailyTimer, RequestTimer, ServiceTimer, ChangingLog
@@ -14,6 +8,15 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.models import User
+
+# Python
+from datetime import datetime, timedelta
+
+# External
+from PS.calc import *
+from PS.data import *
+from pointer.handler import *
+from planning.handler import *
 
 month_names = [
     "January", "February", "March", "April", "May", "June",
@@ -91,7 +94,7 @@ def preview_report(request):
     interns_data    = []
     for intern in Intern.objects.filter(is_ongoing=True):
         intern_data     = structure_data(intern.id)
-        monthly_hours   = sum(timer.worktime for timer in intern_data.months[month])
+        monthly_hours   = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1, reason='Congé') | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé'))
         interns_data.append({
             'intern'        : intern,
             'monthly_hours' : monthly_hours
@@ -261,20 +264,8 @@ def individual_report(request, username, month):
                 'week_number'   : week_number,
                 'weekly_hours'  : weekly_hours,
             })
-    event_list = []
-    for event in Event.objects.filter(intern=intern, approbation=1):
-        event_list.append({
-            'reason'        : event.reason,
-            'start_date'    : event.start_date,
-            'end_date'      : event.end_date,
-            'duration'      : event.duration,
-        })
-        monthly_hours       += 8 * event.duration
-    for timer in intern_data.months[month]:
-        monthly_hours       += timer.worktime
-    if monthly_hours > 173:
-        monthly_hours       = 173
-
+    monthly_hours   = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1) | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé'))
+    event_list      = Event.objects.filter(intern=intern, start_date__month=month, approbation=1) | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé')
     context = {
         'intern'            : intern,
         'intern_data'       : intern_data,
