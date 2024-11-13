@@ -102,11 +102,7 @@ def update_or_create_request(request_id: int, intern: Intern, date: date, t1: ti
         request.altered_t4  = t4
     else:
         if approbation == 1:
-            ''' in order to keep daysoff worktime alteration: '''
-            original_worktime           = timer.worktime
-            raw_original_worktime       = calculate_worktime(request.original_t1, request.original_t2, request.original_t3, request.original_t4)
-            raw_new_worktime            = calculate_worktime(request.altered_t1, request.altered_t2, request.altered_t3, request.altered_t4)
-            timer.worktime              = raw_new_worktime + original_worktime - raw_original_worktime
+            timer.worktime              = calculate_worktime(request.altered_t1, request.altered_t2, request.altered_t3, request.altered_t4)
             timer.t1                    = request.altered_t1
             timer.t2                    = request.altered_t2
             timer.t3                    = request.altered_t3
