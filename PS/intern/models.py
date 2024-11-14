@@ -6,7 +6,7 @@ class Intern(models.Model):
     user            = models.OneToOneField(User, on_delete=models.CASCADE)
     cns             = models.IntegerField(default=1234567890)
     internship_type = models.CharField(default='NA', max_length=32)
-    department      = models.CharField(default='NA', max_length=8)
+    department      = models.CharField(default='NA', max_length=16)
     tutor           = models.CharField(default='NA', max_length=32)
     mission         = models.CharField(default='NA', max_length=64)
 

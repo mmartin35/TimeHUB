@@ -19,7 +19,7 @@ Return:
 '''
 def update_or_create_event(event_id: int, intern: Intern, reason: str, is_half_day: bool, start: date, end: date, approbation: int, comment: str) -> Optional[Event]:
     if event_id == 0:
-        event = Event.objects.create(intern=intern, request_date=datetime.now(), start_date=start, end_date=end, comment=comment)
+        event = Event.objects.create(intern=intern, start_date=start, end_date=end, comment=comment)
         duration = 0
         if is_half_day:
             if start.weekday() < 5:
