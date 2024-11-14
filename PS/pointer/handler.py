@@ -76,7 +76,7 @@ def update_or_create_request(request_id: int, intern: Intern, date: date, t1: ti
             print(f"[ERROR]: Couldnt create request object. date={date}")
             return None
         try:
-            timer = DailyTimer.objects.get(intern=intern, date=date)
+            timer, created = DailyTimer.objects.get_or_create(intern=intern, date=date)
             request = RequestTimer.objects.create(intern=intern, date=date)
             request.original_t1 = timer.t1
             request.original_t2 = timer.t2
@@ -92,7 +92,7 @@ def update_or_create_request(request_id: int, intern: Intern, date: date, t1: ti
     else:
         try:
             request = RequestTimer.objects.get(pk=request_id)
-            timer = DailyTimer.objects.get(intern=intern, date=date)
+            timer, created = DailyTimer.objects.get_or_create(intern=intern, date=date)
             if approbation == 1:
                 timer.worktime              = calculate_worktime(request.altered_t1, request.altered_t2, request.altered_t3, request.altered_t4)
                 timer.t1                    = request.altered_t1
