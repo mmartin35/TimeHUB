@@ -123,10 +123,10 @@ Access the Application: Open your browser and navigate to http://localhost:8000.
 ## Technical information
 
 Approval status is an integer field that can have the following values:
-> 0: Pending
-> 1: Approved
-> 2: Denied
-> 3: Cancelled
+> 0: Pending<br>
+> 1: Approved<br>
+> 2: Rejected<br>
+> 3: Cancelled<br>
 
 Views only contains redirection pages. All the logic is in the handlers and the calc pages in PS.<br>
 
