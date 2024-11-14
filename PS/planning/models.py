@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Event(models.Model):
     intern          = models.ForeignKey(Intern, on_delete=models.CASCADE)
-    request_date    = models.DateTimeField(default=datetime.now)
+    request_date    = models.DateTimeField(default=datetime.now, null=True, blank=True)
 
     reason          = models.CharField(max_length=64, default='NA') 
     is_half_day     = models.BooleanField(default=False)
