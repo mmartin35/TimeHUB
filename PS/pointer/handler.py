@@ -22,7 +22,6 @@ Return:
 '''
 def update_or_create_timer(intern: Intern, date: date, is_half_day: bool) -> Optional[DailyTimer]:
     timer, created = DailyTimer.objects.get_or_create(intern=intern, date=date)
-
     if timer.t1 is None:
         timer.t1        = datetime.now().time()
     elif timer.t2 is None:
@@ -53,7 +52,6 @@ def update_or_create_service(service_id: ServiceTimer, intern: Intern, date: dat
         except:
             print(f"[ERROR]: Couldnt fetch service data. intern={intern.user.username}, date={date}")
             return None
-
     if not service:
         ServiceTimer.objects.create(intern=intern, date=datetime.now().date(), t1=datetime.now().time())
     else:
@@ -74,40 +72,37 @@ Return:
 '''
 def update_or_create_request(request_id: int, intern: Intern, date: date, t1: time, t2: time, t3: time, t4: time, approbation: int, comment: str) -> Optional[RequestTimer]:
     if request_id == 0:
-        request, created = RequestTimer.objects.get_or_create(intern=intern, date=date)
+        if date >= datetime.now().date():
+            print(f"[ERROR]: Couldnt create request object. date={date}")
+            return None
+        try:
+            timer = DailyTimer.objects.get(intern=intern, date=date)
+            request = RequestTimer.objects.create(intern=intern, date=date)
+            request.original_t1 = timer.t1
+            request.original_t2 = timer.t2
+            request.original_t3 = timer.t3
+            request.original_t4 = timer.t4
+            request.altered_t1  = t1
+            request.altered_t2  = t2
+            request.altered_t3  = t3
+            request.altered_t4  = t4
+        except:
+            print(f"[ERROR]: Couldnt fetch timer data. intern={intern.user.username} date=({date})")
+            return None
     else:
         try:
             request = RequestTimer.objects.get(pk=request_id)
-            created = False
+            timer = DailyTimer.objects.get(intern=intern, date=date)
+            if approbation == 1:
+                timer.worktime              = calculate_worktime(request.altered_t1, request.altered_t2, request.altered_t3, request.altered_t4)
+                timer.t1                    = request.altered_t1
+                timer.t2                    = request.altered_t2
+                timer.t3                    = request.altered_t3
+                timer.t4                    = request.altered_t4
+                timer.save()
         except:
             print(f"[ERROR]: Couldnt fetch request data. intern={intern.user.username}, date={date}")
             return None
-
-    if date > datetime.now().date():
-        print(f"[ERROR]: Couldnt create request object. date={date}")
-        return None
-    try:
-        timer = DailyTimer.objects.get(intern=intern, date=date)
-    except:
-        print(f"[ERROR]: Couldnt fetch timer data. intern={intern.user.username} date=({date})")
-        return None
-    if created:
-        request.original_t1 = timer.t1
-        request.original_t2 = timer.t2
-        request.original_t3 = timer.t3
-        request.original_t4 = timer.t4
-        request.altered_t1  = t1
-        request.altered_t2  = t2
-        request.altered_t3  = t3
-        request.altered_t4  = t4
-    else:
-        if approbation == 1:
-            timer.worktime              = calculate_worktime(request.altered_t1, request.altered_t2, request.altered_t3, request.altered_t4)
-            timer.t1                    = request.altered_t1
-            timer.t2                    = request.altered_t2
-            timer.t3                    = request.altered_t3
-            timer.t4                    = request.altered_t4
-            timer.save()
     request.comment     = comment
     request.approbation = approbation
     request.save()

@@ -60,9 +60,14 @@ A carousel feature enables users to view timers and events for the current week,
 - Bootstrap 5.0 for styling the calendar, including color-coding events and day numbers, and customizing month and day headers.
 ### Backend:
 - Django as the web framework.
-- A Timer model for tracking work times.
-- An Event model to manage user requests
+- A SQLite database for storing user, event, and timer data.
+### Models:
+- A User model for user authentication.
 - An Intern model to manage user-related work information.
+- A Timer model for worktime tracking.
+- A Service model for service tracking.
+- A Request model for managing timer changes.
+- An Event model to manage user requests
 
 ## Installation Instructions
 Clone the Repository:
@@ -105,33 +110,32 @@ Access the Application: Open your browser and navigate to http://localhost:8000.
 
 ## Models Overview
 
-- Timer:
-  Tracks work start and end times for both morning and afternoon sessions.
-  ForeignKey relationship with the Intern model.
 - Intern:
-  Represents each intern user.
-  Related to Timer and event models for tracking work time and day-off requests.
+  Represents each intern user.<br>
+  Related to Timer and event models for tracking work time and day-off requests.<br>
+- Timer:
+  Tracks work start and end times for both morning and afternoon sessions.<br>
+  ForeignKey relationship with the Intern model.<br>
 - Event:
-  Represents day-off or leave requests.
-  Includes fields like start_date, end_date, reason, and approval status.
+  Represents day-off or leave requests.<br>
+  Includes fields like start_date, end_date, reason, and approval status.<br>
 
-## Future Enhancements
+## Technical information
 
-[x] Finish to setup the archive page for requests.<br>
-[ ] Add email notifications when day-off requests are submitted or approved.<br>
-[x] Fix auto assignment of Interns class when creating a new user.<br>
-[ ] Add 5m delay for pointing to avoid multiclick.<br>
+Approval status is an integer field that can have the following values:
+> 0: Pending
+> 1: Approved
+> 2: Denied
+> 3: Cancelled
 
-## Troubleshooting
+Views only contains redirection pages. All the logic is in the handlers and the calc pages in PS.<br>
 
-Server configuration<br>
-CI/CD pipeline<br>
+The authentication system is based on OAuth2.0. The user is redirected to the login page of the company's website. Once the user is authenticated, the user is redirected to the pointing system.<br>
+If you want to use or test the app, you will need to update the authentication system in the pointer app and use the Django built-in authentication system.<br>
 
 ## Additional Information
 
-    Supervisor: Chakib Senhadji
-    Project duration: 1 month
-
-## Contact Information
-
-For further information or to contribute to the project, please reach out at matthieu.martin@dlh.lu.
+Supervisor: Chakib Senhadji<br>
+Project start date: 09-02-2024<br>
+Project duration: 2 months<br>
+This project is part of the DLH internship management system.<br>

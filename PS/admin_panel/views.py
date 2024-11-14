@@ -94,7 +94,7 @@ def preview_report(request):
     interns_data    = []
     for intern in Intern.objects.filter(is_ongoing=True):
         intern_data     = structure_data(intern.id)
-        monthly_hours   = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1, reason='Congé') | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé'))
+        monthly_hours   = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1, reason='Congé') | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé')) + PublicHolidays.objects.filter(date__month=month).count() * 8
         interns_data.append({
             'intern'        : intern,
             'monthly_hours' : monthly_hours
@@ -241,7 +241,7 @@ def global_report(request, month):
     interns_data = []
     for intern in Intern.objects.filter(is_ongoing=True):
         intern_data         = structure_data(intern.id)
-        monthly_hours       = sum(timer.worktime for timer in intern_data.months[month])
+        monthly_hours       = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1, reason='Congé') | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé')) + PublicHolidays.objects.filter(date__month=month).count() * 8
         interns_data.append({
             'intern'        : intern,
             'monthly_hours' : monthly_hours
@@ -270,7 +270,7 @@ def individual_report(request, username, month):
                 'week_number'   : week_number,
                 'weekly_hours'  : weekly_hours,
             })
-    monthly_hours   = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1) | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé'))
+    monthly_hours   = sum(timer.worktime for timer in intern_data.months[month]) + sum(event.duration * 8 for event in Event.objects.filter(intern=intern, start_date__month=month, approbation=1) | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé')) + PublicHolidays.objects.filter(date__month=month).count() * 8
     event_list      = Event.objects.filter(intern=intern, start_date__month=month, approbation=1) | Event.objects.filter(intern=intern, end_date__month=month, approbation=1, reason='Congé')
     context = {
         'intern'            : intern,

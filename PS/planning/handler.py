@@ -1,6 +1,7 @@
 # Django
 from .models import Event, PublicHolidays
 from intern.models import Intern
+
 # Python
 from typing import Optional
 from datetime import datetime, timedelta, date
@@ -18,16 +19,7 @@ Return:
 '''
 def update_or_create_event(event_id: int, intern: Intern, reason: str, is_half_day: bool, start: date, end: date, approbation: int, comment: str) -> Optional[Event]:
     if event_id == 0:
-        event, created = Event.objects.get_or_create(intern=intern, request_date=datetime.now(), start_date=start, end_date=end, comment=comment)
-    else:
-        try:
-            event   = Event.objects.get(pk=event_id)
-            created = False
-        except:
-            print(f"[ERROR]: Couldnt fetch event data. intern={intern.user.username}, start={start}, end={end}")
-            return None
-
-    if created:
+        event = Event.objects.create(intern=intern, request_date=datetime.now(), start_date=start, end_date=end, comment=comment)
         duration = 0
         if is_half_day:
             if start.weekday() < 5:
@@ -57,6 +49,12 @@ def update_or_create_event(event_id: int, intern: Intern, reason: str, is_half_d
             event.delete()
             return None
         event.duration      = duration
+    else:
+        try:
+            event   = Event.objects.get(pk=event_id)
+        except:
+            print(f"[ERROR]: Couldnt fetch event data. intern={intern.user.username}, start={start}, end={end}")
+            return None
     event.reason        = reason
     event.start_date    = start
     event.end_date      = end
