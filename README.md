@@ -94,18 +94,23 @@ Access the Application: Open your browser and navigate to http://localhost:8000.
 
 ``` bash
 .
+├── PS/
+│   ├── asgi.py
+│   ├── settings.py             # Django config
+│   ├── urls.py                 # URL routing for the project
+│   └── wsgi.py
 ├── my_app/
 │   ├── templates/
-│   │   └── my_app.html   # Base template for the app
-│   ├── models.py         # Django models (Timer, Intern, Events)
-│   ├── views.py          # Views for handling events, timers, etc.
+│   │   └── my_app.html         # HTML template
+│   ├── models.py               # Django models
+│   ├── views.py                # Views
 │   ├── static/
-│   │   └── planning/
+│   │   └── my_app/
 │   │       └── css/
-│   │           └── planning.css  # Custom styles for FullCalendar and the UI
-│   └── urls.py           # URL routing for the app
-├── requirements.txt      # Python dependencies
-└── manage.py             # Django management script
+│   │           └── my_app.css  # Custom styles for the UI
+│   └── urls.py                 # URL routing for the app
+├── requirements.txt            # Python dependencies
+└── manage.py                   # Django management script
 ```
 
 ## Models Overview
