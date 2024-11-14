@@ -59,7 +59,6 @@ def dashboard(request):
                     update_or_create_request(request_id, requested.intern, requested.date, requested.altered_t1, requested.altered_t2, requested.altered_t3, requested.altered_t4, 1, requested.comment)
                 elif requestForm.cleaned_data['request_reject']:
                     update_or_create_request(request_id, requested.intern, requested.date, requested.altered_t1, requested.altered_t2, requested.altered_t3, requested.altered_t4, 2, requested.comment)
-                else: print('reject error')
             elif serviceForm.is_valid():
                 service_id  = serviceForm.cleaned_data['service_id']
                 service     = ServiceTimer.objects.get(id=service_id)

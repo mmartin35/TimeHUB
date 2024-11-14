@@ -75,20 +75,23 @@ def update_or_create_request(request_id: int, intern: Intern, date: date, t1: ti
         if date >= datetime.now().date():
             print(f"[ERROR]: Couldnt create request object. date={date}")
             return None
+        request = RequestTimer.objects.create(intern=intern, date=date)
         try:
-            timer, created = DailyTimer.objects.get_or_create(intern=intern, date=date)
-            request = RequestTimer.objects.create(intern=intern, date=date)
+            timer = DailyTimer.objects.get(intern=intern, date=date)
             request.original_t1 = timer.t1
             request.original_t2 = timer.t2
             request.original_t3 = timer.t3
             request.original_t4 = timer.t4
-            request.altered_t1  = t1
-            request.altered_t2  = t2
-            request.altered_t3  = t3
-            request.altered_t4  = t4
         except:
-            print(f"[ERROR]: Couldnt fetch timer data. intern={intern.user.username} date=({date})")
-            return None
+            print(f"[WARNING]: Couldnt fetch timer data. intern={intern.user.username} date=({date})")
+            request.original_t1 = None
+            request.original_t2 = None
+            request.original_t3 = None
+            request.original_t4 = None
+        request.altered_t1  = t1
+        request.altered_t2  = t2
+        request.altered_t3  = t3
+        request.altered_t4  = t4
     else:
         try:
             request = RequestTimer.objects.get(pk=request_id)
