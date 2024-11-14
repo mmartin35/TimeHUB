@@ -42,8 +42,10 @@
         internSelect.addEventListener('change', function() {
             if (this.value != "none") {
                 const intern                = internsData[this.value];
-                const new_arrival           = new Date(intern.arrival)
-                const new_departure         = new Date(intern.departure)
+                var buf_new_arrival         = new Date(intern.arrival);
+                var buf_new_departure       = new Date(intern.departure);
+                const new_arrival           = new Date(buf_new_arrival.getFullYear(), buf_new_arrival.getMonth(), buf_new_arrival.getDate() + 1);
+                const new_departure         = new Date(buf_new_departure.getFullYear(), buf_new_departure.getMonth(), buf_new_departure.getDate() + 1);
 
                 emailField.value            = intern.email;
                 firstField.value            = intern.first_name;
@@ -58,6 +60,7 @@
                 arrivalField.value          = new_arrival.toISOString().split('T')[0];
                 departureField.value        = new_departure.toISOString().split('T')[0];
                 missionField.value          = intern.mission;
+
             } else {
                 const fields = [emailField, firstField, lastField, cnsField, internship_typeField, departmentField, tutorField, regimeField, arrivalField, departureField, missionField];
                 for (const field of fields) {
