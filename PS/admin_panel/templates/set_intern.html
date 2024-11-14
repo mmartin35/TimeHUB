@@ -44,6 +44,7 @@
                 const intern                = internsData[this.value];
                 var buf_new_arrival         = new Date(intern.arrival);
                 var buf_new_departure       = new Date(intern.departure);
+                // prevent date from being one day behind -> timezone issue
                 const new_arrival           = new Date(buf_new_arrival.getFullYear(), buf_new_arrival.getMonth(), buf_new_arrival.getDate() + 1);
                 const new_departure         = new Date(buf_new_departure.getFullYear(), buf_new_departure.getMonth(), buf_new_departure.getDate() + 1);
 
