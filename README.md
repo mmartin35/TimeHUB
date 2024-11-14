@@ -117,15 +117,15 @@ Access the Application: Open your browser and navigate to http://localhost:8000.
 
 ## Future Enhancements
 
-[x] Finish to setup the archive page for requests.
-[ ] Add email notifications when day-off requests are submitted or approved.
-[x] Fix auto assignment of Interns class when creating a new user.
-[ ] Add 5m delay for pointing to avoid multiclick.
-[ ] Add csv file import to setup vacation days
+[x] Finish to setup the archive page for requests.<br>
+[ ] Add email notifications when day-off requests are submitted or approved.<br>
+[x] Fix auto assignment of Interns class when creating a new user.<br>
+[ ] Add 5m delay for pointing to avoid multiclick.<br>
 
 ## Troubleshooting
 
-NA
+Server configuration<br>
+CI/CD pipeline<br>
 
 ## Additional Information
 
