@@ -1,19 +1,6 @@
 # Pointing System
 
-## Table of Contents
-
-Links:<br>
-https://trello.com/w/dlhpointingsystem<br>
-
-- [Project Overview](#project-overview)
-- [Technologies Used](#technologies-used)
-- [Installation Instructions](#installation-instructions)
-- [Directory Structure](#directory-structure)
-- [Models Overview](#models-overview)
-- [Future Enhancements](#future-enhancements)
-- [Troubleshooting](#troubleshooting)
-- [Additional Information](#additional-information)
-- [Contact Information](#contact-information)
+[TOC]
 
 ## Project Overview
 
@@ -54,20 +41,14 @@ A carousel feature enables users to view timers and events for the current week,
 
 ## Technologies Used
 
-### Frontend:
+### Frontend
 - FullCalendar for calendar UI and event handling.
 - jQuery for DOM manipulation.
 - Bootstrap 5.0 for styling the calendar, including color-coding events and day numbers, and customizing month and day headers.
-### Backend:
-- Django as the web framework.
-- A SQLite database for storing user, event, and timer data.
-### Models:
-- A User model for user authentication.
-- An Intern model to manage user-related work information.
-- A Timer model for worktime tracking.
-- A Service model for service tracking.
-- A Request model for managing timer changes.
-- An Event model to manage user requests
+### Backend
+- Web framework: Django
+- Database: SQLite
+- API calls: requests
 
 ## Installation Instructions
 Clone the Repository:
@@ -84,11 +65,18 @@ Set Up the Database: Apply migrations to set up the database schema:
 python3 manage.py makemigrations
 python3 manage.py migrate
 ```
-Run the Development Server: Start the Django development server:
+### Development
+
+Start the Django development server:
+
 ``` bash
 python3 manage.py runserver
 ```
-Access the Application: Open your browser and navigate to http://localhost:8000.
+Open your browser and navigate to http://localhost:8000.
+
+### Production
+
+Go on the django_to_prod.md documentation to get more details.
 
 ## Directory Structure
 
@@ -109,31 +97,157 @@ Access the Application: Open your browser and navigate to http://localhost:8000.
 │   │       └── css/
 │   │           └── my_app.css  # Custom styles for the UI
 │   └── urls.py                 # URL routing for the app
+├── templates/
+│   ├── base.html				# Shared base template
+│   └── navbar.html				# Navbar depending on logged-in user
+├── static/
+│	├── images.png
+│   └── css/
+│       ├── base.css  			# Custom styles for the base
+│       └── navbar.css			# Custom styles for the navbar
 ├── requirements.txt            # Python dependencies
 └── manage.py                   # Django management script
 ```
 
 ## Models Overview
 
+### user
+
+- Member:
+  Represents each staff user.<br>
+
+  ``` python
+  ├── user		# ForeignKey relationship with the User model
+  └── email		# personal email address
+  ```
+
 - Intern:
   Represents each intern user.<br>
-  Related to Timer and event models for tracking work time and day-off requests.<br>
-- Timer:
-  Tracks work start and end times for both morning and afternoon sessions.<br>
-  ForeignKey relationship with the Intern model.<br>
+
+  ``` python
+  ├── user			# ForeignKey relationship with the User model
+  ├── cns				# CNS number
+  ├── internship_type # (stage conventionné, stage pratique...)
+  ├── department		# (IT, HR...)
+  ├── tutor
+  ├── mission
+  │
+  ├── arrival			# first day of internship
+  ├── departure		# last day of internship
+  ├── is_ongoing		# presence in the company
+  ├── is_active		# presence at office
+  │
+  ├── daysoff_total	# days off total during the internship
+  ├── daysoff_left	# days off available
+  ├── daysoff_onhold	# days off still to be processed
+  │
+  └── regime			# percentage in reference to full time
+  ```
+
+### planning
+
 - Event:
+
   Represents day-off or leave requests.<br>
-  Includes fields like start_date, end_date, reason, and approval status.<br>
+
+  ``` python
+  ├── intern			# ForeignKey relationship with the Intern model
+  ├── request_date
+  │
+  ├── reason
+  ├── is_half_day
+  ├── start_date
+  ├── end_date
+  ├── duration
+  │
+  ├── approbation		# check technical informations for more details
+  └── comment			# comment from staff for approbation
+  ```
+
+- PublicHolidays:
+
+  Represents vacations.<br>
+
+  ``` python
+  ├── name
+  └── date
+  ```
+
+### pointer
+
+- DailyTimer:
+
+  Tracks work start and end times for both morning and afternoon sessions.<br>
+
+  ``` python
+  ├── intern		# ForeignKey relationship with the Intern model
+  ├── date
+  │
+  ├── worktime	# sum of t1, t2 and t3, t4
+  ├── t2			# time of timer 2
+  ├── t3			# time of timer 3
+  ├── t4			# time of timer 4
+  └── t1			# time of timer 1
+  ```
+
+- ServiceTimer:
+
+  Tracks out of office times.<br>
+
+  ``` python
+  ├── intern		# ForeignKey relationship with the Intern model
+  ├── date
+  ├── comment		# comment from staff for approbation
+  │
+  ├── t1			# time of timer 1
+  └── t2			# time of timer 2
+  ```
+
+- RequestTimer:
+
+  Represents timer correction requests.<br>
+
+  ``` python
+  ├── intern		# ForeignKey relationship with the Intern model
+  ├── date
+  ├── approbation	# check technical informations for more details
+  ├── comment		# comment from staff for approbation
+  │
+  ├── original_t1	# save of timer 1
+  ├── original_t2	# save of timer 1
+  ├── original_t3	# save of timer 1
+  ├── original_t4	# save of timer 1
+  │
+  ├── altered_t1	# changes for timer 1
+  ├── altered_t2	# changes for timer 2
+  ├── altered_t3	# changes for timer 3
+  └── altered_t4	# changes for timer 4
+  ```
+
+- ChangingLog:
+  Keeps database alterations.<br>
+
+  ``` python
+  ├── intern				# ForeignKey relationship with the Intern model
+  ├── member				# username of staff username
+  ├── date
+  │
+  ├── original_worktime	# save of worktime
+  └── altered_worktime	# changes for worktime
+  ```
 
 ## Technical information
 
-Approval status is an integer field that can have the following values:
+### Approbation
+
+ Integer field that can have the following values:
+
 > 0: Pending<br>
 > 1: Approved<br>
 > 2: Rejected<br>
 > 3: Cancelled<br>
 
-Views only contains redirection pages. All the logic is in the handlers and the calc pages in PS.<br>
+### Authentication
 
 The authentication system is based on OAuth2.0. The user is redirected to the login page of the company's website. Once the user is authenticated, the user is redirected to the pointing system.<br>
 If you want to use or test the app, you will need to update the authentication system in the pointer app and use the Django built-in authentication system.<br>
