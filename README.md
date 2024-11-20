@@ -45,14 +45,15 @@ This project is a web-based planning and event management tool built using Djang
 This project is a web-based planning and event management tool built using Django for the backend and FullCalendar and Bootstrap for the frontend. It allows users to submit day-off requests, view a calendar of events, and manage various aspects of their schedule. The project includes a stopwatch feature to track work times and functionality to manage interns and events through an admin panel.
 Key Features
 
-1. Calendar for Events
+
+#### Calendar for Events
 Displays a monthly view using FullCalendar.<br>
 Allows users to submit events on specific dates or day-off requests.<br>
 Dynamically loads events via AJAX from a Django URL endpoint (events_json).<br>
 Color-codes events based on approval status (e.g., approved events in red, pending events in blue).<br>
 The calendar has fixed dimensions to prevent resizing when switching between months.<br>
 
-2. Event Submission
+#### Event Submission
 Users can submit day-off requests via a form on the right side of the calendar.<br>
 The form captures:
 - Event date (auto-filled when a date is clicked on the calendar).
@@ -61,20 +62,20 @@ The form captures:
 - Half-day options to specify the exact time of leave and return.
 Once submitted, the event is either pending approval or automatically handled depending on business logic.<br>
 
-3. Work Time Tracking
+#### Work Time Tracking
 Users can log work and lunch times using a server-side stopwatch feature.<br>
 Buttons allow users to start/stop the work or lunch timer.<br>
 Times are saved and managed via a Timer model that tracks both morning and afternoon work sessions.<br>
 
-4. Admin Panel
+#### Admin Panel
 The admin panel allows administrators to manage interns and events.<br>
 Admins can approve or deny events, view intern details, and manage time-tracking data.<br>
 
-5. Intern Management
+#### Intern Management
 Interns are managed within the Django admin panel and have relationships with timers and events.<br>
 Work times are tracked via a Timer model, and each intern's work times are displayed in a carousel view for the current week.<br>
 
-6. Dynamic Week Navigation
+#### Dynamic Week Navigation
 A carousel feature enables users to view timers and events for the current week, with the ability to navigate to past weeks.<br>
 
 ## Technologies Used
