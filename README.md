@@ -1,8 +1,51 @@
 # Pointing System
 
-[TOC]
+1. **[Introduction](#introduction)**  
+   - [Overview of the Pointing System Project](#overview-of-the-pointing-system-project)  
+   - [Key Features](#key-features)  
 
-## Project Overview
+2. **[Project Overview](#project-overview)**  
+   - [Calendar for Events](#calendar-for-events)  
+   - [Event Submission](#event-submission)  
+   - [Work Time Tracking](#work-time-tracking)  
+   - [Admin Panel Features](#admin-panel-features)  
+   - [Intern Management](#intern-management)  
+   - [Dynamic Week Navigation](#dynamic-week-navigation)  
+
+3. **[Technologies Used](#technologies-used)**  
+   - [Frontend Technologies](#frontend-technologies)  
+   - [Backend Technologies](#backend-technologies)  
+
+4. **[Installation Instructions](#installation-instructions)**  
+   - [Clone the Repository](#clone-the-repository)  
+   - [Install Dependencies](#install-dependencies)  
+   - [Set Up the Database](#set-up-the-database)  
+   - [Development Setup](#development-setup)  
+   - [Production Setup](#production-setup)  
+
+5. **[Directory Structure](#directory-structure)**  
+
+6. **[Models Overview](#models-overview)**  
+   - [User Models](#user-models)  
+   - [Planning Models](#planning-models)  
+   - [Pointer Models](#pointer-models)  
+
+7. **[Technical Information](#technical-information)**  
+   - [Approbation Values](#approbation-values)  
+   - [Authentication System](#authentication-system)  
+
+8. **[Additional Information](#additional-information)**  
+   - [Supervisor Details](#supervisor-details)  
+   - [Project Timeline](#project-timeline)  
+   - [Integration with DLH Internship Management System](#integration-with-dlh-internship-management-system)
+
+## Introduction
+
+### Project Overview
+
+This project is a web-based planning and event management tool built using Django for the backend and FullCalendar and Bootstrap for the frontend. It allows users to submit day-off requests, view a calendar of events, and manage various aspects of their schedule. The project includes a stopwatch feature to track work times and functionality to manage interns and events through an admin panel.
+
+### Key Features
 
 This project is a web-based planning and event management tool built using Django for the backend and FullCalendar and Bootstrap for the frontend. It allows users to submit day-off requests, view a calendar of events, and manage various aspects of their schedule. The project includes a stopwatch feature to track work times and functionality to manage interns and events through an admin panel.
 Key Features
@@ -98,13 +141,13 @@ Go on the django_to_prod.md documentation to get more details.
 │   │           └── my_app.css  # Custom styles for the UI
 │   └── urls.py                 # URL routing for the app
 ├── templates/
-│   ├── base.html				# Shared base template
-│   └── navbar.html				# Navbar depending on logged-in user
+│   ├── base.html				        # Shared base template
+│   └── navbar.html				      # Navbar depending on logged-in user
 ├── static/
 │	├── images.png
 │   └── css/
-│       ├── base.css  			# Custom styles for the base
-│       └── navbar.css			# Custom styles for the navbar
+│       ├── base.css  			    # Custom styles for the base
+│       └── navbar.css			    # Custom styles for the navbar
 ├── requirements.txt            # Python dependencies
 └── manage.py                   # Django management script
 ```
@@ -125,23 +168,23 @@ Go on the django_to_prod.md documentation to get more details.
   Represents each intern user.<br>
 
   ``` python
-  ├── user			# ForeignKey relationship with the User model
-  ├── cns				# CNS number
+  ├── user			      # ForeignKey relationship with the User model
+  ├── cns				      # CNS number
   ├── internship_type # (stage conventionné, stage pratique...)
-  ├── department		# (IT, HR...)
+  ├── department		  # (IT, HR...)
   ├── tutor
   ├── mission
   │
-  ├── arrival			# first day of internship
-  ├── departure		# last day of internship
-  ├── is_ongoing		# presence in the company
-  ├── is_active		# presence at office
+  ├── arrival			    # first day of internship
+  ├── departure		    # last day of internship
+  ├── is_ongoing		  # presence in the company
+  ├── is_active		    # presence at office
   │
-  ├── daysoff_total	# days off total during the internship
-  ├── daysoff_left	# days off available
+  ├── daysoff_total	  # days off total during the internship
+  ├── daysoff_left	  # days off available
   ├── daysoff_onhold	# days off still to be processed
   │
-  └── regime			# percentage in reference to full time
+  └── regime			    # percentage in reference to full time
   ```
 
 ### planning
@@ -151,7 +194,7 @@ Go on the django_to_prod.md documentation to get more details.
   Represents day-off or leave requests.<br>
 
   ``` python
-  ├── intern			# ForeignKey relationship with the Intern model
+  ├── intern			  # ForeignKey relationship with the Intern model
   ├── request_date
   │
   ├── reason
@@ -160,8 +203,8 @@ Go on the django_to_prod.md documentation to get more details.
   ├── end_date
   ├── duration
   │
-  ├── approbation		# check technical informations for more details
-  └── comment			# comment from staff for approbation
+  ├── approbation		  # check technical informations for more details
+  └── comment			    # comment from staff for approbation
   ```
 
 - PublicHolidays:
@@ -184,10 +227,10 @@ Go on the django_to_prod.md documentation to get more details.
   ├── date
   │
   ├── worktime	# sum of t1, t2 and t3, t4
-  ├── t2			# time of timer 2
-  ├── t3			# time of timer 3
-  ├── t4			# time of timer 4
-  └── t1			# time of timer 1
+  ├── t2			  # time of timer 2
+  ├── t3			  # time of timer 3
+  ├── t4			  # time of timer 4
+  └── t1			  # time of timer 1
   ```
 
 - ServiceTimer:
@@ -199,8 +242,8 @@ Go on the django_to_prod.md documentation to get more details.
   ├── date
   ├── comment		# comment from staff for approbation
   │
-  ├── t1			# time of timer 1
-  └── t2			# time of timer 2
+  ├── t1			  # time of timer 1
+  └── t2			  # time of timer 2
   ```
 
 - RequestTimer:
@@ -208,10 +251,10 @@ Go on the django_to_prod.md documentation to get more details.
   Represents timer correction requests.<br>
 
   ``` python
-  ├── intern		# ForeignKey relationship with the Intern model
+  ├── intern		  # ForeignKey relationship with the Intern model
   ├── date
   ├── approbation	# check technical informations for more details
-  ├── comment		# comment from staff for approbation
+  ├── comment		  # comment from staff for approbation
   │
   ├── original_t1	# save of timer 1
   ├── original_t2	# save of timer 1
@@ -228,8 +271,8 @@ Go on the django_to_prod.md documentation to get more details.
   Keeps database alterations.<br>
 
   ``` python
-  ├── intern				# ForeignKey relationship with the Intern model
-  ├── member				# username of staff username
+  ├── intern				    # ForeignKey relationship with the Intern model
+  ├── member				    # username of staff username
   ├── date
   │
   ├── original_worktime	# save of worktime
