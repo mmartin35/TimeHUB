@@ -90,16 +90,18 @@ A carousel feature enables users to view timers and events for the current week,
 - API calls: requests
 
 ## Installation Instructions
-Clone the Repository:
+### Clone the Repository:
 ``` bash
 git clone git@github.com:mmartin35/pointing_system.git
 cd pointing_system
 ```
-Install Dependencies: Make sure to have Python and Django installed. Install required dependencies using:
+### Install Dependencies:
+Make sure to have Python and Django installed. Install required dependencies using:<br>
 ``` bash
 pip install -r requirements.txt
 ```
-Set Up the Database: Apply migrations to set up the database schema:
+### Set Up the Database:
+Apply migrations to set up the database schema:<br>
 ``` bash
 python3 manage.py makemigrations
 python3 manage.py migrate
