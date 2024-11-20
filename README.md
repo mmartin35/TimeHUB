@@ -5,10 +5,10 @@
    - [Key Features](#key-features)
    - - [Calendar for Events](#calendar-for-events)
    - - [Event Submission](#event-submission)
-   - [Work Time Tracking](#work-time-tracking)
-   - [Admin Panel Features](#admin-panel-features)
-   - [Intern Management](#intern-management)
-   - [Dynamic Week Navigation](#dynamic-week-navigation)
+   - - [Work Time Tracking](#work-time-tracking)
+   - - [Admin Panel Features](#admin-panel-features)
+   - - [Intern Management](#intern-management)
+   - - [Dynamic Week Navigation](#dynamic-week-navigation)
 
 3. **[Technologies Used](#technologies-used)**
    - [Frontend Technologies](#frontend)
