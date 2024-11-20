@@ -139,13 +139,13 @@ Go on the django_to_prod.md documentation to get more details.
 │   │           └── my_app.css  # Custom styles for the UI
 │   └── urls.py                 # URL routing for the app
 ├── templates/
-│   ├── base.html				        # Shared base template
-│   └── navbar.html				      # Navbar depending on logged-in user
+│   ├── base.html				     # Shared base template
+│   └── navbar.html				  # Navbar depending on logged-in user
 ├── static/
 │	├── images.png
 │   └── css/
-│       ├── base.css  			    # Custom styles for the base
-│       └── navbar.css			    # Custom styles for the navbar
+│       ├── base.css  			  # Custom styles for the base
+│       └── navbar.css			  # Custom styles for the navbar
 ├── requirements.txt            # Python dependencies
 └── manage.py                   # Django management script
 ```
@@ -166,21 +166,21 @@ Go on the django_to_prod.md documentation to get more details.
   Represents each intern user.<br>
 
   ``` python
-  ├── user			      # ForeignKey relationship with the User model
-  ├── cns				      # CNS number
-  ├── internship_type # (stage conventionné, stage pratique...)
-  ├── department		  # (IT, HR...)
+  ├── user			       # ForeignKey relationship with the User model
+  ├── cns				    # CNS number
+  ├── internship_type    # (stage conventionné, stage pratique...)
+  ├── department         # (IT, HR...)
   ├── tutor
   ├── mission
   │
   ├── arrival			    # first day of internship
   ├── departure		    # last day of internship
-  ├── is_ongoing		  # presence in the company
+  ├── is_ongoing		    # presence in the company
   ├── is_active		    # presence at office
   │
-  ├── daysoff_total	  # days off total during the internship
-  ├── daysoff_left	  # days off available
-  ├── daysoff_onhold	# days off still to be processed
+  ├── daysoff_total	    # days off total during the internship
+  ├── daysoff_left	    # days off available
+  ├── daysoff_onhold	    # days off still to be processed
   │
   └── regime			    # percentage in reference to full time
   ```
@@ -202,7 +202,7 @@ Go on the django_to_prod.md documentation to get more details.
   ├── duration
   │
   ├── approbation		  # check technical informations for more details
-  └── comment			    # comment from staff for approbation
+  └── comment			  # comment from staff for approbation
   ```
 
 - PublicHolidays:
@@ -221,14 +221,14 @@ Go on the django_to_prod.md documentation to get more details.
   Tracks work start and end times for both morning and afternoon sessions.<br>
 
   ``` python
-  ├── intern		# ForeignKey relationship with the Intern model
+  ├── intern	   # ForeignKey relationship with the Intern model
   ├── date
   │
-  ├── worktime	# sum of t1, t2 and t3, t4
-  ├── t2			  # time of timer 2
-  ├── t3			  # time of timer 3
-  ├── t4			  # time of timer 4
-  └── t1			  # time of timer 1
+  ├── worktime    # sum of t1, t2 and t3, t4
+  ├── t2			   # time of timer 2
+  ├── t3			   # time of timer 3
+  ├── t4			   # time of timer 4
+  └── t1			   # time of timer 1
   ```
 
 - ServiceTimer:
@@ -240,8 +240,8 @@ Go on the django_to_prod.md documentation to get more details.
   ├── date
   ├── comment		# comment from staff for approbation
   │
-  ├── t1			  # time of timer 1
-  └── t2			  # time of timer 2
+  ├── t1			   # time of timer 1
+  └── t2			   # time of timer 2
   ```
 
 - RequestTimer:
@@ -251,26 +251,26 @@ Go on the django_to_prod.md documentation to get more details.
   ``` python
   ├── intern		  # ForeignKey relationship with the Intern model
   ├── date
-  ├── approbation	# check technical informations for more details
+  ├── approbation	  # check technical informations for more details
   ├── comment		  # comment from staff for approbation
   │
-  ├── original_t1	# save of timer 1
-  ├── original_t2	# save of timer 1
-  ├── original_t3	# save of timer 1
-  ├── original_t4	# save of timer 1
+  ├── original_t1	  # save of timer 1
+  ├── original_t2	  # save of timer 1
+  ├── original_t3	  # save of timer 1
+  ├── original_t4	  # save of timer 1
   │
-  ├── altered_t1	# changes for timer 1
-  ├── altered_t2	# changes for timer 2
-  ├── altered_t3	# changes for timer 3
-  └── altered_t4	# changes for timer 4
+  ├── altered_t1	  # changes for timer 1
+  ├── altered_t2	  # changes for timer 2
+  ├── altered_t3	  # changes for timer 3
+  └── altered_t4	  # changes for timer 4
   ```
 
 - ChangingLog:
   Keeps database alterations.<br>
 
   ``` python
-  ├── intern				    # ForeignKey relationship with the Intern model
-  ├── member				    # username of staff username
+  ├── intern				# ForeignKey relationship with the Intern model
+  ├── member		      # username of staff username
   ├── date
   │
   ├── original_worktime	# save of worktime
