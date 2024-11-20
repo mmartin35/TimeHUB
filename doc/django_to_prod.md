@@ -1,10 +1,10 @@
 [TOC]
 
-## Setup Django production
+# Setup Django production
 
-### Prepare the project:
+## Prepare the project:
 
-#### Ensure settings are production-ready:
+### Ensure settings are production-ready:
 
 Set `DEBUG = False` in `settings.py`.
 
@@ -14,13 +14,13 @@ Add your domain name or server IP to `ALLOWED_HOSTS`.
 ALLOWED_HOSTS = ['your-domain.com', 'your-server-ip']
 ```
 
-#### Apply migrations:
+### Apply migrations:
 
 ```
 python manage.py migrate
 ```
 
-#### Create a virtual environment for your Django project:
+### Create a virtual environment for your Django project:
 
 ```
 python3 -m venv env
@@ -28,30 +28,30 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-#### Collect static files: Run the following command to gather all static files:
+### Collect static files: Run the following command to gather all static files:
 
 ```
 python manage.py collectstatic
 ```
 
-### Install required software:
+## Install required software:
 
-#### Update and install system packages:
+### Update and install system packages:
 
 ```
 sudo apt update
 sudo apt install python3-pip python3-venv nginx
 ```
 
-#### Install Gunicorn:
+### Install Gunicorn:
 
 ```
 pip install gunicorn
 ```
 
-### Configure Server:
+## Configure Server:
 
-#### Configure Gunicorn:
+### Configure Gunicorn:
 
 Test Gunicorn to ensure it can serve your application:
 
@@ -83,7 +83,7 @@ sudo systemctl start gunicorn
 sudo systemctl enable gunicorn
 ```
 
-#### Configure Nginx:
+### Configure Nginx:
 
 Create a file at `/etc/nginx/sites-available/myproject`:
 
@@ -122,9 +122,9 @@ Restart Nginx:
 sudo systemctl restart nginx
 ```
 
-### Secure with SSL (optional):
+## Secure with SSL (optional):
 
-#### Use Certbot to install and configure an SSL certificate:
+### Use Certbot to install and configure an SSL certificate:
 
 Install Certbot:
 
@@ -144,11 +144,11 @@ Test automatic renewal:
 sudo certbot renew --dry-run
 ```
 
-### Verify the deployment:
+## Verify the deployment:
 
 Access your Django project in a browser using your domain name or server IP.
 
-#### Check logs for issues:
+### Check logs for issues:
 
 - Gunicorn: `sudo journalctl -u gunicorn`
 - Nginx: `sudo tail -f /var/log/nginx/error.log`
