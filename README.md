@@ -67,7 +67,7 @@ Users can log work and lunch times using a server-side stopwatch feature.<br>
 Buttons allow users to start/stop the work or lunch timer.<br>
 Times are saved and managed via a Timer model that tracks both morning and afternoon work sessions.<br>
 
-#### Admin Panel
+#### Admin Panel Features
 The admin panel allows administrators to manage interns and events.<br>
 Admins can approve or deny events, view intern details, and manage time-tracking data.<br>
 
