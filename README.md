@@ -1,12 +1,10 @@
 # Pointing System
 
 1. **[Introduction](#introduction)**
-   - [Overview of the Pointing System Project](#overview-of-the-pointing-system-project)
+   - [Overview of the Pointing System Project](#project-overview)
    - [Key Features](#key-features)
-
-2. **[Project Overview](#project-overview)**
-   - [Calendar for Events](#calendar-for-events)
-   - [Event Submission](#event-submission)
+   - - [Calendar for Events](#calendar-for-events)
+   - - [Event Submission](#event-submission)
    - [Work Time Tracking](#work-time-tracking)
    - [Admin Panel Features](#admin-panel-features)
    - [Intern Management](#intern-management)
