@@ -1,43 +1,40 @@
 # Pointing System
 
-1. **[Introduction](#introduction)**  
-   - [Overview of the Pointing System Project](#overview-of-the-pointing-system-project)  
-   - [Key Features](#key-features)  
+1. **[Introduction](#introduction)**
+   - [Overview of the Pointing System Project](#overview-of-the-pointing-system-project)
+   - [Key Features](#key-features)
 
-2. **[Project Overview](#project-overview)**  
-   - [Calendar for Events](#calendar-for-events)  
-   - [Event Submission](#event-submission)  
-   - [Work Time Tracking](#work-time-tracking)  
-   - [Admin Panel Features](#admin-panel-features)  
-   - [Intern Management](#intern-management)  
-   - [Dynamic Week Navigation](#dynamic-week-navigation)  
+2. **[Project Overview](#project-overview)**
+   - [Calendar for Events](#calendar-for-events)
+   - [Event Submission](#event-submission)
+   - [Work Time Tracking](#work-time-tracking)
+   - [Admin Panel Features](#admin-panel-features)
+   - [Intern Management](#intern-management)
+   - [Dynamic Week Navigation](#dynamic-week-navigation)
 
-3. **[Technologies Used](#technologies-used)**  
-   - [Frontend Technologies](#frontend-technologies)  
-   - [Backend Technologies](#backend-technologies)  
+3. **[Technologies Used](#technologies-used)**
+   - [Frontend Technologies](#frontend)
+   - [Backend Technologies](#backend)
 
-4. **[Installation Instructions](#installation-instructions)**  
-   - [Clone the Repository](#clone-the-repository)  
-   - [Install Dependencies](#install-dependencies)  
-   - [Set Up the Database](#set-up-the-database)  
-   - [Development Setup](#development-setup)  
-   - [Production Setup](#production-setup)  
+4. **[Installation Instructions](#installation-instructions)**
+   - [Clone the Repository](#clone-the-repository)
+   - [Install Dependencies](#install-dependencies)
+   - [Set Up the Database](#set-up-the-database)
+   - [Development Setup](#development)
+   - [Production Setup](#production)
 
-5. **[Directory Structure](#directory-structure)**  
+5. **[Directory Structure](#directory-structure)**
 
-6. **[Models Overview](#models-overview)**  
-   - [User Models](#user-models)  
-   - [Planning Models](#planning-models)  
-   - [Pointer Models](#pointer-models)  
+6. **[Models Overview](#models-overview)**
+   - [User Models](#user)
+   - [Planning Models](#planning)
+   - [Pointer Models](#pointer)
 
-7. **[Technical Information](#technical-information)**  
-   - [Approbation Values](#approbation-values)  
-   - [Authentication System](#authentication-system)  
+7. **[Technical Information](#technical-information)**
+   - [Approbation Values](#approbation)
+   - [Authentication System](#authentication)
 
-8. **[Additional Information](#additional-information)**  
-   - [Supervisor Details](#supervisor-details)  
-   - [Project Timeline](#project-timeline)  
-   - [Integration with DLH Internship Management System](#integration-with-dlh-internship-management-system)
+8. **[Additional Information](#additional-information)**
 
 ## Introduction
 
