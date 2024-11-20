@@ -1,5 +1,3 @@
-[TOC]
-
 # Setup Django production
 
 ## Prepare the project:
